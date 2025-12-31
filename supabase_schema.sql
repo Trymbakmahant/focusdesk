@@ -9,7 +9,9 @@ CREATE TABLE IF NOT EXISTS tasks (
   user_id UUID REFERENCES auth.users(id) ON DELETE CASCADE DEFAULT auth.uid(),
   title TEXT NOT NULL,
   completed BOOLEAN DEFAULT FALSE,
-  priority TEXT DEFAULT 'Medium',
+  importance TEXT DEFAULT 'Medium', -- 'Urgent', 'High', 'Medium', 'Low'
+  badge TEXT,                       -- Custom badge name from Badge Box
+  due_date DATE DEFAULT CURRENT_DATE,
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
