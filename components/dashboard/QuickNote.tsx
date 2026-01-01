@@ -2,8 +2,10 @@
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/context/AuthContext';
 
 export default function QuickNote() {
+  const { user } = useAuth();
   const [content, setContent] = useState<string>("Ideas for FocusDeck plugin architecture: SQLite local schema for user-defined cards, Rust IPC channels for background timers, and Raycast hotkey binding with zero electron footprint...");
   const [noteId, setNoteId] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
@@ -11,25 +13,25 @@ export default function QuickNote() {
 
   useEffect(() => {
     async function fetchNote() {
-      if (!supabase) return;
-      const { data, error } = await supabase.from('notes').select('*').limit(1);
+      if (!supabase || !user) return;
+      const { data, error } = await supabase.from('notes').select('*').eq('user_id', user.id).limit(1);
       if (!error && data && data.length > 0) {
         setContent(data[0].content);
         setNoteId(data[0].id);
       }
     }
     fetchNote();
-  }, []);
+  }, [user]);
 
   const handleSave = async () => {
     setIsEditing(false);
-    if (!supabase) return;
+    if (!supabase || !user) return;
     
     setIsSaving(true);
     if (noteId) {
-      await supabase.from('notes').update({ content, updated_at: new Date() }).eq('id', noteId);
+      await supabase.from('notes').update({ content, updated_at: new Date() }).eq('id', noteId).eq('user_id', user.id);
     } else {
-      const { data } = await supabase.from('notes').insert([{ content }]).select();
+      const { data } = await supabase.from('notes').insert([{ content, user_id: user.id }]).select();
       if (data && data.length > 0) {
         setNoteId(data[0].id);
       }

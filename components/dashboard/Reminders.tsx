@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/context/AuthContext';
 
 type Reminder = {
   id: string;
@@ -16,23 +17,28 @@ const initialReminders: Reminder[] = [
 ];
 
 export default function Reminders() {
+  const { user } = useAuth();
   const [reminders, setReminders] = useState<Reminder[]>(initialReminders);
 
   useEffect(() => {
     async function fetchReminders() {
-      if (!supabase) return;
-      const { data, error } = await supabase.from('reminders').select('*').order('created_at', { ascending: true });
+      if (!supabase || !user) return;
+      const { data, error } = await supabase
+        .from('reminders')
+        .select('*')
+        .eq('user_id', user.id)
+        .order('created_at', { ascending: true });
       if (!error && data && data.length > 0) {
         setReminders(data);
       }
     }
     fetchReminders();
-  }, []);
+  }, [user]);
 
   const toggleReminder = async (id: string, currentStatus: boolean) => {
     setReminders(reminders.map(r => r.id === id ? { ...r, completed: !currentStatus } : r));
-    if (supabase) {
-      await supabase.from('reminders').update({ completed: !currentStatus }).eq('id', id);
+    if (supabase && user) {
+      await supabase.from('reminders').update({ completed: !currentStatus }).eq('id', id).eq('user_id', user.id);
     }
   };
 
@@ -50,8 +56,8 @@ export default function Reminders() {
     
     setReminders([...reminders, newReminder]);
     
-    if (supabase) {
-      await supabase.from('reminders').insert([newReminder]);
+    if (supabase && user) {
+      await supabase.from('reminders').insert([{ ...newReminder, user_id: user.id }]);
     }
   };
 

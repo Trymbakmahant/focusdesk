@@ -2,6 +2,7 @@
 
 import React, { useState, useEffect } from 'react';
 import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/context/AuthContext';
 
 type Habit = {
   id: string;
@@ -20,14 +21,15 @@ const initialHabits: Habit[] = [
 ];
 
 export default function HabitActivity() {
+  const { user } = useAuth();
   const [habits, setHabits] = useState<Habit[]>(initialHabits);
   const [activeHabitId, setActiveHabitId] = useState<string>('1');
   const [polarity, setPolarity] = useState<'Good' | 'Bad'>('Bad');
 
   useEffect(() => {
     async function fetchHabits() {
-      if (!supabase) return;
-      const { data, error } = await supabase.from('habits').select('*');
+      if (!supabase || !user) return;
+      const { data, error } = await supabase.from('habits').select('*').eq('user_id', user.id);
       if (!error && data && data.length > 0) {
         setHabits(data);
         if (data.length > 0) {
@@ -37,7 +39,7 @@ export default function HabitActivity() {
       }
     }
     fetchHabits();
-  }, []);
+  }, [user]);
 
   const activeHabit = habits.find(h => h.id === activeHabitId) || habits[0];
 
@@ -50,8 +52,8 @@ export default function HabitActivity() {
     const newCount = Math.max(0, activeHabit.count_today + increment);
     setHabits(habits.map(h => h.id === activeHabit.id ? { ...h, count_today: newCount } : h));
     
-    if (supabase) {
-      await supabase.from('habits').update({ count_today: newCount }).eq('id', activeHabit.id);
+    if (supabase && user) {
+      await supabase.from('habits').update({ count_today: newCount }).eq('id', activeHabit.id).eq('user_id', user.id);
     }
   };
 

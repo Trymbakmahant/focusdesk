@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback, useMemo } from 'react';
 import { supabase } from '@/lib/supabase';
+import { useAuth } from '@/context/AuthContext';
 import {
   TaskItem,
   BadgeItem,
@@ -11,9 +12,6 @@ import {
   PRESET_BADGE_COLORS,
 } from '@/types/task';
 
-const TASKS_STORAGE_KEY = 'focusdeck_tasks_v2';
-const BADGE_BOX_STORAGE_KEY = 'focusdeck_badge_box_v1';
-
 const getTodayString = () => {
   const now = new Date();
   const year = now.getFullYear();
@@ -22,90 +20,58 @@ const getTodayString = () => {
   return `${year}-${month}-${day}`;
 };
 
-const initialDefaultTasks: TaskItem[] = [
-  {
-    id: 'task-1',
-    title: 'Deploy FocusDeck desktop production build',
-    completed: false,
-    importance: 'Urgent',
-    badge: 'Code',
-    dueDate: getTodayString(),
-    createdAt: '2025-12-30T10:00:00Z',
-  },
-  {
-    id: 'task-2',
-    title: 'Refactor SQLite database migrations',
-    completed: false,
-    importance: 'High',
-    badge: 'Code',
-    dueDate: getTodayString(),
-    createdAt: '2025-12-30T09:30:00Z',
-  },
-  {
-    id: 'task-3',
-    title: 'Design high-contrast badge color tokens',
-    completed: false,
-    importance: 'Medium',
-    badge: 'Design',
-    dueDate: getTodayString(),
-    createdAt: '2025-12-30T09:00:00Z',
-  },
-  {
-    id: 'task-4',
-    title: 'Read 20 pages of Systems Architecture',
-    completed: false,
-    importance: 'Low',
-    badge: 'Focus',
-    dueDate: getTodayString(),
-    createdAt: '2025-12-30T08:30:00Z',
-  },
-  {
-    id: 'task-5',
-    title: 'Finish FocusDeck UI layout & responsive shell',
-    completed: true,
-    importance: 'High',
-    badge: 'Work',
-    dueDate: getTodayString(),
-    createdAt: '2025-12-30T08:00:00Z',
-  },
-];
-
 export function useTasks() {
+  const { user } = useAuth();
   const [tasks, setTasks] = useState<TaskItem[]>([]);
   const [badgeBox, setBadgeBox] = useState<BadgeItem[]>(INITIAL_BADGE_BOX);
   const [isLoaded, setIsLoaded] = useState(false);
 
-  // Initialize from localStorage or fallback
+  // Storage keys scoped to authenticated user
+  const tasksKey = useMemo(() => {
+    return user ? `focusdeck_tasks_${user.id}` : 'focusdeck_tasks_guest';
+  }, [user]);
+
+  const badgeBoxKey = useMemo(() => {
+    return user ? `focusdeck_badge_box_${user.id}` : 'focusdeck_badge_box_guest';
+  }, [user]);
+
+  // Load user data whenever authenticated user changes
   useEffect(() => {
+    if (!user) {
+      setTasks([]);
+      setIsLoaded(true);
+      return;
+    }
+
     try {
-      // 1. Load Badge Box
-      const savedBadges = localStorage.getItem(BADGE_BOX_STORAGE_KEY);
+      // 1. Load User's Badge Box from local cache
+      const savedBadges = localStorage.getItem(badgeBoxKey);
       if (savedBadges) {
         const parsed = JSON.parse(savedBadges);
         if (Array.isArray(parsed) && parsed.length > 0) {
           setBadgeBox(parsed);
-        }
-      }
-
-      // 2. Load Tasks
-      const savedTasks = localStorage.getItem(TASKS_STORAGE_KEY);
-      if (savedTasks) {
-        const parsed = JSON.parse(savedTasks);
-        if (Array.isArray(parsed) && parsed.length > 0) {
-          setTasks(parsed);
         } else {
-          setTasks(initialDefaultTasks);
+          setBadgeBox(INITIAL_BADGE_BOX);
         }
       } else {
-        setTasks(initialDefaultTasks);
+        setBadgeBox(INITIAL_BADGE_BOX);
+      }
+
+      // 2. Load User's Tasks from local cache
+      const savedTasks = localStorage.getItem(tasksKey);
+      if (savedTasks) {
+        const parsed = JSON.parse(savedTasks);
+        if (Array.isArray(parsed)) {
+          setTasks(parsed);
+        }
       }
     } catch {
-      setTasks(initialDefaultTasks);
+      // Fallback
     }
 
-    // 3. Sync with Supabase if configured
+    // 3. Fetch from Supabase for this specific user
     async function syncSupabase() {
-      if (!supabase) {
+      if (!supabase || !user) {
         setIsLoaded(true);
         return;
       }
@@ -114,9 +80,10 @@ export function useTasks() {
         const { data, error } = await supabase
           .from('tasks')
           .select('*')
+          .eq('user_id', user.id)
           .order('created_at', { ascending: false });
 
-        if (!error && data && data.length > 0) {
+        if (!error && data) {
           const formatted: TaskItem[] = data.map((t: any) => ({
             id: t.id,
             title: t.title,
@@ -127,36 +94,37 @@ export function useTasks() {
             createdAt: t.created_at || new Date().toISOString(),
           }));
           setTasks(formatted);
+          localStorage.setItem(tasksKey, JSON.stringify(formatted));
         }
       } catch (err) {
-        console.warn('Supabase sync skipped, using local data:', err);
+        console.warn('Supabase sync error:', err);
       } finally {
         setIsLoaded(true);
       }
     }
 
     syncSupabase();
-  }, []);
+  }, [user, tasksKey, badgeBoxKey]);
 
   // Save to localStorage whenever badgeBox changes
   useEffect(() => {
-    if (!isLoaded) return;
+    if (!isLoaded || !user) return;
     try {
-      localStorage.setItem(BADGE_BOX_STORAGE_KEY, JSON.stringify(badgeBox));
+      localStorage.setItem(badgeBoxKey, JSON.stringify(badgeBox));
     } catch (err) {
       console.error('Failed to persist badge box:', err);
     }
-  }, [badgeBox, isLoaded]);
+  }, [badgeBox, isLoaded, user, badgeBoxKey]);
 
   // Save to localStorage whenever tasks change
   useEffect(() => {
-    if (!isLoaded) return;
+    if (!isLoaded || !user) return;
     try {
-      localStorage.setItem(TASKS_STORAGE_KEY, JSON.stringify(tasks));
+      localStorage.setItem(tasksKey, JSON.stringify(tasks));
     } catch (err) {
       console.error('Failed to persist tasks:', err);
     }
-  }, [tasks, isLoaded]);
+  }, [tasks, isLoaded, user, tasksKey]);
 
   // Sort tasks: Active first by Importance (Urgent -> High -> Medium -> Low), then Completed
   const sortedTasks = useMemo(() => {
@@ -183,7 +151,7 @@ export function useTasks() {
     });
   }, [tasks]);
 
-  // Add a task
+  // Add a task scoped to current user
   const addTask = useCallback(
     async (taskData: {
       title: string;
@@ -203,11 +171,12 @@ export function useTasks() {
 
       setTasks((prev) => [newTask, ...prev]);
 
-      if (supabase) {
+      if (supabase && user) {
         try {
           await supabase.from('tasks').insert([
             {
               id: newTask.id,
+              user_id: user.id,
               title: newTask.title,
               completed: false,
               importance: newTask.importance,
@@ -223,7 +192,7 @@ export function useTasks() {
 
       return newTask;
     },
-    []
+    [user]
   );
 
   // Update a task
@@ -233,7 +202,7 @@ export function useTasks() {
         prev.map((t) => (t.id === id ? { ...t, ...updates } : t))
       );
 
-      if (supabase) {
+      if (supabase && user) {
         try {
           const supabaseUpdates: Record<string, any> = {};
           if (updates.title !== undefined) supabaseUpdates.title = updates.title;
@@ -242,13 +211,17 @@ export function useTasks() {
           if (updates.badge !== undefined) supabaseUpdates.badge = updates.badge;
           if (updates.dueDate !== undefined) supabaseUpdates.due_date = updates.dueDate;
 
-          await supabase.from('tasks').update(supabaseUpdates).eq('id', id);
+          await supabase
+            .from('tasks')
+            .update(supabaseUpdates)
+            .eq('id', id)
+            .eq('user_id', user.id);
         } catch (err) {
           console.warn('Supabase task update error:', err);
         }
       }
     },
-    []
+    [user]
   );
 
   // Toggle completion status
@@ -262,32 +235,40 @@ export function useTasks() {
         prev.map((t) => (t.id === id ? { ...t, completed: newCompleted } : t))
       );
 
-      if (supabase) {
+      if (supabase && user) {
         try {
           await supabase
             .from('tasks')
             .update({ completed: newCompleted })
-            .eq('id', id);
+            .eq('id', id)
+            .eq('user_id', user.id);
         } catch (err) {
           console.warn('Supabase task toggle error:', err);
         }
       }
     },
-    [tasks]
+    [tasks, user]
   );
 
   // Delete a task
-  const deleteTask = useCallback(async (id: string) => {
-    setTasks((prev) => prev.filter((t) => t.id !== id));
+  const deleteTask = useCallback(
+    async (id: string) => {
+      setTasks((prev) => prev.filter((t) => t.id !== id));
 
-    if (supabase) {
-      try {
-        await supabase.from('tasks').delete().eq('id', id);
-      } catch (err) {
-        console.warn('Supabase task delete error:', err);
+      if (supabase && user) {
+        try {
+          await supabase
+            .from('tasks')
+            .delete()
+            .eq('id', id)
+            .eq('user_id', user.id);
+        } catch (err) {
+          console.warn('Supabase task delete error:', err);
+        }
       }
-    }
-  }, []);
+    },
+    [user]
+  );
 
   // Add badge to Badge Box
   const addBadge = useCallback(

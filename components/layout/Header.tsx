@@ -7,7 +7,7 @@ type HeaderProps = {
 };
 
 export default function Header({ onMenuClick }: HeaderProps) {
-  const { user } = useAuth();
+  const { user, signOut } = useAuth();
 
   return (
     <header className="fixed top-0 left-0 md:left-sidebar-width right-0 h-14 z-30 bg-surface/75 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.03)] flex items-center justify-between px-space-md md:px-space-lg transition-all duration-300">
@@ -34,9 +34,19 @@ export default function Header({ onMenuClick }: HeaderProps) {
       </div>
       <div className="flex items-center gap-space-sm">
         {user ? (
-          <div className="hidden sm:flex items-center gap-space-xs px-space-sm py-1 rounded-lg bg-surface-container text-xs text-outline">
-            <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-            <span className="truncate max-w-[140px] text-on-surface">{user.email}</span>
+          <div className="flex items-center gap-2">
+            <div className="hidden sm:flex items-center gap-space-xs px-2.5 py-1 rounded-lg bg-surface-container text-xs text-outline border border-outline-variant/20">
+              <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+              <span className="truncate max-w-[140px] text-on-surface font-medium">{user.email}</span>
+            </div>
+            <button
+              onClick={() => signOut()}
+              title="Sign Out"
+              className="h-8 px-2.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-outline hover:text-error text-xs font-medium transition-colors flex items-center gap-1 border border-outline-variant/20"
+            >
+              <span className="material-symbols-outlined text-[16px]">logout</span>
+              <span className="hidden sm:inline">Sign Out</span>
+            </button>
           </div>
         ) : (
           <Link
