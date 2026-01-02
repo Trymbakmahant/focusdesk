@@ -1,0 +1,51 @@
+export type EventCategory = 'Work' | 'Meeting' | 'Focus' | 'Personal' | 'Design';
+
+export interface CalendarEvent {
+  id: string;
+  user_id?: string;
+  title: string;
+  startTime: string; // e.g. "09:30 AM"
+  endTime: string;   // e.g. "10:30 AM"
+  date: string;      // "YYYY-MM-DD"
+  category: EventCategory;
+  description?: string;
+  location?: string;
+  source: 'google' | 'manual';
+  created_at?: string;
+}
+
+export const CATEGORY_COLORS: Record<
+  EventCategory,
+  { bg: string; text: string; dot: string; ring?: string }
+> = {
+  Work: {
+    bg: 'bg-sky-500/15',
+    text: 'text-sky-300',
+    dot: 'bg-sky-400',
+    ring: 'ring-sky-500/30',
+  },
+  Meeting: {
+    bg: 'bg-purple-500/15',
+    text: 'text-purple-300',
+    dot: 'bg-purple-400',
+    ring: 'ring-purple-500/30',
+  },
+  Focus: {
+    bg: 'bg-primary/20',
+    text: 'text-primary',
+    dot: 'bg-primary',
+    ring: 'ring-primary/40',
+  },
+  Personal: {
+    bg: 'bg-emerald-500/15',
+    text: 'text-emerald-300',
+    dot: 'bg-emerald-400',
+    ring: 'ring-emerald-500/30',
+  },
+  Design: {
+    bg: 'bg-rose-500/15',
+    text: 'text-rose-300',
+    dot: 'bg-rose-400',
+    ring: 'ring-rose-500/30',
+  },
+};
