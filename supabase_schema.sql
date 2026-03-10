@@ -1,4 +1,4 @@
--- FocusDeck Cloud Database Schema (Compatible with WorkOS AuthKit)
+-- Fixates Cloud Database Schema (Compatible with WorkOS AuthKit)
 -- Run this in your Supabase Dashboard -> SQL Editor
 
 CREATE EXTENSION IF NOT EXISTS "uuid-ossp";
