@@ -6,7 +6,8 @@ export type AgentToolCategory =
   | 'habits'
   | 'notes'
   | 'reminders'
-  | 'ui';
+  | 'ui'
+  | 'second_brain';
 
 export interface JSONSchemaProperty {
   type: 'string' | 'number' | 'integer' | 'boolean' | 'array' | 'object';
