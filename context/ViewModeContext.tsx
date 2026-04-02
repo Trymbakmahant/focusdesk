@@ -19,7 +19,7 @@ export function ViewModeProvider({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     try {
-      const saved = localStorage.getItem('focusdeck_view_mode') as ViewMode;
+      const saved = localStorage.getItem('fixates_view_mode') as ViewMode;
       if (saved === 'canvas' || saved === 'feed') {
         setViewModeState(saved);
       }
@@ -34,9 +34,9 @@ export function ViewModeProvider({ children }: { children: React.ReactNode }) {
       }
     };
 
-    window.addEventListener('focusdeck-viewmode-command', handleViewModeCommand);
+    window.addEventListener('fixates-viewmode-command', handleViewModeCommand);
     return () => {
-      window.removeEventListener('focusdeck-viewmode-command', handleViewModeCommand);
+      window.removeEventListener('fixates-viewmode-command', handleViewModeCommand);
     };
   }, []);
 
@@ -44,7 +44,7 @@ export function ViewModeProvider({ children }: { children: React.ReactNode }) {
   const setViewMode = (mode: ViewMode) => {
     setViewModeState(mode);
     try {
-      localStorage.setItem('focusdeck_view_mode', mode);
+      localStorage.setItem('fixates_view_mode', mode);
     } catch {
       // Ignore write errors
     }
