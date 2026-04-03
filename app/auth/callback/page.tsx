@@ -90,13 +90,13 @@ export default function AuthCallbackPage() {
         {status === 'verifying' && (
           <>
             <div className="relative w-16 h-16 flex items-center justify-center mb-space-2xs">
-              <img src="/logo.jpg" alt="FocusDeck Logo" className="w-12 h-12 rounded-xl object-cover ring-1 ring-outline-variant/30 shadow-lg" />
+              <img src="/logo.jpg" alt="Fixates Logo" className="w-12 h-12 rounded-xl object-cover ring-1 ring-outline-variant/30 shadow-lg" />
               <div className="absolute inset-0 rounded-2xl border-2 border-primary border-t-transparent animate-spin" />
             </div>
             <div className="flex flex-col gap-1">
               <h2 className="font-headline-sm text-headline-sm text-on-surface font-semibold">Verifying your email</h2>
               <p className="font-body-sm text-body-sm text-outline">
-                Connecting to FocusDeck and synchronizing your account session...
+                Connecting to Fixates and synchronizing your account session...
               </p>
             </div>
           </>
@@ -110,7 +110,7 @@ export default function AuthCallbackPage() {
             <div className="flex flex-col gap-1">
               <h2 className="font-headline-sm text-headline-sm text-on-surface font-semibold">Email Verified!</h2>
               <p className="font-body-sm text-body-sm text-outline">
-                Welcome to FocusDeck. Redirecting you to your dashboard...
+                Welcome to Fixates. Redirecting you to your dashboard...
               </p>
             </div>
           </>

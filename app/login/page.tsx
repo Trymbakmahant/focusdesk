@@ -225,7 +225,7 @@ function LoginContent() {
             type="button"
             onClick={() => {
               if (typeof window !== 'undefined') {
-                sessionStorage.setItem('focusdeck_guest', 'true');
+                sessionStorage.setItem('fixates_guest', 'true');
               }
               router.push('/');
             }}

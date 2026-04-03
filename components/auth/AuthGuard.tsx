@@ -13,7 +13,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
 
   useEffect(() => {
     if (!loading) {
-      const isGuest = typeof window !== 'undefined' && sessionStorage.getItem('focusdeck_guest') === 'true';
+      const isGuest = typeof window !== 'undefined' && sessionStorage.getItem('fixates_guest') === 'true';
       if (!user && !isPublicRoute && !isGuest) {
         router.replace('/login');
       } else if (user && pathname === '/login') {
