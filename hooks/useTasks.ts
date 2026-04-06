@@ -28,11 +28,11 @@ export function useTasks() {
 
   // Storage keys scoped to authenticated user
   const tasksKey = useMemo(() => {
-    return user ? `focusdeck_tasks_${user.id}` : 'focusdeck_tasks_guest';
+    return user ? `fixates_tasks_${user.id}` : 'fixates_tasks_guest';
   }, [user]);
 
   const badgeBoxKey = useMemo(() => {
-    return user ? `focusdeck_badge_box_${user.id}` : 'focusdeck_badge_box_guest';
+    return user ? `fixates_badge_box_${user.id}` : 'fixates_badge_box_guest';
   }, [user]);
 
   // Load user data whenever authenticated user changes

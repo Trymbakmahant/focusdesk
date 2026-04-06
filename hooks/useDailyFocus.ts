@@ -6,7 +6,7 @@ import { useAuth } from '@/context/AuthContext';
 import { useFocusStats } from '@/hooks/useFocusStats';
 import { DailyFocusIntention, FocusCategory } from '@/types/focus';
 
-const DAILY_FOCUS_UPDATE_EVENT = 'focusdeck-daily-focus-update';
+const DAILY_FOCUS_UPDATE_EVENT = 'fixates-daily-focus-update';
 
 function getTodayIso(): string {
   const now = new Date();
@@ -24,11 +24,11 @@ export function useDailyFocus() {
 
   const storageKey = useMemo(() => {
     return user
-      ? `focusdeck_daily_focus_${user.id}_${todayIso}`
-      : `focusdeck_daily_focus_guest_${todayIso}`;
+      ? `fixates_daily_focus_${user.id}_${todayIso}`
+      : `fixates_daily_focus_guest_${todayIso}`;
   }, [user, todayIso]);
 
-  const [focusIntention, setFocusIntention] = useState<string>('Ship Core FocusDeck Architecture');
+  const [focusIntention, setFocusIntention] = useState<string>('Ship Core Fixates Architecture');
   const [category, setCategory] = useState<FocusCategory | string>('Deep Work');
   const [workdayHours, setWorkdayHours] = useState<number>(8.0); // Standard 8-hour workday benchmark
   const [isLoaded, setIsLoaded] = useState(false);

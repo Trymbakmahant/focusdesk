@@ -4,7 +4,7 @@ import { useState, useEffect, useCallback, useMemo } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { DailyFocusRecord, FocusGoalSettings } from '@/types/focus';
 
-const FOCUS_UPDATE_EVENT = 'focusdeck-focus-update';
+const FOCUS_UPDATE_EVENT = 'fixates-focus-update';
 
 function getIsoDate(date: Date = new Date()): string {
   const year = date.getFullYear();
@@ -23,11 +23,11 @@ export function useFocusStats() {
   const { user } = useAuth();
 
   const storageKey = useMemo(() => {
-    return user ? `focusdeck_focus_records_${user.id}` : 'focusdeck_focus_records_guest';
+    return user ? `fixates_focus_records_${user.id}` : 'fixates_focus_records_guest';
   }, [user]);
 
   const goalKey = useMemo(() => {
-    return user ? `focusdeck_focus_goal_${user.id}` : 'focusdeck_focus_goal_guest';
+    return user ? `fixates_focus_goal_${user.id}` : 'fixates_focus_goal_guest';
   }, [user]);
 
   const [records, setRecords] = useState<Record<string, DailyFocusRecord>>({});
