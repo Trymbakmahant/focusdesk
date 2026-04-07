@@ -5,7 +5,7 @@ import {
   NoGoogleTokensError,
   InsufficientCalendarScopeError,
 } from '@/lib/calendarService';
-import { getAuthenticatedCalendar, formatGoogleCalendarEvent, isGoogleConfigured } from '@/lib/googleCalendar';
+import { getAuthenticatedCalendar, formatGoogleCalendarEvent, isGoogleConfigured, clearGoogleTokens } from '@/lib/googleCalendar';
 import { CalendarEvent } from '@/types/calendar';
 
 function isAuthOrScopeError(err: unknown): boolean {
@@ -18,6 +18,9 @@ function isAuthOrScopeError(err: unknown): boolean {
     msg.includes('insufficient') ||
     msg.includes('scope') ||
     msg.includes('invalid credentials') ||
+    msg.includes('invalid_grant') ||
+    msg.includes('expired') ||
+    msg.includes('revoked') ||
     msg.includes('not connected')
   );
 }
@@ -78,26 +81,24 @@ export async function GET() {
       }
 
       if (isAuthOrScopeError(err)) {
+        await clearGoogleTokens();
         return NextResponse.json({
           isConnected: false,
           isConfigured: isGoogleConfigured(),
           requiresConnection: true,
           requiresCalendarConsent: true,
           events: [],
-          message: 'Google Calendar permissions required. Please connect or authorize your Google Calendar.',
+          message: 'Google Calendar session expired or invalid. Please reconnect your Google Calendar.',
         });
       }
 
-      console.error('Unexpected error fetching calendar events for user:', workosUserId, err);
-      return NextResponse.json(
-        {
-          isConnected: false,
-          isConfigured: true,
-          events: [],
-          error: err instanceof Error ? err.message : 'failed_to_fetch_events',
-        },
-        { status: 500 }
-      );
+      console.warn('Google Calendar fetch warning for user:', workosUserId, err instanceof Error ? err.message : err);
+      return NextResponse.json({
+        isConnected: false,
+        isConfigured: true,
+        events: [],
+        error: err instanceof Error ? err.message : 'failed_to_fetch_events',
+      });
     }
   }
 
@@ -147,25 +148,23 @@ export async function GET() {
     });
   } catch (err: unknown) {
     if (isAuthOrScopeError(err)) {
+      await clearGoogleTokens();
       return NextResponse.json({
         isConnected: false,
         isConfigured: true,
         requiresConnection: true,
         requiresCalendarConsent: true,
         events: [],
-        message: 'Google Calendar permissions required. Please reconnect Google Calendar.',
+        message: 'Google Calendar session expired or invalid. Please reconnect Google Calendar.',
       });
     }
 
-    console.error('Failed to list Google Calendar events:', err);
-    return NextResponse.json(
-      {
-        isConnected: false,
-        isConfigured: true,
-        events: [],
-        error: err instanceof Error ? err.message : 'failed_to_fetch_events',
-      },
-      { status: 500 }
-    );
+    console.warn('Failed to list Google Calendar events:', err instanceof Error ? err.message : err);
+    return NextResponse.json({
+      isConnected: false,
+      isConfigured: true,
+      events: [],
+      error: err instanceof Error ? err.message : 'failed_to_fetch_events',
+    });
   }
 }

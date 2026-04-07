@@ -235,7 +235,7 @@ export default function GoogleCalendarModal({
                 <div className="p-4 rounded-2xl bg-black/[0.02] dark:bg-white/[0.04] border border-black/5 dark:border-white/10 flex flex-col gap-2">
                   <span className="font-semibold text-xs text-gray-900 dark:text-white">Automatic Calendar Synchronization</span>
                   <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
-                    Connect your Google account using standard OAuth 2.0. FocusDeck will securely read your primary calendar to show your next meetings, focus blocks, and live countdowns.
+                    Connect your Google account using standard OAuth 2.0. Fixates will securely read your primary calendar to show your next meetings, focus blocks, and live countdowns.
                   </p>
                   <div className="grid grid-cols-2 gap-2 mt-1">
                     <div className="flex items-center gap-1.5 text-[11px] text-gray-500 dark:text-gray-400">

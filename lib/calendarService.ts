@@ -50,7 +50,7 @@ function getEncryptionKey(): Buffer {
   const secret =
     process.env.WORKOS_COOKIE_PASSWORD ||
     process.env.WORKOS_API_KEY ||
-    'focusdeck-workos-calendar-secret-key-32chars!';
+    'fixates-workos-calendar-secret-key-32chars!';
   return crypto.createHash('sha256').update(secret).digest();
 }
 

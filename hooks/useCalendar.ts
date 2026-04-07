@@ -16,11 +16,11 @@ export function useCalendar() {
 
   // Storage key scoped to authenticated user
   const storageKey = useMemo(() => {
-    return user ? `focusdeck_calendar_${user.id}` : 'focusdeck_calendar_guest';
+    return user ? `fixates_calendar_${user.id}` : 'fixates_calendar_guest';
   }, [user]);
 
   const urlStorageKey = useMemo(() => {
-    return user ? `focusdeck_gcal_url_${user.id}` : 'focusdeck_gcal_url_guest';
+    return user ? `fixates_gcal_url_${user.id}` : 'fixates_gcal_url_guest';
   }, [user]);
 
   // 1. Load local calendar from localStorage
@@ -74,10 +74,11 @@ export function useCalendar() {
       const res = await fetch('/api/calendar/google/events');
       const data = await res.json();
 
-      setIsGoogleConnected(Boolean(data.isConnected));
+      const connected = Boolean(data.isConnected);
+      setIsGoogleConnected(connected);
       setIsGoogleConfigured(Boolean(data.isConfigured));
 
-      if (data.isConnected && Array.isArray(data.events)) {
+      if (connected && Array.isArray(data.events)) {
         setEvents((prev) => {
           // Keep manually created events, replace Google events with fresh sync
           const nonGoogle = prev.filter((e) => e.source !== 'google');
@@ -86,21 +87,15 @@ export function useCalendar() {
         return data.events.length;
       }
 
-      if (data.requiresCalendarConsent || data.requiresConnection) {
+      if (data.requiresCalendarConsent || data.requiresConnection || !connected) {
         setIsGoogleConnected(false);
-        if (data.message) {
-          throw new Error(data.message);
-        }
-      }
-
-      if (!res.ok) {
-        throw new Error(data.error || 'Failed to fetch events from Google Calendar API');
       }
 
       return 0;
     } catch (err) {
-      console.error('Error syncing Google Calendar:', err);
-      throw err;
+      console.warn('Google Calendar sync paused (disconnected or invalid grant):', err);
+      setIsGoogleConnected(false);
+      return 0;
     } finally {
       setIsSyncing(false);
     }

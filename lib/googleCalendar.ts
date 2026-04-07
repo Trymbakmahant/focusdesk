@@ -6,7 +6,7 @@ const GOOGLE_CLIENT_ID = process.env.GOOGLE_CLIENT_ID || '';
 const GOOGLE_CLIENT_SECRET = process.env.GOOGLE_CLIENT_SECRET || '';
 const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || 'http://localhost:3000/api/auth/google/callback';
 
-export const GOOGLE_TOKEN_COOKIE_NAME = 'focusdeck_gcal_tokens';
+export const GOOGLE_TOKEN_COOKIE_NAME = 'fixates_gcal_tokens';
 
 export function isGoogleConfigured(): boolean {
   return Boolean(
