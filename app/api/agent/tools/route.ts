@@ -1,8 +1,8 @@
 import { NextResponse } from 'next/server';
-import { FOCUSDECK_TOOL_REGISTRY } from '@/lib/harness/toolRegistry';
+import { FIXATES_TOOL_REGISTRY } from '@/lib/harness/toolRegistry';
 
 export async function GET() {
-  const openAiTools = FOCUSDECK_TOOL_REGISTRY.map((t) => ({
+  const openAiTools = FIXATES_TOOL_REGISTRY.map((t) => ({
     type: 'function',
     function: {
       name: t.name,
@@ -13,7 +13,7 @@ export async function GET() {
     voiceExamples: t.voiceTriggers.map((v) => v.example),
   }));
 
-  const mcpTools = FOCUSDECK_TOOL_REGISTRY.map((t) => ({
+  const mcpTools = FIXATES_TOOL_REGISTRY.map((t) => ({
     name: t.name,
     description: t.description,
     inputSchema: t.parameters,
@@ -21,10 +21,10 @@ export async function GET() {
   }));
 
   return NextResponse.json({
-    name: 'FocusDeck AI Agent Harness',
+    name: 'Fixates AI Agent Harness',
     version: '1.0.0',
-    description: 'Autonomous agent and voice command action harness for FocusDeck macOS Productivity Suite',
-    totalTools: FOCUSDECK_TOOL_REGISTRY.length,
+    description: 'Autonomous agent and voice command action harness for Fixates macOS Productivity Suite',
+    totalTools: FIXATES_TOOL_REGISTRY.length,
     tools: openAiTools,
     mcpFormat: mcpTools,
   });

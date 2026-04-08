@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { FOCUSDECK_TOOL_REGISTRY } from '@/lib/harness/toolRegistry';
+import { FIXATES_TOOL_REGISTRY } from '@/lib/harness/toolRegistry';
 
 export async function POST(req: NextRequest) {
   try {
@@ -13,12 +13,12 @@ export async function POST(req: NextRequest) {
       );
     }
 
-    const tool = FOCUSDECK_TOOL_REGISTRY.find((t) => t.name === toolName);
+    const tool = FIXATES_TOOL_REGISTRY.find((t) => t.name === toolName);
     if (!tool) {
       return NextResponse.json(
         {
           error: `Tool "${toolName}" not found.`,
-          availableTools: FOCUSDECK_TOOL_REGISTRY.map((t) => t.name),
+          availableTools: FIXATES_TOOL_REGISTRY.map((t) => t.name),
         },
         { status: 404 }
       );

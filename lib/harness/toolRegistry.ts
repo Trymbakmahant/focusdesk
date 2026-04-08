@@ -2,14 +2,14 @@ import { HarnessToolDefinition, ToolExecutionResult } from '@/types/harness';
 
 // Custom Event Names for Harness Actions
 export const HARNESS_EVENTS = {
-  TIMER_COMMAND: 'focusdeck-timer-command',
-  TASKS_COMMAND: 'focusdeck-tasks-command',
-  NOTES_COMMAND: 'focusdeck-notes-command',
-  REMINDERS_COMMAND: 'focusdeck-reminders-command',
-  VIEWMODE_COMMAND: 'focusdeck-viewmode-command',
-  DAILY_FOCUS_UPDATE: 'focusdeck-daily-focus-update',
-  FOCUS_UPDATE: 'focusdeck-focus-update',
-  HARNESS_ACTION_EXECUTED: 'focusdeck-harness-executed',
+  TIMER_COMMAND: 'fixates-timer-command',
+  TASKS_COMMAND: 'fixates-tasks-command',
+  NOTES_COMMAND: 'fixates-notes-command',
+  REMINDERS_COMMAND: 'fixates-reminders-command',
+  VIEWMODE_COMMAND: 'fixates-viewmode-command',
+  DAILY_FOCUS_UPDATE: 'fixates-daily-focus-update',
+  FOCUS_UPDATE: 'fixates-focus-update',
+  HARNESS_ACTION_EXECUTED: 'fixates-harness-executed',
 } as const;
 
 function dispatchClientEvent(eventName: string, detail: Record<string, any>) {
@@ -23,14 +23,14 @@ function dispatchClientEvent(eventName: string, detail: Record<string, any>) {
   }
 }
 
-export const FOCUSDECK_TOOL_REGISTRY: HarnessToolDefinition[] = [
+export const FIXATES_TOOL_REGISTRY: HarnessToolDefinition[] = [
   // ==========================================
   // 1. FOCUS TIMER TOOLS
   // ==========================================
   {
     name: 'timer_start',
     category: 'timer',
-    description: 'Start a focus or break timer session in FocusDeck with a specified duration and mode.',
+    description: 'Start a focus or break timer session in Fixates with a specified duration and mode.',
     parameters: {
       type: 'object',
       properties: {
@@ -190,7 +190,7 @@ export const FOCUSDECK_TOOL_REGISTRY: HarnessToolDefinition[] = [
     execute: (params) => {
       const minutes = Math.max(30, Math.min(1440, Number(params.targetMinutes)));
       if (typeof window !== 'undefined') {
-        const goalKey = Object.keys(localStorage).find((k) => k.startsWith('focusdeck_focus_goal_')) || 'focusdeck_focus_goal_guest';
+        const goalKey = Object.keys(localStorage).find((k) => k.startsWith('fixates_focus_goal_')) || 'fixates_focus_goal_guest';
         localStorage.setItem(goalKey, JSON.stringify({ dailyTargetMinutes: minutes }));
         window.dispatchEvent(new CustomEvent(HARNESS_EVENTS.FOCUS_UPDATE));
       }
@@ -250,7 +250,7 @@ export const FOCUSDECK_TOOL_REGISTRY: HarnessToolDefinition[] = [
 
       if (typeof window !== 'undefined') {
         const today = new Date().toISOString().split('T')[0];
-        const storageKey = Object.keys(localStorage).find((k) => k.startsWith('focusdeck_daily_focus_') && k.endsWith(today)) || `focusdeck_daily_focus_guest_${today}`;
+        const storageKey = Object.keys(localStorage).find((k) => k.startsWith('fixates_daily_focus_') && k.endsWith(today)) || `fixates_daily_focus_guest_${today}`;
         
         const payload = {
           focusIntention: intention,
@@ -292,7 +292,7 @@ export const FOCUSDECK_TOOL_REGISTRY: HarnessToolDefinition[] = [
 
       if (typeof window !== 'undefined') {
         const today = new Date().toISOString().split('T')[0];
-        const recordsKey = Object.keys(localStorage).find((k) => k.startsWith('focusdeck_focus_records_'));
+        const recordsKey = Object.keys(localStorage).find((k) => k.startsWith('fixates_focus_records_'));
         if (recordsKey) {
           try {
             const parsed = JSON.parse(localStorage.getItem(recordsKey) || '{}');
@@ -302,7 +302,7 @@ export const FOCUSDECK_TOOL_REGISTRY: HarnessToolDefinition[] = [
             }
           } catch {}
         }
-        const goalKey = Object.keys(localStorage).find((k) => k.startsWith('focusdeck_focus_goal_'));
+        const goalKey = Object.keys(localStorage).find((k) => k.startsWith('fixates_focus_goal_'));
         if (goalKey) {
           try {
             const parsed = JSON.parse(localStorage.getItem(goalKey) || '{}');
@@ -354,7 +354,7 @@ export const FOCUSDECK_TOOL_REGISTRY: HarnessToolDefinition[] = [
     execute: (params) => {
       let tasks: any[] = [];
       if (typeof window !== 'undefined') {
-        const taskKey = Object.keys(localStorage).find((k) => k.startsWith('focusdeck_tasks_'));
+        const taskKey = Object.keys(localStorage).find((k) => k.startsWith('fixates_tasks_'));
         if (taskKey) {
           try {
             tasks = JSON.parse(localStorage.getItem(taskKey) || '[]');
@@ -379,7 +379,7 @@ export const FOCUSDECK_TOOL_REGISTRY: HarnessToolDefinition[] = [
   {
     name: 'tasks_create',
     category: 'tasks',
-    description: 'Create a new task in FocusDeck.',
+    description: 'Create a new task in Fixates.',
     parameters: {
       type: 'object',
       properties: {
@@ -434,7 +434,7 @@ export const FOCUSDECK_TOOL_REGISTRY: HarnessToolDefinition[] = [
       };
 
       if (typeof window !== 'undefined') {
-        const taskKey = Object.keys(localStorage).find((k) => k.startsWith('focusdeck_tasks_')) || 'focusdeck_tasks_guest';
+        const taskKey = Object.keys(localStorage).find((k) => k.startsWith('fixates_tasks_')) || 'fixates_tasks_guest';
         let current: any[] = [];
         try {
           current = JSON.parse(localStorage.getItem(taskKey) || '[]');
@@ -486,7 +486,7 @@ export const FOCUSDECK_TOOL_REGISTRY: HarnessToolDefinition[] = [
       let matchedTask: any = null;
 
       if (typeof window !== 'undefined') {
-        const taskKey = Object.keys(localStorage).find((k) => k.startsWith('focusdeck_tasks_'));
+        const taskKey = Object.keys(localStorage).find((k) => k.startsWith('fixates_tasks_'));
         if (taskKey) {
           try {
             const current = JSON.parse(localStorage.getItem(taskKey) || '[]');
@@ -543,7 +543,7 @@ export const FOCUSDECK_TOOL_REGISTRY: HarnessToolDefinition[] = [
     execute: () => {
       let events: any[] = [];
       if (typeof window !== 'undefined') {
-        const calKey = Object.keys(localStorage).find((k) => k.startsWith('focusdeck_calendar_events_'));
+        const calKey = Object.keys(localStorage).find((k) => k.startsWith('fixates_calendar_events_'));
         if (calKey) {
           try {
             events = JSON.parse(localStorage.getItem(calKey) || '[]');
@@ -591,7 +591,7 @@ export const FOCUSDECK_TOOL_REGISTRY: HarnessToolDefinition[] = [
     execute: () => {
       let events: any[] = [];
       if (typeof window !== 'undefined') {
-        const calKey = Object.keys(localStorage).find((k) => k.startsWith('focusdeck_calendar_events_'));
+        const calKey = Object.keys(localStorage).find((k) => k.startsWith('fixates_calendar_events_'));
         if (calKey) {
           try {
             events = JSON.parse(localStorage.getItem(calKey) || '[]');
@@ -628,7 +628,7 @@ export const FOCUSDECK_TOOL_REGISTRY: HarnessToolDefinition[] = [
     execute: () => {
       let habits: any[] = [];
       if (typeof window !== 'undefined') {
-        const habitKey = Object.keys(localStorage).find((k) => k.startsWith('focusdeck_habits_'));
+        const habitKey = Object.keys(localStorage).find((k) => k.startsWith('fixates_habits_'));
         if (habitKey) {
           try {
             habits = JSON.parse(localStorage.getItem(habitKey) || '[]');
@@ -675,7 +675,7 @@ export const FOCUSDECK_TOOL_REGISTRY: HarnessToolDefinition[] = [
       let matched: any = null;
 
       if (typeof window !== 'undefined') {
-        const habitKey = Object.keys(localStorage).find((k) => k.startsWith('focusdeck_habits_'));
+        const habitKey = Object.keys(localStorage).find((k) => k.startsWith('fixates_habits_'));
         if (habitKey) {
           try {
             const habits = JSON.parse(localStorage.getItem(habitKey) || '[]');
@@ -684,7 +684,7 @@ export const FOCUSDECK_TOOL_REGISTRY: HarnessToolDefinition[] = [
               habits[idx].countToday = (habits[idx].countToday || 0) + 1;
               matched = habits[idx];
               localStorage.setItem(habitKey, JSON.stringify(habits));
-              dispatchClientEvent('focusdeck-habits-updated', { habit: matched });
+              dispatchClientEvent('fixates-habits-updated', { habit: matched });
             }
           } catch {}
         }
@@ -727,7 +727,7 @@ export const FOCUSDECK_TOOL_REGISTRY: HarnessToolDefinition[] = [
     execute: () => {
       let content = '';
       if (typeof window !== 'undefined') {
-        content = localStorage.getItem('focusdeck_quicknote_content') || '';
+        content = localStorage.getItem('fixates_quicknote_content') || '';
       }
       return {
         success: true,
@@ -771,9 +771,9 @@ export const FOCUSDECK_TOOL_REGISTRY: HarnessToolDefinition[] = [
 
       let newContent = text;
       if (typeof window !== 'undefined') {
-        const existing = localStorage.getItem('focusdeck_quicknote_content') || '';
+        const existing = localStorage.getItem('fixates_quicknote_content') || '';
         newContent = existing ? `${existing}\n- ${text}` : text;
-        localStorage.setItem('focusdeck_quicknote_content', newContent);
+        localStorage.setItem('fixates_quicknote_content', newContent);
         dispatchClientEvent(HARNESS_EVENTS.NOTES_COMMAND, { content: newContent });
       }
 
@@ -881,7 +881,7 @@ export const FOCUSDECK_TOOL_REGISTRY: HarnessToolDefinition[] = [
       dispatchClientEvent(HARNESS_EVENTS.VIEWMODE_COMMAND, { mode });
 
       if (typeof window !== 'undefined') {
-        localStorage.setItem('focusdeck_view_mode', mode);
+        localStorage.setItem('fixates_view_mode', mode);
       }
 
       return {
@@ -909,7 +909,7 @@ export const FOCUSDECK_TOOL_REGISTRY: HarnessToolDefinition[] = [
     execute: () => {
       let mode = 'canvas';
       if (typeof window !== 'undefined') {
-        mode = localStorage.getItem('focusdeck_view_mode') || 'canvas';
+        mode = localStorage.getItem('fixates_view_mode') || 'canvas';
       }
       return {
         success: true,
@@ -919,4 +919,99 @@ export const FOCUSDECK_TOOL_REGISTRY: HarnessToolDefinition[] = [
       };
     },
   },
+  // ==========================================
+  // 9. SECOND BRAIN TOOLS
+  // ==========================================
+  {
+    name: 'memory_save',
+    category: 'second_brain',
+    description: 'Save a knowledge item, preference, or lesson to the Second Brain memory bank.',
+    parameters: {
+      type: 'object',
+      properties: {
+        content: {
+          type: 'string',
+          description: 'The memory or knowledge text to persist.',
+        },
+        category: {
+          type: 'string',
+          description: 'Category: fact, preference, lesson, note.',
+          enum: ['fact', 'preference', 'lesson', 'note'],
+          default: 'fact',
+        },
+      },
+      required: ['content'],
+    },
+    voiceTriggers: [
+      {
+        pattern: /(?:remember that|save memory|save to second brain)\s+(.+)/i,
+        example: 'remember that our backend uses PostgreSQL with pgvector',
+        extractParams: (match) => {
+          if (Array.isArray(match) && match[1]) {
+            return { content: match[1].trim() };
+          }
+          return {};
+        },
+      },
+    ],
+    execute: async (params) => {
+      const content = params.content || 'Note saved';
+      if (typeof window !== 'undefined') {
+        try {
+          await fetch('/api/second-brain/memories', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+              content,
+              category: params.category || 'fact',
+              importance: 4,
+            }),
+          });
+        } catch {}
+      }
+      return {
+        success: true,
+        message: `Saved to Second Brain: "${content.slice(0, 50)}..."`,
+        data: { content },
+        timestamp: Date.now(),
+      };
+    },
+  },
+  {
+    name: 'daily_brief',
+    category: 'second_brain',
+    description: 'Get the deterministic daily execution briefing summarizing top priorities and deadlines.',
+    parameters: {
+      type: 'object',
+      properties: {},
+    },
+    voiceTriggers: [
+      {
+        pattern: /(?:what is my|give me my|read my|show)\s+(?:daily briefing|daily brief|briefing)/i,
+        example: 'give me my daily briefing',
+      },
+    ],
+    execute: async () => {
+      let summary = 'Daily briefing ready in Second Brain OS.';
+      if (typeof window !== 'undefined') {
+        try {
+          const res = await fetch('/api/second-brain/brief');
+          if (res.ok) {
+            const data = await res.json();
+            const top = data.data?.topPriorities || [];
+            if (top.length > 0) {
+              summary = `Your top priority today is ${top[0].title}. You have ${top.length} key priorities.`;
+            }
+          }
+        } catch {}
+      }
+      return {
+        success: true,
+        message: summary,
+        timestamp: Date.now(),
+      };
+    },
+  },
 ];
+
+export const FOCUSDECK_TOOL_REGISTRY = FIXATES_TOOL_REGISTRY;

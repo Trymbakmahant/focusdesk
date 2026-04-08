@@ -1,4 +1,4 @@
-import { FOCUSDECK_TOOL_REGISTRY } from './toolRegistry';
+import { FIXATES_TOOL_REGISTRY } from './toolRegistry';
 import { VoiceParseResult } from '@/types/harness';
 
 /**
@@ -16,7 +16,7 @@ export function parseVoiceCommand(transcript: string): VoiceParseResult {
   }
 
   // 1. Try exact or regex pattern match against tool voice triggers
-  for (const tool of FOCUSDECK_TOOL_REGISTRY) {
+  for (const tool of FIXATES_TOOL_REGISTRY) {
     for (const trigger of tool.voiceTriggers) {
       if (trigger.pattern instanceof RegExp) {
         const match = trimmed.match(trigger.pattern);

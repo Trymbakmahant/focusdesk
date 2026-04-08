@@ -1,35 +1,35 @@
-import { FOCUSDECK_TOOL_REGISTRY } from './toolRegistry';
+import { FIXATES_TOOL_REGISTRY } from './toolRegistry';
 import { parseVoiceCommand } from './voiceParser';
 import { HarnessToolDefinition, ToolExecutionResult, HarnessExecutionLog } from '@/types/harness';
 
 declare global {
   interface Window {
-    __FOCUSDECK_HARNESS__?: FocusDeckHarnessInstance;
+    __FIXATES_HARNESS__?: FixatesHarnessInstance;
   }
 }
 
-class FocusDeckHarnessInstance {
+class FixatesHarnessInstance {
   private logs: HarnessExecutionLog[] = [];
   private listeners: ((log: HarnessExecutionLog) => void)[] = [];
 
   constructor() {
     if (typeof window !== 'undefined') {
-      window.__FOCUSDECK_HARNESS__ = this;
+      window.__FIXATES_HARNESS__ = this;
     }
   }
 
   /**
-   * List all registered tools in FocusDeck
+   * List all registered tools in Fixates
    */
   public listTools(): HarnessToolDefinition[] {
-    return FOCUSDECK_TOOL_REGISTRY;
+    return FIXATES_TOOL_REGISTRY;
   }
 
   /**
    * Get a specific tool definition by name
    */
   public getTool(name: string): HarnessToolDefinition | undefined {
-    return FOCUSDECK_TOOL_REGISTRY.find((t) => t.name === name);
+    return FIXATES_TOOL_REGISTRY.find((t) => t.name === name);
   }
 
   /**
@@ -44,7 +44,7 @@ class FocusDeckHarnessInstance {
     if (!tool) {
       const errResult: ToolExecutionResult = {
         success: false,
-        message: `Tool "${toolName}" not found in FocusDeck registry.`,
+        message: `Tool "${toolName}" not found in Fixates registry.`,
         error: `Unknown tool name "${toolName}"`,
         timestamp: Date.now(),
       };
@@ -125,4 +125,6 @@ class FocusDeckHarnessInstance {
   }
 }
 
-export const FocusDeckHarness = new FocusDeckHarnessInstance();
+export const FixatesHarness = new FixatesHarnessInstance();
+export const FocusDeckHarness = FixatesHarness;
+
