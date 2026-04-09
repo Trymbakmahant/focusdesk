@@ -6,7 +6,7 @@ import { useAuth } from '@/context/AuthContext';
 
 export default function QuickNote() {
   const { user } = useAuth();
-  const [content, setContent] = useState<string>("Ideas for FocusDeck plugin architecture: SQLite local schema for user-defined cards, Rust IPC channels for background timers, and Raycast hotkey binding with zero electron footprint...");
+  const [content, setContent] = useState<string>("Ideas for Fixates plugin architecture: SQLite local schema for user-defined cards, Rust IPC channels for background timers, and Raycast hotkey binding with zero electron footprint...");
   const [noteId, setNoteId] = useState<string | null>(null);
   const [isEditing, setIsEditing] = useState(false);
   const [isSaving, setIsSaving] = useState(false);

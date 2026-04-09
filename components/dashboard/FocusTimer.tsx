@@ -146,9 +146,9 @@ export default function FocusTimer() {
       }
     };
 
-    window.addEventListener('focusdeck-timer-command', handleTimerCommand);
+    window.addEventListener('fixates-timer-command', handleTimerCommand);
     return () => {
-      window.removeEventListener('focusdeck-timer-command', handleTimerCommand);
+      window.removeEventListener('fixates-timer-command', handleTimerCommand);
     };
   }, [mode, customMinutes]);
 

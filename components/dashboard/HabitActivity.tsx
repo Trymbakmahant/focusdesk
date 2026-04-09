@@ -34,7 +34,7 @@ export default function HabitActivity() {
 
   // User-scoped localStorage key for habits list
   const habitsStorageKey = useMemo(() => {
-    return user ? `focusdeck_habits_${user.id}` : 'focusdeck_habits_guest';
+    return user ? `fixates_habits_${user.id}` : 'fixates_habits_guest';
   }, [user]);
 
   // Load habits from Supabase or localStorage for the authenticated user
@@ -188,7 +188,7 @@ export default function HabitActivity() {
     if (user) {
       try {
         const todayStr = new Date().toISOString().split('T')[0];
-        const logKey = `focusdeck_habit_logs_${user.id}_${activeHabit.id}`;
+        const logKey = `fixates_habit_logs_${user.id}_${activeHabit.id}`;
         const existing = JSON.parse(localStorage.getItem(logKey) || '{}');
         existing[todayStr] = newCount;
         localStorage.setItem(logKey, JSON.stringify(existing));
@@ -241,7 +241,7 @@ export default function HabitActivity() {
     let logsMap: Record<string, number> = {};
     if (user && activeHabit) {
       try {
-        const logKey = `focusdeck_habit_logs_${user.id}_${activeHabit.id}`;
+        const logKey = `fixates_habit_logs_${user.id}_${activeHabit.id}`;
         logsMap = JSON.parse(localStorage.getItem(logKey) || '{}');
       } catch {
         // Fallback
