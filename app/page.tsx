@@ -10,6 +10,7 @@ import CalendarTimeline from "@/components/dashboard/CalendarTimeline";
 import HabitActivity from "@/components/dashboard/HabitActivity";
 import QuickNote from "@/components/dashboard/QuickNote";
 import Reminders from "@/components/dashboard/Reminders";
+import DailyExecutionBriefing from "@/components/dashboard/DailyExecutionBriefing";
 import { useViewMode } from "@/context/ViewModeContext";
 
 export default function Home() {
@@ -20,6 +21,8 @@ export default function Home() {
       <GreetingHeader />
 
       <HeroFocusCard />
+
+      <DailyExecutionBriefing />
 
       {viewMode === "canvas" ? (
         /* Canvas View: 12-column responsive Bento Dashboard */
