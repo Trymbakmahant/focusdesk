@@ -5,9 +5,10 @@ import ThemeSwitcher from './ThemeSwitcher';
 
 type HeaderProps = {
   onMenuClick: () => void;
+  onVoiceClick?: () => void;
 };
 
-export default function Header({ onMenuClick }: HeaderProps) {
+export default function Header({ onMenuClick, onVoiceClick }: HeaderProps) {
   const { user, signOut } = useAuth();
 
   const formattedDate = new Intl.DateTimeFormat('en-US', {
@@ -26,22 +27,39 @@ export default function Header({ onMenuClick }: HeaderProps) {
           <span className="material-symbols-outlined text-[20px]">menu</span>
         </button>
         <div className="md:hidden flex items-center gap-2">
-          <img alt="FocusDeck Logo" className="w-6 h-6 rounded-lg object-cover ring-1 ring-black/10 dark:ring-white/10" src="/logo.jpg" />
-          <span className="font-semibold text-[14px] text-gray-950 dark:text-white">FocusDeck</span>
+          <img alt="Fixates Logo" className="w-6 h-6 rounded-lg object-cover ring-1 ring-black/10 dark:ring-white/10" src="/logo.jpg" />
+          <span className="font-semibold text-[14px] text-gray-950 dark:text-white">Fixates</span>
         </div>
         <div className="hidden md:flex items-center gap-2 text-gray-600 dark:text-gray-300">
           <span className="material-symbols-outlined text-[18px] text-[#007AFF]">calendar_today</span>
           <span className="text-[13px] font-medium text-gray-900 dark:text-gray-100">{formattedDate}</span>
         </div>
-        <div className="hidden md:flex items-center gap-2 bg-black/[0.04] dark:bg-white/[0.06] hover:bg-black/[0.06] dark:hover:bg-white/[0.1] transition-colors px-3 py-1.5 rounded-full text-gray-600 dark:text-gray-300 w-72 border border-black/5 dark:border-white/10">
-          <span className="material-symbols-outlined text-[17px] text-gray-400 dark:text-gray-500">search</span>
-          <span className="text-[12px] text-gray-400 dark:text-gray-500 flex-1 truncate">Search FocusDeck...</span>
+        <button 
+          type="button"
+          onClick={onVoiceClick}
+          title="Open AI Voice Command & Search (⌘K)"
+          className="hidden md:flex items-center gap-2 bg-black/[0.04] dark:bg-white/[0.06] hover:bg-black/[0.06] dark:hover:bg-white/[0.1] transition-colors px-3 py-1.5 rounded-full text-gray-600 dark:text-gray-300 w-72 border border-black/5 dark:border-white/10 text-left group cursor-pointer"
+        >
+          <span className="material-symbols-outlined text-[17px] text-violet-500 group-hover:scale-110 transition-transform">mic</span>
+          <span className="text-[12px] text-gray-400 dark:text-gray-500 flex-1 truncate">Voice command or search...</span>
           <kbd className="apple-keycap font-mono text-[10px] text-gray-600 dark:text-gray-300 px-1.5 py-0.2 rounded font-semibold">⌘K</kbd>
-        </div>
+        </button>
       </div>
       <div className="flex items-center gap-2">
         {/* Apple Appearance Switcher (Light / Dark / Auto) */}
         <ThemeSwitcher compact />
+
+        {/* Header Voice Command Button */}
+        <button
+          type="button"
+          onClick={onVoiceClick}
+          title="AI Voice Command Assistant (⌘K)"
+          className="h-8 px-3 rounded-full bg-gradient-to-r from-violet-600 via-purple-600 to-indigo-600 text-white hover:opacity-95 shadow-[0_2px_8px_rgba(124,58,237,0.35)] hover:scale-[1.02] active:scale-[0.98] transition-all flex items-center gap-1.5 text-[12px] font-semibold group cursor-pointer"
+        >
+          <span className="material-symbols-outlined text-[16px] group-hover:scale-110 transition-transform">mic</span>
+          <span className="hidden sm:inline">Voice AI</span>
+          <kbd className="hidden lg:inline font-mono text-[9px] bg-white/20 text-white px-1 py-0.2 rounded font-semibold ml-0.5">⌘K</kbd>
+        </button>
 
         {user ? (
           <div className="flex items-center gap-2">

@@ -7,9 +7,10 @@ import ThemeSwitcher from './ThemeSwitcher';
 type SidebarProps = {
   isOpen: boolean;
   setIsOpen: (isOpen: boolean) => void;
+  onVoiceClick?: () => void;
 };
 
-export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
+export default function Sidebar({ isOpen, setIsOpen, onVoiceClick }: SidebarProps) {
   const pathname = usePathname();
   const { user, signOut } = useAuth();
 
@@ -35,11 +36,11 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
         {/* App Branding with Squircle Icon */}
         <div className="px-4 py-2 flex items-center gap-3">
           <div className="w-9 h-9 rounded-xl overflow-hidden shadow-sm ring-1 ring-black/5 dark:ring-white/10 shrink-0 bg-gradient-to-b from-white to-gray-50 dark:from-[#2C2C2E] dark:to-[#1C1C1E] flex items-center justify-center p-0.5">
-            <img alt="FocusDeck Icon" className="w-full h-full object-contain rounded-lg" src="/logo.jpg" />
+            <img alt="Fixates Icon" className="w-full h-full object-contain rounded-lg" src="/logo.jpg" />
           </div>
           <div className="flex flex-col min-w-0">
             <div className="flex items-center gap-1.5">
-              <span className="font-semibold text-[14px] text-gray-900 dark:text-white tracking-tight leading-tight">FocusDeck</span>
+              <span className="font-semibold text-[14px] text-gray-900 dark:text-white tracking-tight leading-tight">Fixates</span>
               <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[#007AFF]/10 text-[#007AFF] uppercase tracking-wider">v2.4</span>
             </div>
             <span className="text-[11px] text-gray-400 dark:text-gray-500 truncate leading-tight mt-0.5">macOS Sequoia Native</span>
@@ -139,6 +140,21 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
               </div>
               <kbd className={`font-mono text-[10px] px-1.5 py-0.2 rounded font-semibold ${pathname === '/activity' ? 'bg-white/20 text-white' : 'apple-keycap text-gray-500 dark:text-gray-400'}`}>⌘6</kbd>
             </Link>
+
+            <Link 
+              href="/second-brain" 
+              className={`flex items-center justify-between px-2.5 py-1.5 rounded-xl text-[13px] transition-all ${
+                pathname === '/second-brain' 
+                  ? 'bg-[#007AFF] text-white font-medium shadow-[0_2px_8px_rgba(0,122,255,0.28)]' 
+                  : 'text-gray-700 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/5 font-normal'
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                <span className={`material-symbols-outlined text-[18px] ${pathname === '/second-brain' ? 'text-white' : 'text-[#5856D6]'}`}>neurology</span>
+                <span>Second Brain OS</span>
+              </div>
+              <kbd className={`font-mono text-[10px] px-1.5 py-0.2 rounded font-semibold ${pathname === '/second-brain' ? 'bg-white/20 text-white' : 'apple-keycap text-gray-500 dark:text-gray-400'}`}>⌘7</kbd>
+            </Link>
           </nav>
         </div>
 
@@ -174,13 +190,20 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
           <ThemeSwitcher />
         </div>
 
-        <div className="flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-white/70 dark:bg-white/[0.04] text-gray-600 dark:text-gray-300 border border-black/5 dark:border-white/10 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
-          <span className="text-[12px] flex items-center gap-1.5 font-medium">
-            <span className="material-symbols-outlined text-[15px] text-[#007AFF]">terminal</span>
-            Command Menu
+        <button
+          type="button"
+          onClick={onVoiceClick}
+          title="Open AI Voice Command &amp; Action Palette (⌘K)"
+          className="flex items-center justify-between px-2.5 py-2 rounded-xl bg-gradient-to-r from-violet-500/10 via-purple-500/10 to-indigo-500/10 hover:from-violet-500/20 hover:to-indigo-500/20 text-gray-800 dark:text-gray-200 border border-violet-500/20 shadow-[0_1px_4px_rgba(124,58,237,0.1)] transition-all cursor-pointer group text-left w-full"
+        >
+          <span className="text-[12px] flex items-center gap-2 font-medium">
+            <span className="w-5 h-5 rounded-lg bg-gradient-to-tr from-violet-600 to-indigo-600 text-white flex items-center justify-center shadow-xs group-hover:scale-105 transition-transform">
+              <span className="material-symbols-outlined text-[13px]">mic</span>
+            </span>
+            <span className="group-hover:text-violet-600 dark:group-hover:text-violet-400 transition-colors">AI Voice Agent</span>
           </span>
           <kbd className="apple-keycap font-mono text-[10px] font-semibold px-1.5 py-0.5 rounded text-gray-700 dark:text-gray-300">⌘K</kbd>
-        </div>
+        </button>
 
         <div className="pt-0.5">
           {user ? (
