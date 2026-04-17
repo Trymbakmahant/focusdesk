@@ -51,7 +51,7 @@ export default function RootLayout({
             __html: `
               (function() {
                 try {
-                  var t = localStorage.getItem('focusdeck_theme') || 'system';
+                  var t = localStorage.getItem('fixates_theme') || 'system';
                   var isDark = t === 'dark' || (t === 'system' && window.matchMedia('(prefers-color-scheme: dark)').matches);
                   var root = document.documentElement;
                   if (isDark) {

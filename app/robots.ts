@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next';
 import { SITE_URL } from '@/lib/seo';
 
 /**
- * FocusDeck Robots Policy
+ * Fixates Robots Policy
  *
  * Configures crawler access for standard search engines and AI bots.
  * Separates search indexing crawlers (e.g. OAI-SearchBot) from foundation model

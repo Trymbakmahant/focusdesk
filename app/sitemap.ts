@@ -2,7 +2,7 @@ import type { MetadataRoute } from 'next';
 import { SITE_URL } from '@/lib/seo';
 
 /**
- * FocusDeck Dynamic XML Sitemap
+ * Fixates Dynamic XML Sitemap
  *
  * Exclusively indexes public, canonical product routes.
  * Private APIs, auth endpoints, and user callbacks are strictly excluded.

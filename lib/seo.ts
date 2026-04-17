@@ -1,7 +1,7 @@
 import type { Metadata } from 'next';
 
 /**
- * FocusDeck Centralized SEO & LLM Discoverability Strategy
+ * Fixates Centralized SEO & LLM Discoverability Strategy
  * 
  * Supports dynamic production domain configuration with fallback to the current
  * Cloudflare deployment URL.
