@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import {
   TaskItem,
   BadgeItem,
@@ -33,6 +34,7 @@ export default function TaskModal({
   initialTask,
   todayString,
 }: TaskModalProps) {
+  const [mounted, setMounted] = useState(false);
   const [title, setTitle] = useState('');
   const [dueDate, setDueDate] = useState(todayString);
   const [importance, setImportance] = useState<ImportanceLevel>('Medium');
@@ -42,6 +44,10 @@ export default function TaskModal({
   const [showBadgeCreator, setShowBadgeCreator] = useState(false);
   const [newBadgeName, setNewBadgeName] = useState('');
   const [selectedColorIndex, setSelectedColorIndex] = useState(0);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Sync initial task when opened
   useEffect(() => {
@@ -61,7 +67,7 @@ export default function TaskModal({
     setSelectedColorIndex(0);
   }, [initialTask, isOpen, todayString]);
 
-  if (!isOpen) return null;
+  if (!isOpen || !mounted || typeof document === 'undefined') return null;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -93,45 +99,47 @@ export default function TaskModal({
     setDueDate(`${yyyy}-${mm}-${dd}`);
   };
 
-  return (
+  return createPortal(
     <div
       role="dialog"
       aria-modal="true"
       aria-labelledby="task-modal-title"
-      className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/70 backdrop-blur-md animate-in fade-in duration-200"
+      className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 dark:bg-black/75 backdrop-blur-md animate-in fade-in duration-200"
       onClick={onClose}
     >
       <div
-        className="w-full max-w-lg bg-surface-container-lowest border border-outline-variant/30 rounded-2xl shadow-2xl p-6 overflow-hidden flex flex-col gap-5 text-on-surface"
+        className="w-full max-w-lg bg-white/95 dark:bg-[#1C1C1E]/95 backdrop-blur-2xl border border-white/80 dark:border-white/15 rounded-3xl shadow-2xl p-6 overflow-hidden flex flex-col gap-5 text-[#1D1D1F] dark:text-white"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Header */}
-        <div className="flex items-center justify-between border-b border-outline-variant/20 pb-4">
-          <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-primary text-[24px]">
-              {initialTask ? 'edit_square' : 'add_task'}
-            </span>
-            <h2 id="task-modal-title" className="font-headline-sm text-lg font-semibold text-on-surface">
-              {initialTask ? 'Edit Task' : 'Create New Task'}
+        <div className="flex items-center justify-between border-b border-black/5 dark:border-white/10 pb-4">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-[#007AFF]/10 dark:bg-[#007AFF]/20 text-[#007AFF] dark:text-[#0A84FF] flex items-center justify-center shadow-xs">
+              <span className="material-symbols-outlined text-[20px]">
+                {initialTask ? 'edit_square' : 'add_task'}
+              </span>
+            </div>
+            <h2 id="task-modal-title" className="text-base font-semibold text-[#1D1D1F] dark:text-white tracking-tight">
+              {initialTask ? 'Edit Task' : 'New Task'}
             </h2>
           </div>
           <button
             type="button"
             onClick={onClose}
             aria-label="Close dialog"
-            className="w-8 h-8 rounded-lg text-outline hover:text-on-surface hover:bg-surface-container flex items-center justify-center transition-colors"
+            className="w-7 h-7 rounded-full text-[#86868B] dark:text-gray-400 hover:text-[#1D1D1F] dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 flex items-center justify-center transition-colors"
           >
-            <span className="material-symbols-outlined text-[20px]">close</span>
+            <span className="material-symbols-outlined text-[18px]">close</span>
           </button>
         </div>
 
         {/* Form Content */}
-        <form onSubmit={handleSubmit} className="flex flex-col gap-5">
+        <form onSubmit={handleSubmit} className="flex flex-col gap-4">
           {/* Title Input */}
           <div className="flex flex-col gap-1.5">
-            <label htmlFor="task-title-input" className="text-body-sm font-medium text-on-surface-variant flex items-center justify-between">
+            <label htmlFor="task-title-input" className="text-xs font-semibold text-[#86868B] dark:text-gray-400 flex items-center justify-between">
               <span>Task Title</span>
-              <span className="text-xs text-outline">Required</span>
+              <span className="text-[10px] text-[#86868B] dark:text-gray-500">Required</span>
             </label>
             <input
               id="task-title-input"
@@ -141,25 +149,25 @@ export default function TaskModal({
               placeholder="e.g. Review Tauri IPC bindings & update state"
               value={title}
               onChange={(e) => setTitle(e.target.value)}
-              className="w-full px-3.5 py-2.5 rounded-xl bg-surface-container border border-outline-variant/30 text-on-surface placeholder:text-outline focus:outline-none focus:border-primary focus:ring-1 focus:ring-primary transition-all text-sm"
+              className="w-full px-3.5 py-2.5 rounded-xl bg-black/[0.03] dark:bg-white/[0.06] border border-black/10 dark:border-white/15 text-[#1D1D1F] dark:text-white placeholder:text-[#86868B] dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#007AFF]/30 text-sm transition-all"
             />
           </div>
 
           {/* Date Selector (Default: Today) */}
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
-              <label htmlFor="task-date-input" className="text-body-sm font-medium text-on-surface-variant flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-[18px] text-primary">calendar_today</span>
-                <span>Due Date (Default: Today)</span>
+              <label htmlFor="task-date-input" className="text-xs font-semibold text-[#86868B] flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-[16px] text-[#007AFF]">calendar_today</span>
+                <span>Due Date</span>
               </label>
               <div className="flex items-center gap-1.5">
                 <button
                   type="button"
                   onClick={() => setDueDate(todayString)}
-                  className={`px-2.5 py-1 text-xs rounded-lg font-medium transition-colors ${
+                  className={`px-2.5 py-1 text-xs rounded-full font-semibold transition-all ${
                     dueDate === todayString
-                      ? 'bg-primary text-on-primary'
-                      : 'bg-surface-container text-on-surface-variant hover:bg-surface-container-high'
+                      ? 'bg-[#007AFF] text-white shadow-xs'
+                      : 'bg-black/[0.04] dark:bg-white/[0.06] text-[#86868B] dark:text-gray-400 hover:text-[#1D1D1F] dark:hover:text-white'
                   }`}
                 >
                   Today
@@ -167,7 +175,7 @@ export default function TaskModal({
                 <button
                   type="button"
                   onClick={setTomorrow}
-                  className="px-2.5 py-1 text-xs rounded-lg font-medium bg-surface-container text-on-surface-variant hover:bg-surface-container-high transition-colors"
+                  className="px-2.5 py-1 text-xs rounded-full font-semibold bg-black/[0.04] dark:bg-white/[0.06] text-[#86868B] dark:text-gray-400 hover:text-[#1D1D1F] dark:hover:text-white transition-all"
                 >
                   Tomorrow
                 </button>
@@ -178,18 +186,18 @@ export default function TaskModal({
               type="date"
               value={dueDate}
               onChange={(e) => setDueDate(e.target.value)}
-              className="w-full px-3.5 py-2 rounded-xl bg-surface-container border border-outline-variant/30 text-on-surface focus:outline-none focus:border-primary text-sm"
+              className="w-full px-3.5 py-2 rounded-xl bg-black/[0.03] dark:bg-white/[0.06] border border-black/10 dark:border-white/15 text-[#1D1D1F] dark:text-white focus:outline-none focus:ring-2 focus:ring-[#007AFF]/30 text-sm"
             />
           </div>
 
           {/* Importance Level Selector */}
           <div className="flex flex-col gap-2">
-            <label className="text-body-sm font-medium text-on-surface-variant flex items-center justify-between">
+            <label className="text-xs font-semibold text-[#86868B] dark:text-gray-400 flex items-center justify-between">
               <span className="flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-[18px] text-amber-400">low_priority</span>
-                <span>Importance Level (Sorted Top to Bottom)</span>
+                <span className="material-symbols-outlined text-[16px] text-[#FF9500]">low_priority</span>
+                <span>Importance Level</span>
               </span>
-              <span className="text-xs text-outline">{IMPORTANCE_CONFIG[importance].label} priority</span>
+              <span className="text-xs text-[#007AFF] dark:text-[#0A84FF] font-medium">{IMPORTANCE_CONFIG[importance].label} priority</span>
             </label>
             <div className="grid grid-cols-4 gap-2">
               {(['Urgent', 'High', 'Medium', 'Low'] as ImportanceLevel[]).map((level) => {
@@ -200,10 +208,10 @@ export default function TaskModal({
                     key={level}
                     type="button"
                     onClick={() => setImportance(level)}
-                    className={`flex flex-col items-center justify-center p-2.5 rounded-xl border transition-all text-xs font-medium ${
+                    className={`flex flex-col items-center justify-center p-2.5 rounded-2xl border transition-all text-xs font-semibold ${
                       isSelected
-                        ? `${config.badgeClass} ring-2 ring-primary/40 shadow-sm scale-[1.02]`
-                        : 'border-outline-variant/30 bg-surface-container/60 text-outline hover:text-on-surface hover:bg-surface-container'
+                        ? `${config.badgeClass} ring-2 ring-[#007AFF]/30 shadow-xs scale-[1.02]`
+                        : 'border-black/5 dark:border-white/10 bg-black/[0.02] dark:bg-white/[0.04] text-[#86868B] dark:text-gray-400 hover:text-[#1D1D1F] dark:hover:text-white hover:bg-black/[0.04] dark:hover:bg-white/[0.08]'
                     }`}
                   >
                     <div className="flex items-center gap-1 mb-1">
@@ -220,14 +228,14 @@ export default function TaskModal({
           {/* Badge Box Section */}
           <div className="flex flex-col gap-2">
             <div className="flex items-center justify-between">
-              <label className="text-body-sm font-medium text-on-surface-variant flex items-center gap-1.5">
-                <span className="material-symbols-outlined text-[18px] text-purple-400">local_offer</span>
+              <label className="text-xs font-semibold text-[#86868B] dark:text-gray-400 flex items-center gap-1.5">
+                <span className="material-symbols-outlined text-[16px] text-[#AF52DE]">local_offer</span>
                 <span>Badge Box</span>
               </label>
               <button
                 type="button"
                 onClick={() => setShowBadgeCreator(!showBadgeCreator)}
-                className="text-xs text-primary hover:text-primary-container flex items-center gap-1 font-medium transition-colors"
+                className="text-xs text-[#007AFF] dark:text-[#0A84FF] hover:underline flex items-center gap-1 font-semibold transition-colors"
               >
                 <span className="material-symbols-outlined text-[14px]">
                   {showBadgeCreator ? 'expand_less' : 'add'}
@@ -238,8 +246,8 @@ export default function TaskModal({
 
             {/* Inline Badge Creator */}
             {showBadgeCreator && (
-              <div className="p-3 rounded-xl bg-surface-container/80 border border-outline-variant/30 flex flex-col gap-2.5 animate-in fade-in duration-150">
-                <span className="text-xs font-medium text-on-surface">Add New Badge to Box (Stored for Future Tasks):</span>
+              <div className="p-3 rounded-2xl bg-black/[0.02] dark:bg-white/[0.04] border border-black/5 dark:border-white/10 flex flex-col gap-2.5 animate-in fade-in duration-150">
+                <span className="text-xs font-medium text-[#1D1D1F] dark:text-white">Add New Badge to Box:</span>
                 <div className="flex items-center gap-2">
                   <input
                     type="text"
@@ -252,13 +260,13 @@ export default function TaskModal({
                         handleCreateBadge();
                       }
                     }}
-                    className="flex-1 px-3 py-1.5 text-xs rounded-lg bg-surface-container-highest border border-outline-variant/40 text-on-surface placeholder:text-outline focus:outline-none focus:border-primary"
+                    className="flex-1 px-3 py-1.5 text-xs rounded-xl bg-white dark:bg-[#2C2C2E] border border-black/10 dark:border-white/15 text-[#1D1D1F] dark:text-white placeholder:text-[#86868B] dark:placeholder:text-gray-500 focus:outline-none focus:ring-2 focus:ring-[#007AFF]/30"
                   />
                   <button
                     type="button"
                     onClick={handleCreateBadge}
                     disabled={!newBadgeName.trim()}
-                    className="px-3 py-1.5 rounded-lg bg-primary hover:bg-primary-container disabled:opacity-40 text-on-primary text-xs font-medium transition-colors flex items-center gap-1"
+                    className="px-3.5 py-1.5 rounded-full bg-[#007AFF] hover:bg-[#0071EB] disabled:opacity-40 text-white text-xs font-semibold transition-colors flex items-center gap-1"
                   >
                     <span className="material-symbols-outlined text-[14px]">save</span>
                     <span>Add</span>
@@ -267,7 +275,7 @@ export default function TaskModal({
 
                 {/* Color Swatches */}
                 <div className="flex items-center gap-2 pt-1">
-                  <span className="text-[11px] text-outline">Accent Color:</span>
+                  <span className="text-[11px] text-[#86868B] dark:text-gray-400">Accent Color:</span>
                   <div className="flex items-center gap-1.5 flex-wrap">
                     {PRESET_BADGE_COLORS.map((preset, index) => (
                       <button
@@ -277,7 +285,7 @@ export default function TaskModal({
                         title={preset.name}
                         className={`w-5 h-5 rounded-full border transition-all ${
                           selectedColorIndex === index
-                            ? 'ring-2 ring-primary ring-offset-1 ring-offset-surface-container scale-110'
+                            ? 'ring-2 ring-[#007AFF] ring-offset-1 ring-offset-white dark:ring-offset-[#1C1C1E] scale-110'
                             : 'opacity-80 hover:opacity-100'
                         }`}
                         style={{ backgroundColor: preset.previewHex, borderColor: preset.previewHex }}
@@ -293,10 +301,10 @@ export default function TaskModal({
               <button
                 type="button"
                 onClick={() => setSelectedBadge(undefined)}
-                className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-all ${
+                className={`px-3 py-1 rounded-full text-xs font-semibold border transition-all ${
                   selectedBadge === undefined
-                    ? 'bg-surface-container-high border-primary text-on-surface ring-1 ring-primary'
-                    : 'bg-surface-container/50 border-outline-variant/20 text-outline hover:text-on-surface'
+                    ? 'bg-white dark:bg-[#2C2C2E] border-[#007AFF] dark:border-[#0A84FF] text-[#007AFF] dark:text-[#0A84FF] shadow-xs'
+                    : 'bg-black/[0.02] dark:bg-white/[0.04] border-black/5 dark:border-white/10 text-[#86868B] dark:text-gray-400 hover:text-[#1D1D1F] dark:hover:text-white'
                 }`}
               >
                 None
@@ -308,11 +316,11 @@ export default function TaskModal({
                     key={badge.id}
                     type="button"
                     onClick={() => setSelectedBadge(badge.name)}
-                    className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-all flex items-center gap-1.5 ${
+                    className={`px-3 py-1 rounded-full text-xs font-semibold border transition-all flex items-center gap-1.5 ${
                       badge.color
                     } ${badge.textColor} ${badge.borderColor} ${
                       isSelected
-                        ? 'ring-2 ring-primary ring-offset-1 ring-offset-surface-container-lowest font-semibold scale-105'
+                        ? 'ring-2 ring-[#007AFF] ring-offset-1 ring-offset-white dark:ring-offset-[#1C1C1E] font-semibold scale-105 shadow-xs'
                         : 'opacity-85 hover:opacity-100 hover:scale-[1.02]'
                     }`}
                   >
@@ -327,20 +335,20 @@ export default function TaskModal({
           </div>
 
           {/* Footer Actions */}
-          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-outline-variant/20 mt-1">
+          <div className="flex items-center justify-end gap-2.5 pt-3 border-t border-black/5 dark:border-white/10 mt-1">
             <button
               type="button"
               onClick={onClose}
-              className="px-4 py-2 rounded-xl text-xs font-medium text-outline hover:text-on-surface hover:bg-surface-container transition-colors"
+              className="px-4 py-2 rounded-full text-xs font-semibold text-[#86868B] dark:text-gray-400 hover:text-[#1D1D1F] dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
             >
               Cancel
             </button>
             <button
               type="submit"
               disabled={!title.trim()}
-              className="px-5 py-2 rounded-xl bg-primary hover:bg-primary-container disabled:opacity-50 text-on-primary text-xs font-medium shadow-md transition-all flex items-center gap-1.5"
+              className="px-5 py-2 rounded-full bg-[#007AFF] hover:bg-[#0071EB] disabled:opacity-40 text-white text-xs font-semibold shadow-[0_2px_8px_rgba(0,122,255,0.25)] transition-all flex items-center gap-1.5 active:scale-95"
             >
-              <span className="material-symbols-outlined text-[16px]">
+              <span className="material-symbols-outlined text-[15px]">
                 {initialTask ? 'save' : 'add'}
               </span>
               <span>{initialTask ? 'Save Changes' : 'Add Task'}</span>
@@ -348,6 +356,7 @@ export default function TaskModal({
           </div>
         </form>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }

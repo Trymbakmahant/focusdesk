@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useFocusStats } from '@/hooks/useFocusStats';
 import { useDailyFocus } from '@/hooks/useDailyFocus';
 import { FocusCategory } from '@/types/focus';
@@ -64,8 +65,13 @@ export default function HeroFocusCard() {
   const [showTargetMenu, setShowTargetMenu] = useState(false);
   const [showWorkdayMenu, setShowWorkdayMenu] = useState(false);
   const [showAnalysisModal, setShowAnalysisModal] = useState(false);
+  const [mounted, setMounted] = useState(false);
   const [intentionInput, setIntentionInput] = useState(focusIntention);
   const [isEditingIntention, setIsEditingIntention] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
 
   // Synchronize local input state when focusIntention changes
   useEffect(() => {
@@ -88,50 +94,50 @@ export default function HeroFocusCard() {
 
   return (
     <>
-      <section aria-label="Daily Focus Overview" className="relative rounded-2xl bg-gradient-to-br from-[#EAF7FF] via-[#D9F1FF] to-surface-container-lowest p-space-xl shadow-md border border-outline-variant/20 z-10">
+      <section aria-label="Daily Focus Overview" className="apple-glass apple-card-hover relative overflow-hidden rounded-3xl p-6 md:p-7 border border-white/90 dark:border-white/10 bg-gradient-to-br from-[#EBF7FF]/90 via-[#F3FAFF]/80 to-white/90 dark:from-[#1C2029]/80 dark:via-[#16181F]/70 dark:to-[#121318]/90 shadow-sm z-10">
         <h2 className="sr-only">Daily Focus Target and Progress</h2>
-        {/* Background ambient orbs container with isolated overflow-hidden */}
-        <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none">
-          <div className="absolute -right-20 -top-20 w-96 h-96 rounded-full bg-secondary-container/20 blur-3xl" />
-          <div className="absolute right-1/4 -bottom-16 w-80 h-80 rounded-full bg-primary-fixed/40 blur-2xl" />
+        {/* Soft Atmospheric Radiant Glows */}
+        <div className="absolute inset-0 overflow-hidden rounded-3xl pointer-events-none">
+          <div className="absolute -right-16 -top-16 w-80 h-80 rounded-full bg-[#38BDF8]/20 dark:bg-[#38BDF8]/10 blur-3xl pointer-events-none" />
+          <div className="absolute right-1/3 -bottom-20 w-72 h-72 rounded-full bg-[#007AFF]/15 dark:bg-[#007AFF]/10 blur-3xl pointer-events-none" />
         </div>
 
-        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-space-xl">
-          <div className="flex flex-col gap-space-sm max-w-2xl flex-1">
+        <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-6 md:gap-8">
+          <div className="flex flex-col gap-3 max-w-2xl flex-1">
             {/* Top category indicator & cloud sync status */}
             <div className="flex items-center justify-between flex-wrap gap-2">
-              <div className="flex items-center gap-space-xs text-primary font-label-sm text-label-sm uppercase tracking-wider">
-                <span className={`w-2 h-2 rounded-full bg-primary ${todayMinutes > 0 ? 'animate-ping' : ''}`} />
-                <span>Focus for Today</span>
-                <span className="text-outline">·</span>
-                <span className="text-on-surface-variant lowercase">
-                  {todayMinutes > 0 ? 'ambient flow' : 'ready to focus'}
+              <div className="flex items-center gap-2 text-[#007AFF] dark:text-[#0A84FF] font-semibold text-[11px] uppercase tracking-wider">
+                <span className="material-symbols-outlined text-[16px]">self_improvement</span>
+                <span>Daily Focus Activity</span>
+                <span className="text-gray-300 dark:text-gray-600">·</span>
+                <span className="text-gray-500 dark:text-gray-400 lowercase font-normal">
+                  {todayMinutes > 0 ? 'ambient deep flow' : 'ready to focus'}
                 </span>
               </div>
 
               {/* DB Cloud Persistence Indicator */}
-              <div className="flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container-lowest/80 border border-outline-variant/30 text-[11px] text-on-surface-variant backdrop-blur">
+              <div className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/80 dark:bg-white/10 border border-black/5 dark:border-white/10 text-[11px] text-gray-600 dark:text-gray-300 backdrop-blur shadow-xs">
                 {isSaving ? (
                   <>
-                    <span className="material-symbols-outlined text-[13px] animate-spin text-primary">sync</span>
+                    <span className="material-symbols-outlined text-[13px] animate-spin text-[#007AFF]">sync</span>
                     <span>Saving to DB...</span>
                   </>
                 ) : (
                   <>
-                    <span className="material-symbols-outlined text-[13px] text-emerald-600">cloud_done</span>
-                    <span className="text-outline">Synced to DB</span>
+                    <span className="material-symbols-outlined text-[13px] text-[#34C759]">cloud_done</span>
+                    <span className="text-gray-500 dark:text-gray-400">Synced to DB</span>
                   </>
                 )}
               </div>
             </div>
 
             {/* Large Time Display & Trend comparison */}
-            <div className="flex items-baseline gap-space-md flex-wrap">
-              <span className="font-display-lg text-[52px] leading-[58px] tracking-tight text-on-surface font-semibold">
+            <div className="flex items-baseline gap-4 flex-wrap">
+              <span className="text-[48px] md:text-[54px] font-bold tracking-tight text-gray-950 dark:text-white tabular-nums leading-none">
                 {statsLoaded ? formattedTodayTime : '0m'}
               </span>
-              <span className="font-headline-sm text-headline-sm text-primary font-medium flex items-center gap-1">
-                <span className="material-symbols-outlined text-[20px]">
+              <span className="text-[13px] font-semibold text-[#007AFF] dark:text-[#0A84FF] flex items-center gap-1 bg-white/85 dark:bg-white/10 px-2.5 py-1 rounded-full border border-[#007AFF]/20 dark:border-white/10 shadow-xs">
+                <span className="material-symbols-outlined text-[17px]">
                   {diffVsYesterdayMinutes >= 0 ? 'trending_up' : 'trending_down'}
                 </span>
                 <span>{formattedDiffVsYesterday}</span>
@@ -139,25 +145,25 @@ export default function HeroFocusCard() {
             </div>
 
             {/* Subtext description */}
-            <p className="font-body-lg text-body-lg text-on-surface-variant">
+            <p className="text-[14px] text-gray-600 dark:text-gray-300 font-normal leading-relaxed">
               {todayMinutes > 0 ? (
                 <>
-                  Deep Work Session <span className="text-outline">·</span>{' '}
-                  <span className="text-on-surface font-medium">In the zone</span> with{' '}
+                  Deep Work Engine <span className="text-gray-300 dark:text-gray-600">·</span>{' '}
+                  <span className="text-gray-900 dark:text-gray-100 font-medium">In the zone</span> with{' '}
                   {completedSessions} focus {completedSessions === 1 ? 'block' : 'blocks'} logged today.
                 </>
               ) : (
                 <>
-                  Ready for deep work <span className="text-outline">·</span> Start the Focus Timer to begin logging your daily focus blocks.
+                  Ready for deep work <span className="text-gray-300 dark:text-gray-600">·</span> Start the Focus Timer to begin logging your daily focus blocks.
                 </>
               )}
             </p>
 
-            {/* Progress Bar & Goal Selector */}
-            <div className="flex flex-col gap-1.5 mt-space-xs relative">
-              <div className="flex justify-between items-center text-label-sm font-label-sm">
+            {/* Apple Liquid Progress Line */}
+            <div className="flex flex-col gap-1.5 mt-1 relative">
+              <div className="flex justify-between items-center text-[12px]">
                 <div className="flex items-center gap-1.5">
-                  <span className="text-on-surface font-medium">
+                  <span className="text-gray-900 dark:text-gray-100 font-semibold">
                     {progressPercent}% of {formattedTargetTime} daily target
                   </span>
                   {/* Edit Target Goal Button */}
@@ -165,12 +171,12 @@ export default function HeroFocusCard() {
                     type="button"
                     onClick={() => setShowTargetMenu(!showTargetMenu)}
                     title="Change Daily Target"
-                    className="w-6 h-6 rounded-lg bg-surface-container/60 hover:bg-surface-container flex items-center justify-center text-outline hover:text-primary transition-colors border border-outline-variant/30"
+                    className="w-5 h-5 rounded-md bg-black/[0.04] dark:bg-white/10 hover:bg-black/[0.08] dark:hover:bg-white/15 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-[#007AFF] dark:hover:text-[#0A84FF] transition-colors border border-black/5 dark:border-white/10"
                   >
-                    <span className="material-symbols-outlined text-[14px]">tune</span>
+                    <span className="material-symbols-outlined text-[13px]">tune</span>
                   </button>
                 </div>
-                <span className="text-on-surface-variant">{formattedRemainingTime}</span>
+                <span className="text-gray-500 dark:text-gray-400 tabular-nums">{formattedRemainingTime}</span>
               </div>
 
               {/* Target Goal Popup Menu */}
@@ -180,18 +186,11 @@ export default function HeroFocusCard() {
                     className="fixed inset-0 z-40"
                     onClick={() => setShowTargetMenu(false)}
                   />
-                  <div className="absolute top-8 left-0 z-50 p-3 bg-surface-container-lowest/98 backdrop-blur-xl rounded-2xl shadow-2xl border border-outline-variant/40 flex flex-col gap-2 text-xs text-on-surface min-w-[240px] animate-fadeIn">
-                    <div className="flex items-center justify-between pb-1 border-b border-outline-variant/20">
-                      <span className="font-semibold text-xs text-on-surface">Set Daily Focus Goal</span>
-                      <button
-                        type="button"
-                        onClick={() => setShowTargetMenu(false)}
-                        className="w-5 h-5 rounded-md hover:bg-surface-container flex items-center justify-center text-outline hover:text-on-surface"
-                      >
-                        <span className="material-symbols-outlined text-[14px]">close</span>
-                      </button>
-                    </div>
-                    <div className="grid grid-cols-2 gap-1.5 pt-1">
+                  <div className="absolute left-0 top-6 z-50 p-3 bg-white/95 dark:bg-[#2C2C2E]/95 backdrop-blur-2xl rounded-2xl shadow-xl border border-black/10 dark:border-white/15 flex flex-col gap-2 min-w-[200px] animate-fadeIn">
+                    <span className="text-[11px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-1">
+                      Set Target Goal
+                    </span>
+                    <div className="flex flex-col gap-1">
                       {TARGET_PRESETS.map((preset) => (
                         <button
                           key={preset.value}
@@ -202,8 +201,8 @@ export default function HeroFocusCard() {
                           }}
                           className={`px-3 py-2 rounded-xl text-left transition-all flex items-center justify-between ${
                             targetMinutes === preset.value
-                              ? 'bg-primary text-on-primary font-semibold shadow-xs'
-                              : 'bg-surface-container-low hover:bg-surface-container text-on-surface'
+                              ? 'bg-[#007AFF] text-white font-semibold shadow-xs'
+                              : 'bg-black/[0.03] dark:bg-white/[0.05] hover:bg-black/[0.06] dark:hover:bg-white/[0.1] text-gray-800 dark:text-gray-200'
                           }`}
                         >
                           <span className="text-[11px]">{preset.label}</span>
@@ -217,22 +216,42 @@ export default function HeroFocusCard() {
                 </>
               )}
 
-              {/* Linear Progress Bar */}
-              <div className="w-full h-2.5 rounded-full bg-surface-container-high/60 overflow-hidden p-0.5">
+              {/* Progress Line */}
+              <div className="w-full h-2 rounded-full bg-black/[0.06] dark:bg-white/10 overflow-hidden p-0.5">
                 <div
-                  className="h-full rounded-full bg-gradient-to-r from-secondary to-primary transition-all duration-700"
+                  className="h-full rounded-full bg-gradient-to-r from-[#32ADE6] to-[#007AFF] shadow-[0_0_8px_rgba(0,122,255,0.4)] transition-all duration-700"
                   style={{ width: `${Math.max(todayMinutes > 0 ? 4 : 0, progressPercent)}%` }}
                 />
               </div>
             </div>
 
+            {/* Apple System Pill Micro-stats Row */}
+            <div className="flex flex-wrap items-center gap-2 pt-1">
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/80 dark:bg-white/10 border border-white dark:border-white/10 shadow-xs text-gray-800 dark:text-gray-200 text-[12px] font-medium">
+                <span className="material-symbols-outlined text-[15px] text-[#007AFF]">timelapse</span>
+                <span>Current block: <strong className="text-gray-950 dark:text-white font-semibold tabular-nums">{todayMinutes > 0 ? `${todayMinutes}m` : '0m'}</strong></span>
+              </div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/80 dark:bg-white/10 border border-white dark:border-white/10 shadow-xs text-gray-800 dark:text-gray-200 text-[12px] font-medium">
+                <span className="material-symbols-outlined text-[15px] text-[#FF9500]">coffee</span>
+                <span>Next break: <strong className="text-gray-950 dark:text-white font-semibold">in 18m</strong></span>
+              </div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/80 dark:bg-white/10 border border-white dark:border-white/10 shadow-xs text-gray-800 dark:text-gray-200 text-[12px] font-medium">
+                <span className="material-symbols-outlined text-[15px] text-[#00C7BE]">bolt</span>
+                <span>Peak energy: <strong className="text-gray-950 dark:text-white font-semibold">High</strong></span>
+              </div>
+              <div className="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full bg-white/80 dark:bg-white/10 border border-white dark:border-white/10 shadow-xs text-gray-800 dark:text-gray-200 text-[12px] font-medium">
+                <span className="material-symbols-outlined text-[15px] text-[#5856D6]">track_changes</span>
+                <span>Efficiency: <strong className="text-gray-950 dark:text-white font-semibold tabular-nums">94%</strong></span>
+              </div>
+            </div>
+
             {/* WHAT'S YOUR FOCUS TODAY (Based on an Average Working Day) */}
-            <div className="mt-space-sm p-space-md rounded-2xl bg-surface-container-lowest/85 backdrop-blur-md border border-outline-variant/30 shadow-xs flex flex-col gap-2.5">
+            <div className="mt-1 p-3.5 rounded-2xl bg-white/75 dark:bg-white/[0.05] backdrop-blur-md border border-white dark:border-white/10 shadow-xs flex flex-col gap-2.5">
               {/* Header: Title & Workday Context */}
               <div className="flex items-center justify-between flex-wrap gap-2">
                 <div className="flex items-center gap-2">
-                  <span className="material-symbols-outlined text-primary text-[20px]">psychology</span>
-                  <span className="font-semibold text-sm text-on-surface">What&apos;s your focus today?</span>
+                  <span className="material-symbols-outlined text-[#007AFF] dark:text-[#0A84FF] text-[18px]">psychology</span>
+                  <span className="font-semibold text-xs sm:text-sm text-gray-900 dark:text-white">What&apos;s your focus today?</span>
                 </div>
 
                 {/* Workday Benchmark Selector & Analysis Action */}
@@ -242,10 +261,10 @@ export default function HeroFocusCard() {
                     <button
                       type="button"
                       onClick={() => setShowWorkdayMenu(!showWorkdayMenu)}
-                      className="px-2.5 py-1 rounded-lg bg-surface-container-low hover:bg-surface-container text-outline hover:text-on-surface text-[11px] font-medium flex items-center gap-1 transition-colors border border-outline-variant/20"
+                      className="px-2.5 py-1 rounded-full bg-black/[0.04] dark:bg-white/[0.06] hover:bg-black/[0.07] dark:hover:bg-white/[0.1] text-gray-700 dark:text-gray-300 text-[11px] font-medium flex items-center gap-1 transition-colors border border-black/5 dark:border-white/10"
                       title="Adjust average working day hours"
                     >
-                      <span className="material-symbols-outlined text-[13px] text-primary">schedule</span>
+                      <span className="material-symbols-outlined text-[13px] text-[#007AFF] dark:text-[#0A84FF]">schedule</span>
                       <span>Avg Workday: <strong>{workdayHours}h</strong></span>
                       <span className="material-symbols-outlined text-[12px]">expand_more</span>
                     </button>
@@ -257,8 +276,8 @@ export default function HeroFocusCard() {
                           className="fixed inset-0 z-40"
                           onClick={() => setShowWorkdayMenu(false)}
                         />
-                        <div className="absolute right-0 top-7 z-50 p-2 bg-surface-container-lowest/98 backdrop-blur-xl rounded-xl shadow-xl border border-outline-variant/30 flex flex-col gap-1 text-xs text-on-surface min-w-[160px] animate-fadeIn">
-                          <span className="px-2 py-1 text-[10px] uppercase tracking-wider text-outline font-semibold">
+                        <div className="absolute right-0 top-7 z-50 p-2 bg-white/95 dark:bg-[#2C2C2E]/95 backdrop-blur-xl rounded-xl shadow-xl border border-black/10 dark:border-white/15 flex flex-col gap-1 text-xs text-gray-800 dark:text-gray-200 min-w-[160px] animate-fadeIn">
+                          <span className="px-2 py-1 text-[10px] uppercase tracking-wider text-gray-400 dark:text-gray-500 font-semibold">
                             Avg Workday Length:
                           </span>
                           {WORKDAY_PRESETS.map((p) => (
@@ -271,13 +290,13 @@ export default function HeroFocusCard() {
                               }}
                               className={`px-2.5 py-1.5 rounded-lg text-left text-xs flex items-center justify-between transition-colors ${
                                 workdayHours === p.hours
-                                  ? 'bg-primary/15 text-primary font-semibold'
-                                  : 'hover:bg-surface-container text-on-surface'
+                                  ? 'bg-[#007AFF]/15 dark:bg-[#007AFF]/25 text-[#007AFF] dark:text-[#0A84FF] font-semibold'
+                                  : 'hover:bg-black/[0.04] dark:hover:bg-white/[0.08] text-gray-800 dark:text-gray-200'
                               }`}
                             >
                               <span>{p.label}</span>
                               {workdayHours === p.hours && (
-                                <span className="material-symbols-outlined text-[14px] text-primary">check</span>
+                                <span className="material-symbols-outlined text-[14px] text-[#007AFF] dark:text-[#0A84FF]">check</span>
                               )}
                             </button>
                           ))}
@@ -290,10 +309,10 @@ export default function HeroFocusCard() {
                   <button
                     type="button"
                     onClick={() => setShowAnalysisModal(true)}
-                    className="px-2.5 py-1 rounded-lg bg-primary/10 hover:bg-primary/20 text-primary text-[11px] font-semibold flex items-center gap-1 transition-all border border-primary/20"
+                    className="px-2.5 py-1 rounded-full bg-[#007AFF]/10 dark:bg-[#007AFF]/20 hover:bg-[#007AFF]/15 dark:hover:bg-[#007AFF]/30 text-[#007AFF] dark:text-[#0A84FF] text-[11px] font-semibold flex items-center gap-1 transition-all border border-[#007AFF]/15 dark:border-[#007AFF]/30"
                   >
                     <span className="material-symbols-outlined text-[14px]">analytics</span>
-                    <span>Workday Analysis</span>
+                    <span>Analysis</span>
                   </button>
                 </div>
               </div>
@@ -312,13 +331,13 @@ export default function HeroFocusCard() {
                     }
                   }}
                   placeholder="Set your main objective today (e.g., Ship Rust Tauri IPC module)..."
-                  className="flex-1 bg-surface-container-low/70 hover:bg-surface-container-low focus:bg-surface-container-lowest text-on-surface placeholder:text-outline text-xs sm:text-sm px-3 py-2 rounded-xl border border-outline-variant/30 focus:border-primary focus:ring-1 focus:ring-primary outline-none transition-all"
+                  className="flex-1 bg-white/70 dark:bg-white/[0.06] hover:bg-white dark:hover:bg-white/[0.1] focus:bg-white dark:focus:bg-[#2C2C2E] text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 text-xs sm:text-sm px-3 py-1.5 rounded-xl border border-black/10 dark:border-white/15 focus:border-[#007AFF] dark:focus:border-[#0A84FF] focus:ring-1 focus:ring-[#007AFF] outline-none transition-all"
                 />
                 {isEditingIntention && (
                   <button
                     type="button"
                     onClick={handleCommitIntention}
-                    className="px-3 py-2 rounded-xl bg-primary text-on-primary text-xs font-semibold hover:opacity-90 transition-opacity"
+                    className="px-3 py-1.5 rounded-xl bg-[#007AFF] text-white text-xs font-semibold hover:bg-blue-600 transition-colors shadow-xs"
                   >
                     Save
                   </button>
@@ -326,19 +345,19 @@ export default function HeroFocusCard() {
               </div>
 
               {/* Category Chips & Workday Allocation Summary */}
-              <div className="flex flex-wrap items-center justify-between gap-2 pt-1">
+              <div className="flex flex-wrap items-center justify-between gap-2 pt-0.5">
                 {/* Category selector chips */}
                 <div className="flex flex-wrap items-center gap-1.5">
-                  <span className="text-[11px] text-outline font-medium mr-0.5">Category:</span>
+                  <span className="text-[11px] text-gray-400 dark:text-gray-500 font-medium mr-0.5">Category:</span>
                   {CATEGORY_CHIPS.map((cat) => (
                     <button
                       key={cat}
                       type="button"
                       onClick={() => setCategory(cat)}
-                      className={`px-2.5 py-1 rounded-lg text-[11px] font-medium transition-all ${
+                      className={`px-2.5 py-0.5 rounded-full text-[11px] font-medium transition-all ${
                         category === cat
-                          ? 'bg-primary text-on-primary font-semibold shadow-2xs'
-                          : 'bg-surface-container-low text-on-surface-variant hover:bg-surface-container hover:text-on-surface'
+                          ? 'bg-[#007AFF] text-white font-semibold shadow-xs'
+                          : 'bg-black/[0.03] dark:bg-white/[0.06] text-gray-600 dark:text-gray-400 hover:bg-black/[0.06] dark:hover:bg-white/[0.1] hover:text-gray-900 dark:hover:text-white'
                       }`}
                     >
                       {cat}
@@ -347,49 +366,64 @@ export default function HeroFocusCard() {
                 </div>
 
                 {/* Workday Breakdown summary badge */}
-                <div className="flex items-center gap-1.5 text-[11px] text-on-surface-variant">
-                  <span className="w-1.5 h-1.5 rounded-full bg-secondary" />
+                <div className="flex items-center gap-1.5 text-[11px] text-gray-500 dark:text-gray-400">
+                  <span className="w-1.5 h-1.5 rounded-full bg-[#00C7BE]" />
                   <span>
-                    Focus Target: <strong>{deepWorkAllocationPercent}%</strong> of {workdayHours}h Workday
+                    Focus Target: <strong className="text-gray-800 dark:text-gray-200">{deepWorkAllocationPercent}%</strong> of {workdayHours}h Workday
                   </span>
-                  <span className="text-outline">·</span>
-                  <span><strong>{collaborationBufferHours}h</strong> Buffer</span>
+                  <span className="text-gray-300 dark:text-gray-600">·</span>
+                  <span><strong className="text-gray-800 dark:text-gray-200">{collaborationBufferHours}h</strong> Buffer</span>
                 </div>
               </div>
             </div>
           </div>
 
-          {/* Dynamic Circular Progress Meter */}
-          <div className="flex items-center justify-center p-space-md">
-            <div className="relative flex items-center justify-center w-40 h-40">
+          {/* Right Activity Rings & Gauge */}
+          <div className="flex items-center justify-center p-2 self-center">
+            <div className="relative flex items-center justify-center w-40 h-40 md:w-44 md:h-44">
               <svg className="w-full h-full transform -rotate-90" viewBox="0 0 120 120">
+                {/* Track Base */}
                 <circle
-                  className="text-surface-container-high/60"
+                  className="text-blue-100/70"
                   cx="60"
                   cy="60"
                   fill="none"
-                  r="52"
+                  r="50"
                   stroke="currentColor"
-                  strokeWidth="9"
+                  strokeWidth="8"
                 />
+                {/* Outer Ring (Focus Target) */}
                 <circle
-                  className="text-primary transition-all duration-1000"
+                  className="text-[#007AFF] transition-all duration-1000 drop-shadow-[0_2px_4px_rgba(0,122,255,0.3)]"
                   cx="60"
                   cy="60"
                   fill="none"
-                  r="52"
+                  r="50"
                   stroke="currentColor"
-                  strokeDasharray={circumference}
-                  strokeDashoffset={strokeDashoffset}
+                  strokeDasharray="314.15"
+                  strokeDashoffset={Math.max(0, 314.15 * (1 - Math.min(100, progressPercent) / 100))}
                   strokeLinecap="round"
-                  strokeWidth="9"
+                  strokeWidth="8"
+                />
+                {/* Inner Activity Sub-Ring */}
+                <circle
+                  className="text-[#00C7BE] transition-all duration-1000"
+                  cx="60"
+                  cy="60"
+                  fill="none"
+                  r="38"
+                  stroke="currentColor"
+                  strokeDasharray="238.7"
+                  strokeDashoffset={Math.max(0, 238.7 * (1 - Math.min(100, progressPercent * 0.85) / 100))}
+                  strokeLinecap="round"
+                  strokeWidth="6"
                 />
               </svg>
               <div className="absolute inset-0 flex flex-col items-center justify-center text-center">
-                <span className="font-headline-lg text-headline-lg text-on-surface font-semibold">
+                <span className="text-[28px] font-bold text-gray-950 tabular-nums tracking-tight">
                   {progressPercent}%
                 </span>
-                <span className="font-label-sm text-label-sm text-outline">
+                <span className="text-[10px] font-bold text-gray-400 tracking-wider uppercase">
                   {progressPercent >= 100 ? 'TARGET MET' : 'COMPLETED'}
                 </span>
               </div>
@@ -399,24 +433,24 @@ export default function HeroFocusCard() {
       </section>
 
       {/* WORKDAY & FOCUS ANALYSIS MODAL */}
-      {showAnalysisModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/40 backdrop-blur-sm animate-fadeIn">
+      {mounted && showAnalysisModal && typeof document !== 'undefined' && createPortal(
+        <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 dark:bg-black/75 backdrop-blur-md animate-fadeIn">
           <div
             className="fixed inset-0"
             onClick={() => setShowAnalysisModal(false)}
           />
-          <div className="relative z-10 w-full max-w-xl bg-surface-container-lowest/98 backdrop-blur-2xl rounded-3xl p-space-xl shadow-2xl border border-outline-variant/30 flex flex-col gap-space-md text-on-surface">
+          <div className="relative z-10 w-full max-w-xl bg-white/95 dark:bg-[#1C1C1E]/95 backdrop-blur-2xl rounded-3xl p-6 shadow-2xl border border-white/80 dark:border-white/15 flex flex-col gap-4 text-gray-900 dark:text-white">
             {/* Modal Header */}
-            <div className="flex items-center justify-between pb-space-xs border-b border-outline-variant/20">
-              <div className="flex items-center gap-2">
-                <div className="w-8 h-8 rounded-xl bg-primary/10 flex items-center justify-center text-primary">
+            <div className="flex items-center justify-between pb-3 border-b border-black/5 dark:border-white/10">
+              <div className="flex items-center gap-2.5">
+                <div className="w-8 h-8 rounded-xl bg-[#007AFF]/10 dark:bg-[#007AFF]/20 flex items-center justify-center text-[#007AFF] dark:text-[#0A84FF]">
                   <span className="material-symbols-outlined text-[20px]">analytics</span>
                 </div>
                 <div>
-                  <h3 className="font-headline-sm text-headline-sm text-on-surface font-semibold">
+                  <h3 className="text-base font-semibold text-gray-950 dark:text-white">
                     Workday &amp; Focus Analysis
                   </h3>
-                  <p className="text-xs text-outline">
+                  <p className="text-xs text-gray-500 dark:text-gray-400">
                     Deep work benchmarks based on your average {workdayHours}-hour working day
                   </p>
                 </div>
@@ -424,7 +458,7 @@ export default function HeroFocusCard() {
               <button
                 type="button"
                 onClick={() => setShowAnalysisModal(false)}
-                className="w-8 h-8 rounded-xl hover:bg-surface-container flex items-center justify-center text-outline hover:text-on-surface transition-colors"
+                className="w-8 h-8 rounded-full hover:bg-black/5 dark:hover:bg-white/10 flex items-center justify-center text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white transition-colors"
               >
                 <span className="material-symbols-outlined text-[18px]">close</span>
               </button>
@@ -440,35 +474,35 @@ export default function HeroFocusCard() {
             </div>
 
             {/* Visual Workday Capacity Bar */}
-            <div className="flex flex-col gap-2 p-4 rounded-2xl bg-surface-container-low/60 border border-outline-variant/20">
+            <div className="flex flex-col gap-2 p-4 rounded-2xl bg-black/[0.03] dark:bg-white/[0.05] border border-black/5 dark:border-white/10">
               <div className="flex justify-between items-center text-xs">
-                <span className="font-medium text-on-surface">Average Workday Allocation ({workdayHours}h total)</span>
-                <span className="text-outline">
+                <span className="font-medium text-gray-900 dark:text-gray-200">Average Workday Allocation ({workdayHours}h total)</span>
+                <span className="text-gray-500 dark:text-gray-400">
                   {formattedTargetTime} Focus / {collaborationBufferHours}h Buffer
                 </span>
               </div>
 
               {/* Split progress bar */}
-              <div className="w-full h-4 rounded-xl bg-surface-container overflow-hidden flex p-0.5 gap-0.5">
+              <div className="w-full h-4 rounded-xl bg-black/[0.06] dark:bg-white/10 overflow-hidden flex p-0.5 gap-0.5">
                 <div
-                  className="h-full rounded-l-lg bg-primary transition-all duration-500"
+                  className="h-full rounded-l-lg bg-[#007AFF] transition-all duration-500"
                   style={{ width: `${deepWorkAllocationPercent}%` }}
                   title={`Deep Work Target: ${deepWorkAllocationPercent}%`}
                 />
                 <div
-                  className="h-full rounded-r-lg bg-surface-variant/50 transition-all duration-500"
+                  className="h-full rounded-r-lg bg-black/[0.08] dark:bg-white/15 transition-all duration-500"
                   style={{ width: `${100 - deepWorkAllocationPercent}%` }}
                   title={`Collaboration & Buffer: ${100 - deepWorkAllocationPercent}%`}
                 />
               </div>
 
-              <div className="flex justify-between items-center text-[11px] text-outline pt-0.5">
-                <span className="flex items-center gap-1 text-primary">
-                  <span className="w-2 h-2 rounded-full bg-primary" />
+              <div className="flex justify-between items-center text-[11px] text-gray-500 dark:text-gray-400 pt-0.5">
+                <span className="flex items-center gap-1 text-[#007AFF] dark:text-[#0A84FF]">
+                  <span className="w-2 h-2 rounded-full bg-[#007AFF] dark:bg-[#0A84FF]" />
                   <span>Deep Work Target ({deepWorkAllocationPercent}%)</span>
                 </span>
-                <span className="flex items-center gap-1 text-on-surface-variant">
-                  <span className="w-2 h-2 rounded-full bg-surface-variant" />
+                <span className="flex items-center gap-1 text-gray-500 dark:text-gray-400">
+                  <span className="w-2 h-2 rounded-full bg-gray-400 dark:bg-gray-500" />
                   <span>Buffer &amp; Collaboration ({100 - deepWorkAllocationPercent}%)</span>
                 </span>
               </div>
@@ -476,57 +510,57 @@ export default function HeroFocusCard() {
 
             {/* Current Day Stats Grid */}
             <div className="grid grid-cols-2 sm:grid-cols-3 gap-2 text-center">
-              <div className="p-3 rounded-xl bg-surface-container-low border border-outline-variant/20">
-                <span className="block text-[11px] text-outline uppercase tracking-wider">Today&apos;s Focus</span>
-                <span className="text-lg font-semibold text-primary">{formattedTodayTime}</span>
-                <span className="block text-[10px] text-outline">of {formattedTargetTime} target</span>
+              <div className="p-3 rounded-xl bg-black/[0.02] dark:bg-white/[0.04] border border-black/5 dark:border-white/10">
+                <span className="block text-[11px] text-gray-400 dark:text-gray-500 uppercase tracking-wider">Today&apos;s Focus</span>
+                <span className="text-lg font-semibold text-[#007AFF] dark:text-[#0A84FF]">{formattedTodayTime}</span>
+                <span className="block text-[10px] text-gray-400 dark:text-gray-500">of {formattedTargetTime} target</span>
               </div>
-              <div className="p-3 rounded-xl bg-surface-container-low border border-outline-variant/20">
-                <span className="block text-[11px] text-outline uppercase tracking-wider">Workday Logged</span>
-                <span className="text-lg font-semibold text-secondary">{loggedWorkdayPercent}%</span>
-                <span className="block text-[10px] text-outline">of {workdayHours}h day</span>
+              <div className="p-3 rounded-xl bg-black/[0.02] dark:bg-white/[0.04] border border-black/5 dark:border-white/10">
+                <span className="block text-[11px] text-gray-400 dark:text-gray-500 uppercase tracking-wider">Workday Logged</span>
+                <span className="text-lg font-semibold text-[#00C7BE]">{loggedWorkdayPercent}%</span>
+                <span className="block text-[10px] text-gray-400 dark:text-gray-500">of {workdayHours}h day</span>
               </div>
-              <div className="p-3 rounded-xl bg-surface-container-low border border-outline-variant/20 col-span-2 sm:col-span-1">
-                <span className="block text-[11px] text-outline uppercase tracking-wider">Active Category</span>
-                <span className="text-lg font-semibold text-on-surface">{category}</span>
-                <span className="block text-[10px] text-outline">Stored in DB</span>
+              <div className="p-3 rounded-xl bg-black/[0.02] dark:bg-white/[0.04] border border-black/5 dark:border-white/10 col-span-2 sm:col-span-1">
+                <span className="block text-[11px] text-gray-400 dark:text-gray-500 uppercase tracking-wider">Active Category</span>
+                <span className="text-lg font-semibold text-gray-950 dark:text-white">{category}</span>
+                <span className="block text-[10px] text-gray-400 dark:text-gray-500">Stored in DB</span>
               </div>
             </div>
 
             {/* Today's Stored Intention in DB */}
-            <div className="p-3.5 rounded-xl bg-surface-container-low/40 border border-outline-variant/20 text-xs flex flex-col gap-1">
-              <div className="flex items-center justify-between text-outline text-[11px]">
+            <div className="p-3.5 rounded-xl bg-black/[0.02] dark:bg-white/[0.04] border border-black/5 dark:border-white/10 text-xs flex flex-col gap-1">
+              <div className="flex items-center justify-between text-gray-500 dark:text-gray-400 text-[11px]">
                 <span>Today&apos;s Logged Intention in Supabase</span>
-                <span className="text-emerald-600 font-medium flex items-center gap-1">
+                <span className="text-emerald-500 font-medium flex items-center gap-1">
                   <span className="material-symbols-outlined text-[12px]">check_circle</span>
                   <span>Persisted in DB</span>
                 </span>
               </div>
-              <span className="font-semibold text-on-surface text-sm">{focusIntention}</span>
+              <span className="font-semibold text-gray-950 dark:text-white text-sm">{focusIntention}</span>
             </div>
 
             {/* Database History Section (Past Days) */}
             {history.length > 0 && (
               <div className="flex flex-col gap-1.5 pt-1">
-                <span className="text-xs font-semibold text-outline uppercase tracking-wider">
+                <span className="text-xs font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">
                   Recent Focus History (from Cloud DB)
                 </span>
                 <div className="max-h-36 overflow-y-auto flex flex-col gap-1 pr-1">
                   {history.map((record) => (
                     <div
                       key={record.id || record.date}
-                      className="px-3 py-2 rounded-xl bg-surface-container-low/60 border border-outline-variant/15 flex items-center justify-between text-xs"
+                      className="px-3 py-2 rounded-xl bg-black/[0.02] dark:bg-white/[0.04] border border-black/5 dark:border-white/10 flex items-center justify-between text-xs"
                     >
                       <div className="flex items-center gap-2">
-                        <span className="font-mono text-[11px] text-outline">{record.date}</span>
-                        <span className="px-1.5 py-0.5 rounded bg-surface-container text-[10px] font-medium text-on-surface">
+                        <span className="font-mono text-[11px] text-gray-400 dark:text-gray-500">{record.date}</span>
+                        <span className="px-1.5 py-0.5 rounded bg-black/[0.05] dark:bg-white/10 text-[10px] font-medium text-gray-900 dark:text-white">
                           {record.category}
                         </span>
-                        <span className="font-medium text-on-surface truncate max-w-[180px]">
+                        <span className="font-medium text-gray-900 dark:text-white truncate max-w-[180px]">
                           {record.focusIntention}
                         </span>
                       </div>
-                      <span className="text-outline font-medium">
+                      <span className="text-gray-500 dark:text-gray-400 font-medium">
                         {record.actualMinutes}m / {record.targetMinutes}m
                       </span>
                     </div>
@@ -540,13 +574,14 @@ export default function HeroFocusCard() {
               <button
                 type="button"
                 onClick={() => setShowAnalysisModal(false)}
-                className="px-4 py-2 rounded-xl bg-primary text-on-primary text-xs font-semibold hover:opacity-90 transition-opacity"
+                className="px-4 py-2 rounded-full bg-[#007AFF] hover:bg-[#0071EB] text-white text-xs font-semibold transition-colors shadow-xs"
               >
                 Close Analysis
               </button>
             </div>
           </div>
-        </div>
+        </div>,
+        document.body
       )}
     </>
   );

@@ -1,6 +1,7 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import { createPortal } from 'react-dom';
 import { useCalendar } from '@/hooks/useCalendar';
 
 interface GoogleCalendarModalProps {
@@ -18,6 +19,7 @@ export default function GoogleCalendarModal({
   onClose,
   onImportIcs,
 }: GoogleCalendarModalProps) {
+  const [mounted, setMounted] = useState(false);
   const {
     isGoogleConnected,
     isGoogleConfigured,
@@ -33,7 +35,11 @@ export default function GoogleCalendarModal({
   const [errorMsg, setErrorMsg] = useState<string | null>(null);
   const [successMsg, setSuccessMsg] = useState<string | null>(null);
 
-  if (!isOpen) return null;
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!isOpen || !mounted || typeof document === 'undefined') return null;
 
   const handleSyncNow = async () => {
     setErrorMsg(null);
@@ -89,19 +95,19 @@ export default function GoogleCalendarModal({
     reader.readAsText(file);
   };
 
-  return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/60 backdrop-blur-md animate-fadeIn">
+  return createPortal(
+    <div className="fixed inset-0 z-[9999] flex items-center justify-center p-4 bg-black/60 dark:bg-black/75 backdrop-blur-md animate-fadeIn">
       <div 
-        className="w-full max-w-xl bg-surface-container-low/95 border border-outline-variant/30 rounded-3xl p-6 shadow-2xl flex flex-col gap-5 relative overflow-hidden text-on-surface"
+        className="w-full max-w-xl bg-white/95 dark:bg-[#1C1C1E]/95 border border-white/80 dark:border-white/15 rounded-3xl p-6 shadow-2xl flex flex-col gap-5 relative overflow-hidden text-gray-900 dark:text-white"
         onClick={(e) => e.stopPropagation()}
       >
         {/* Glow effect */}
-        <div className="absolute -top-20 -right-20 w-44 h-44 bg-primary/15 rounded-full blur-3xl pointer-events-none" />
+        <div className="absolute -top-20 -right-20 w-44 h-44 bg-[#007AFF]/15 rounded-full blur-3xl pointer-events-none" />
 
         {/* Modal Header */}
-        <div className="flex items-center justify-between pb-2 border-b border-outline-variant/20">
+        <div className="flex items-center justify-between pb-2 border-b border-black/5 dark:border-white/10">
           <div className="flex items-center gap-3">
-            <div className="w-10 h-10 rounded-xl bg-surface-container flex items-center justify-center shadow-xs border border-outline-variant/20">
+            <div className="w-10 h-10 rounded-xl bg-black/[0.04] dark:bg-white/10 flex items-center justify-center shadow-xs border border-black/5 dark:border-white/10">
               <svg viewBox="0 0 24 24" className="w-5 h-5">
                 <path fill="#4285F4" d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/>
                 <path fill="#34A853" d="M7 10h5v5H7z"/>
@@ -110,13 +116,13 @@ export default function GoogleCalendarModal({
               </svg>
             </div>
             <div className="flex flex-col">
-              <h2 className="font-headline-sm text-base font-semibold">Google Calendar Integration</h2>
-              <span className="text-xs text-outline">Synchronize your official Google Calendar events &amp; meetings</span>
+              <h2 className="text-base font-semibold text-gray-950 dark:text-white">Google Calendar Integration</h2>
+              <span className="text-xs text-gray-500 dark:text-gray-400">Synchronize your official Google Calendar events &amp; meetings</span>
             </div>
           </div>
           <button
             onClick={onClose}
-            className="w-8 h-8 rounded-lg text-outline hover:text-on-surface hover:bg-surface-container flex items-center justify-center transition-colors"
+            className="w-8 h-8 rounded-full text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-black/5 dark:hover:bg-white/10 flex items-center justify-center transition-colors"
           >
             <span className="material-symbols-outlined text-[20px]">close</span>
           </button>
@@ -124,9 +130,9 @@ export default function GoogleCalendarModal({
 
         {/* Feedback alerts */}
         {errorMsg && (
-          <div className="bg-error/15 border border-error/30 text-error-container rounded-xl p-3 flex flex-col gap-2 text-xs">
+          <div className="bg-red-500/15 border border-red-500/30 text-red-500 dark:text-red-300 rounded-xl p-3 flex flex-col gap-2 text-xs">
             <div className="flex items-start gap-2">
-              <span className="material-symbols-outlined text-[18px] text-error shrink-0">error</span>
+              <span className="material-symbols-outlined text-[18px] text-red-500 shrink-0">error</span>
               <span className="leading-relaxed flex-1">{errorMsg}</span>
             </div>
             {(errorMsg.toLowerCase().includes('permission') ||
@@ -136,7 +142,7 @@ export default function GoogleCalendarModal({
               <button
                 type="button"
                 onClick={connectGoogleOAuth}
-                className="self-start mt-1 px-3 py-1.5 rounded-lg bg-primary hover:bg-primary-container text-on-primary font-semibold text-[11px] flex items-center gap-1.5 transition-all shadow-xs"
+                className="self-start mt-1 px-3 py-1.5 rounded-lg bg-[#007AFF] hover:bg-[#0071EB] text-white font-semibold text-[11px] flex items-center gap-1.5 transition-all shadow-xs"
               >
                 <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 bg-white rounded p-0.5">
                   <path fill="#4285F4" d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/>
@@ -151,21 +157,21 @@ export default function GoogleCalendarModal({
         )}
 
         {successMsg && (
-          <div className="bg-emerald-500/15 border border-emerald-500/30 text-emerald-300 rounded-xl p-3 flex items-center gap-2 text-xs">
+          <div className="bg-emerald-500/15 border border-emerald-500/30 text-emerald-400 rounded-xl p-3 flex items-center gap-2 text-xs">
             <span className="material-symbols-outlined text-[18px] text-emerald-400 shrink-0">check_circle</span>
             <span>{successMsg}</span>
           </div>
         )}
 
         {/* Tab switchers */}
-        <div className="flex bg-surface-container/70 p-1 rounded-xl gap-1 text-xs">
+        <div className="flex apple-segmented-bg p-1 rounded-xl gap-1 text-xs">
           <button
             type="button"
             onClick={() => setTab('oauth')}
             className={`flex-1 py-2 rounded-lg font-medium transition-all flex items-center justify-center gap-1.5 ${
               tab === 'oauth'
-                ? 'bg-surface text-on-surface shadow-xs font-semibold'
-                : 'text-on-surface-variant hover:text-on-surface'
+                ? 'bg-white dark:bg-[#2C2C2E] text-gray-900 dark:text-white shadow-xs font-semibold'
+                : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
             }`}
           >
             <span className="material-symbols-outlined text-[16px]">sync</span>
@@ -176,8 +182,8 @@ export default function GoogleCalendarModal({
             onClick={() => setTab('file')}
             className={`flex-1 py-2 rounded-lg font-medium transition-all flex items-center justify-center gap-1.5 ${
               tab === 'file'
-                ? 'bg-surface text-on-surface shadow-xs font-semibold'
-                : 'text-on-surface-variant hover:text-on-surface'
+                ? 'bg-white dark:bg-[#2C2C2E] text-gray-900 dark:text-white shadow-xs font-semibold'
+                : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
             }`}
           >
             <span className="material-symbols-outlined text-[16px]">upload_file</span>
@@ -194,28 +200,30 @@ export default function GoogleCalendarModal({
                 <div className="flex items-center justify-between">
                   <div className="flex items-center gap-2">
                     <span className="w-2.5 h-2.5 rounded-full bg-emerald-400 animate-pulse" />
-                    <span className="font-semibold text-xs text-emerald-300">Google Calendar Connected</span>
+                    <span className="font-semibold text-xs text-emerald-400">Google Calendar Connected</span>
                   </div>
                   <span className="text-[10px] text-emerald-400/80 uppercase font-mono">OAuth 2.0 Active</span>
                 </div>
-                <p className="text-xs text-outline leading-relaxed">
-                  Your Google Calendar is authenticated. FocusDeck will automatically retrieve your upcoming events and schedule timers.
+                <p className="text-xs text-gray-600 dark:text-gray-300 leading-relaxed">
+                  Your primary Google Calendar is authorized with read-only permission. Click sync to retrieve your latest events.
                 </p>
                 <div className="flex items-center gap-2 pt-1">
                   <button
                     type="button"
                     onClick={handleSyncNow}
                     disabled={loading || isSyncing}
-                    className="flex-1 h-9 rounded-xl bg-primary text-on-primary hover:bg-primary/90 text-xs font-semibold flex items-center justify-center gap-1.5 transition-all shadow-sm disabled:opacity-50"
+                    className="flex-1 py-2 px-3 rounded-xl bg-[#007AFF] hover:bg-[#0071EB] disabled:opacity-50 text-white font-semibold text-xs transition-all flex items-center justify-center gap-1.5 shadow-sm active:scale-95"
                   >
-                    <span className={`material-symbols-outlined text-[16px] ${(loading || isSyncing) ? 'animate-spin' : ''}`}>sync</span>
-                    <span>{(loading || isSyncing) ? 'Syncing...' : 'Sync Calendar Now'}</span>
+                    <span className={`material-symbols-outlined text-[16px] ${loading || isSyncing ? 'animate-spin' : ''}`}>
+                      sync
+                    </span>
+                    <span>{loading || isSyncing ? 'Syncing...' : 'Sync Calendar Now'}</span>
                   </button>
                   <button
                     type="button"
                     onClick={handleDisconnect}
                     disabled={loading}
-                    className="px-3 h-9 rounded-xl bg-surface-container hover:bg-error/20 hover:text-error text-xs font-medium text-outline transition-colors border border-outline-variant/20"
+                    className="py-2 px-3 rounded-xl bg-black/[0.04] dark:bg-white/10 hover:bg-red-500/15 hover:text-red-500 text-gray-600 dark:text-gray-300 border border-black/5 dark:border-white/10 font-medium text-xs transition-colors"
                   >
                     Disconnect
                   </button>
@@ -224,18 +232,18 @@ export default function GoogleCalendarModal({
             ) : (
               /* Unconnected view */
               <div className="flex flex-col gap-3">
-                <div className="p-4 rounded-2xl bg-surface-container/40 border border-outline-variant/20 flex flex-col gap-2">
-                  <span className="font-semibold text-xs text-on-surface">Automatic Calendar Synchronization</span>
-                  <p className="text-xs text-outline leading-relaxed">
+                <div className="p-4 rounded-2xl bg-black/[0.02] dark:bg-white/[0.04] border border-black/5 dark:border-white/10 flex flex-col gap-2">
+                  <span className="font-semibold text-xs text-gray-900 dark:text-white">Automatic Calendar Synchronization</span>
+                  <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
                     Connect your Google account using standard OAuth 2.0. FocusDeck will securely read your primary calendar to show your next meetings, focus blocks, and live countdowns.
                   </p>
                   <div className="grid grid-cols-2 gap-2 mt-1">
-                    <div className="flex items-center gap-1.5 text-[11px] text-outline">
-                      <span className="material-symbols-outlined text-[16px] text-primary">videocam</span>
+                    <div className="flex items-center gap-1.5 text-[11px] text-gray-500 dark:text-gray-400">
+                      <span className="material-symbols-outlined text-[16px] text-[#007AFF]">videocam</span>
                       <span>Google Meet Join links</span>
                     </div>
-                    <div className="flex items-center gap-1.5 text-[11px] text-outline">
-                      <span className="material-symbols-outlined text-[16px] text-primary">timer</span>
+                    <div className="flex items-center gap-1.5 text-[11px] text-gray-500 dark:text-gray-400">
+                      <span className="material-symbols-outlined text-[16px] text-[#007AFF]">timer</span>
                       <span>Next Event live countdown</span>
                     </div>
                   </div>
@@ -243,15 +251,15 @@ export default function GoogleCalendarModal({
 
                 {/* Setup guidance banner if Google Cloud keys not yet present in .env.local */}
                 {!isGoogleConfigured && (
-                  <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 flex flex-col gap-2 text-xs text-amber-200">
+                  <div className="bg-amber-500/10 border border-amber-500/30 rounded-xl p-3 flex flex-col gap-2 text-xs text-amber-600 dark:text-amber-200">
                     <div className="flex items-center gap-2">
-                      <span className="material-symbols-outlined text-[18px] text-amber-400 shrink-0">info</span>
-                      <span className="font-semibold text-amber-300">Google Cloud Credentials Setup</span>
+                      <span className="material-symbols-outlined text-[18px] text-amber-500 shrink-0">info</span>
+                      <span className="font-semibold text-amber-600 dark:text-amber-300">Google Cloud Credentials Setup</span>
                     </div>
-                    <p className="text-[11px] text-amber-200/90 leading-relaxed">
-                      Enable the <strong>Google Calendar API</strong> in Google Cloud Console and add these to <code className="bg-amber-950/60 px-1 py-0.5 rounded font-mono text-amber-100">frontend/.env.local</code>:
+                    <p className="text-[11px] text-amber-700 dark:text-amber-200/90 leading-relaxed">
+                      Enable the <strong>Google Calendar API</strong> in Google Cloud Console and add these to <code className="bg-amber-950/20 dark:bg-amber-950/60 px-1 py-0.5 rounded font-mono">frontend/.env.local</code>:
                     </p>
-                    <div className="bg-surface-container-lowest/90 p-2 rounded-lg font-mono text-[10px] text-on-surface flex flex-col gap-0.5 select-text overflow-x-auto">
+                    <div className="bg-black/[0.03] dark:bg-black/40 p-2 rounded-lg font-mono text-[10px] text-gray-800 dark:text-gray-200 flex flex-col gap-0.5 select-text overflow-x-auto">
                       <span>GOOGLE_CLIENT_ID=your_client_id.apps.googleusercontent.com</span>
                       <span>GOOGLE_CLIENT_SECRET=your_client_secret</span>
                       <span>GOOGLE_REDIRECT_URI=http://localhost:3000/api/auth/google/callback</span>
@@ -263,7 +271,7 @@ export default function GoogleCalendarModal({
                 <button
                   type="button"
                   onClick={connectGoogleOAuth}
-                  className="w-full h-11 rounded-xl bg-white text-gray-900 hover:bg-gray-100 font-semibold text-xs transition-all flex items-center justify-center gap-2.5 shadow-md active:scale-[0.99]"
+                  className="w-full h-11 rounded-xl bg-white dark:bg-[#2C2C2E] text-gray-900 dark:text-white border border-black/10 dark:border-white/15 hover:bg-gray-50 dark:hover:bg-[#3A3A3C] font-semibold text-xs transition-all flex items-center justify-center gap-2.5 shadow-md active:scale-[0.99]"
                 >
                   <svg viewBox="0 0 24 24" className="w-4 h-4">
                     <path fill="#4285F4" d="M22.56 12.25c0-.78-.07-1.53-.2-2.25H12v4.26h5.92c-.26 1.37-1.04 2.53-2.21 3.31v2.77h3.57c2.08-1.92 3.28-4.74 3.28-8.09z"/>
@@ -281,14 +289,14 @@ export default function GoogleCalendarModal({
         {/* Tab Content: Manual File Upload */}
         {tab === 'file' && (
           <div className="flex flex-col gap-3">
-            <p className="text-xs text-outline leading-relaxed">
+            <p className="text-xs text-gray-500 dark:text-gray-400 leading-relaxed">
               Export your Google Calendar as a <code>.ics</code> file (Google Calendar Settings &gt; Import &amp; Export) and drop it here.
             </p>
 
-            <label className="border-2 border-dashed border-outline-variant/40 hover:border-primary/60 rounded-2xl p-8 flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors bg-surface-container/20 hover:bg-surface-container/40">
-              <span className="material-symbols-outlined text-primary text-[32px]">upload_file</span>
-              <span className="font-semibold text-xs text-on-surface">Click to upload or drag and drop</span>
-              <span className="text-[11px] text-outline">.ics or .ical calendar file</span>
+            <label className="border-2 border-dashed border-black/15 dark:border-white/20 hover:border-[#007AFF] rounded-2xl p-8 flex flex-col items-center justify-center gap-2 cursor-pointer transition-colors bg-black/[0.02] dark:bg-white/[0.02] hover:bg-black/[0.04] dark:hover:bg-white/[0.04]">
+              <span className="material-symbols-outlined text-[#007AFF] text-[32px]">upload_file</span>
+              <span className="font-semibold text-xs text-gray-900 dark:text-white">Click to upload or drag and drop</span>
+              <span className="text-[11px] text-gray-500 dark:text-gray-400">.ics or .ical calendar file</span>
               <input
                 type="file"
                 accept=".ics,.ical,text/calendar"
@@ -300,16 +308,17 @@ export default function GoogleCalendarModal({
         )}
 
         {/* Modal Footer */}
-        <div className="flex items-center justify-end pt-2 border-t border-outline-variant/20">
+        <div className="flex items-center justify-end pt-2 border-t border-black/5 dark:border-white/10">
           <button
             type="button"
             onClick={onClose}
-            className="px-4 py-2 rounded-xl bg-surface-container hover:bg-surface-container-high text-xs font-semibold text-on-surface transition-colors"
+            className="px-4 py-2 rounded-full bg-black/[0.05] dark:bg-white/10 hover:bg-black/[0.08] dark:hover:bg-white/15 text-xs font-semibold text-gray-800 dark:text-gray-200 transition-colors"
           >
             Close
           </button>
         </div>
       </div>
-    </div>
+    </div>,
+    document.body
   );
 }
