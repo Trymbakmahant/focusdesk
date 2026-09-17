@@ -13,8 +13,9 @@ export default function CalendarTimeline() {
     hasGoogleEvents,
     importIcs,
     importFromUrl,
-    importSampleEvents,
     clearGoogleEvents,
+    isGoogleConnected,
+    isSyncing,
   } = useCalendar();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -73,7 +74,8 @@ export default function CalendarTimeline() {
                 <path fill="#FBBC05" d="M12 10h5v5h-5z"/>
                 <path fill="#EA4335" d="M7 15h5v5H7z"/>
               </svg>
-              <span>{hasGoogleEvents ? 'Google Cal' : 'Import GCal'}</span>
+              {isGoogleConnected && <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />}
+              <span>{isGoogleConnected ? (isSyncing ? 'Syncing...' : 'Google Cal') : hasGoogleEvents ? 'Google Cal' : 'Connect GCal'}</span>
             </button>
           </div>
         </div>
@@ -190,7 +192,6 @@ export default function CalendarTimeline() {
         onClose={() => setIsModalOpen(false)}
         onImportUrl={importFromUrl}
         onImportIcs={importIcs}
-        onImportSample={importSampleEvents}
         existingUrl={googleCalendarUrl}
         hasGoogleEvents={hasGoogleEvents}
         onClearGoogleEvents={clearGoogleEvents}

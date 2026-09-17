@@ -13,7 +13,6 @@ export default function CalendarPage() {
     hasGoogleEvents,
     importIcs,
     importFromUrl,
-    importSampleEvents,
     clearGoogleEvents,
   } = useCalendar();
 
@@ -68,7 +67,6 @@ export default function CalendarPage() {
         onClose={() => setIsModalOpen(false)}
         onImportUrl={importFromUrl}
         onImportIcs={importIcs}
-        onImportSample={importSampleEvents}
         existingUrl={googleCalendarUrl}
         hasGoogleEvents={hasGoogleEvents}
         onClearGoogleEvents={clearGoogleEvents}

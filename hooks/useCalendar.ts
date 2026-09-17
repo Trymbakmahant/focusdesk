@@ -3,13 +3,16 @@
 import { useState, useEffect, useMemo, useCallback } from 'react';
 import { useAuth } from '@/context/AuthContext';
 import { CalendarEvent } from '@/types/calendar';
-import { parseIcsContent, SAMPLE_GOOGLE_CALENDAR_EVENTS } from '@/lib/icsParser';
+import { parseIcsContent } from '@/lib/icsParser';
 
 export function useCalendar() {
   const { user } = useAuth();
   const [events, setEvents] = useState<CalendarEvent[]>([]);
   const [googleCalendarUrl, setGoogleCalendarUrl] = useState<string>('');
   const [isLoaded, setIsLoaded] = useState(false);
+  const [isSyncing, setIsSyncing] = useState(false);
+  const [isGoogleConnected, setIsGoogleConnected] = useState(false);
+  const [isGoogleConfigured, setIsGoogleConfigured] = useState(false);
 
   // Storage key scoped to authenticated user
   const storageKey = useMemo(() => {
@@ -20,19 +23,15 @@ export function useCalendar() {
     return user ? `focusdeck_gcal_url_${user.id}` : 'focusdeck_gcal_url_guest';
   }, [user]);
 
-  // Load calendar from localStorage (supports both authenticated user and guest mode)
+  // 1. Load local calendar from localStorage
   useEffect(() => {
     try {
       const saved = localStorage.getItem(storageKey);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed) && parsed.length > 0) {
+        if (Array.isArray(parsed)) {
           setEvents(parsed);
-        } else {
-          setEvents(SAMPLE_GOOGLE_CALENDAR_EVENTS);
         }
-      } else {
-        setEvents(SAMPLE_GOOGLE_CALENDAR_EVENTS);
       }
 
       const savedUrl = localStorage.getItem(urlStorageKey);
@@ -40,13 +39,13 @@ export function useCalendar() {
         setGoogleCalendarUrl(savedUrl);
       }
     } catch {
-      setEvents(SAMPLE_GOOGLE_CALENDAR_EVENTS);
+      // Fallback to empty list
     } finally {
       setIsLoaded(true);
     }
   }, [storageKey, urlStorageKey]);
 
-  // Persist whenever events change
+  // 2. Persist whenever events change
   useEffect(() => {
     if (!isLoaded) return;
     try {
@@ -56,7 +55,7 @@ export function useCalendar() {
     }
   }, [events, isLoaded, storageKey]);
 
-  // Persist URL
+  // 3. Persist URL
   useEffect(() => {
     if (!isLoaded) return;
     try {
@@ -66,7 +65,67 @@ export function useCalendar() {
     }
   }, [googleCalendarUrl, isLoaded, urlStorageKey]);
 
-  // Import raw ICS string (from file upload or text)
+  // 4. Sync events from Google Calendar API
+  const syncGoogleCalendar = useCallback(async () => {
+    setIsSyncing(true);
+    try {
+      const res = await fetch('/api/calendar/google/events');
+      if (!res.ok) {
+        throw new Error('Failed to fetch events from Google Calendar API');
+      }
+
+      const data = await res.json();
+      setIsGoogleConnected(Boolean(data.isConnected));
+      setIsGoogleConfigured(Boolean(data.isConfigured));
+
+      if (data.isConnected && Array.isArray(data.events)) {
+        setEvents((prev) => {
+          // Keep manually created events, replace Google events with fresh sync
+          const nonGoogle = prev.filter((e) => e.source !== 'google');
+          return [...data.events, ...nonGoogle].sort((a, b) => a.timestamp - b.timestamp);
+        });
+        return data.events.length;
+      }
+      return 0;
+    } catch (err) {
+      console.error('Error syncing Google Calendar:', err);
+      return 0;
+    } finally {
+      setIsSyncing(false);
+    }
+  }, []);
+
+  // 5. Check Google OAuth connection status on mount and sync if connected
+  useEffect(() => {
+    fetch('/api/calendar/google/status')
+      .then((res) => res.json())
+      .then((data) => {
+        setIsGoogleConnected(Boolean(data.isConnected));
+        setIsGoogleConfigured(Boolean(data.isConfigured));
+        if (data.isConnected) {
+          syncGoogleCalendar();
+        }
+      })
+      .catch(() => {});
+  }, [syncGoogleCalendar]);
+
+  // 6. Connect via Google OAuth 2.0
+  const connectGoogleOAuth = useCallback(() => {
+    window.location.assign('/api/auth/google/url?redirect=true');
+  }, []);
+
+  // 7. Disconnect Google Calendar
+  const disconnectGoogle = useCallback(async () => {
+    try {
+      await fetch('/api/calendar/google/disconnect', { method: 'POST' });
+      setIsGoogleConnected(false);
+      setEvents((prev) => prev.filter((e) => e.source !== 'google'));
+    } catch (err) {
+      console.error('Failed to disconnect Google Calendar:', err);
+    }
+  }, []);
+
+  // 8. Import raw ICS string (from manual file upload)
   const importIcs = useCallback((icsContent: string) => {
     const parsed = parseIcsContent(icsContent);
     if (parsed.length === 0) {
@@ -74,28 +133,25 @@ export function useCalendar() {
     }
 
     setEvents((prev) => {
-      // Remove existing google events and merge new ones
       const nonGoogle = prev.filter((e) => e.source !== 'google');
-      return [...parsed, ...nonGoogle];
+      return [...parsed, ...nonGoogle].sort((a, b) => a.timestamp - b.timestamp);
     });
 
     return parsed.length;
   }, []);
 
-  // Import from Google Calendar iCal URL
+  // 9. Import from Google Calendar iCal public URL (fallback method)
   const importFromUrl = useCallback(async (url: string) => {
     const trimmed = url.trim();
     if (!trimmed) throw new Error('Please provide a valid Google Calendar URL');
 
     setGoogleCalendarUrl(trimmed);
 
-    // Fetch feed (try direct or via cors fallback)
     try {
       let response: Response;
       try {
         response = await fetch(trimmed);
       } catch {
-        // Fallback through public CORS proxy if browser blocks direct Google fetch
         const proxyUrl = `https://corsproxy.io/?${encodeURIComponent(trimmed)}`;
         response = await fetch(proxyUrl);
       }
@@ -107,32 +163,23 @@ export function useCalendar() {
       const text = await response.text();
       const count = importIcs(text);
       return count;
-    } catch (err: any) {
-      throw new Error(err.message || 'Unable to import Google Calendar feed. Ensure URL is public or use .ics file export.');
+    } catch (err: unknown) {
+      const msg = err instanceof Error ? err.message : 'Unable to import calendar feed';
+      throw new Error(msg);
     }
   }, [importIcs]);
 
-  // Quick preset sample import for testing
-  const importSampleEvents = useCallback(() => {
-    setEvents((prev) => {
-      const nonGoogle = prev.filter((e) => e.source !== 'google');
-      return [...SAMPLE_GOOGLE_CALENDAR_EVENTS, ...nonGoogle];
-    });
-    return SAMPLE_GOOGLE_CALENDAR_EVENTS.length;
-  }, []);
-
-  // Delete event
+  // 10. Delete single event
   const deleteEvent = useCallback((id: string) => {
     setEvents((prev) => prev.filter((e) => e.id !== id));
   }, []);
 
-  // Clear imported Google Calendar events
+  // 11. Clear all Google-sourced events
   const clearGoogleEvents = useCallback(() => {
     setEvents((prev) => prev.filter((e) => e.source !== 'google'));
     setGoogleCalendarUrl('');
   }, []);
 
-  // Check if synced
   const hasGoogleEvents = useMemo(() => {
     return events.some((e) => e.source === 'google');
   }, [events]);
@@ -141,10 +188,15 @@ export function useCalendar() {
     events,
     googleCalendarUrl,
     isLoaded,
+    isSyncing,
+    isGoogleConnected,
+    isGoogleConfigured,
     hasGoogleEvents,
+    syncGoogleCalendar,
+    connectGoogleOAuth,
+    disconnectGoogle,
     importIcs,
     importFromUrl,
-    importSampleEvents,
     deleteEvent,
     clearGoogleEvents,
   };
