@@ -1,8 +1,56 @@
 import { NextResponse } from 'next/server';
+import { withAuth } from '@workos-inc/authkit-nextjs';
+import { getUserCalendarEvents, NoGoogleTokensError } from '@/lib/calendarService';
 import { getAuthenticatedCalendar, formatGoogleCalendarEvent, isGoogleConfigured } from '@/lib/googleCalendar';
 import { CalendarEvent } from '@/types/calendar';
 
 export async function GET() {
+  // 1. Check if user is authenticated via WorkOS
+  let workosUserId: string | null = null;
+  try {
+    const auth = await withAuth();
+    if (auth.user?.id) {
+      workosUserId = auth.user.id;
+    }
+  } catch {
+    // Unauthenticated or local session
+  }
+
+  // 2. If user is authenticated with WorkOS, fetch calendar events using stored Google tokens
+  if (workosUserId) {
+    try {
+      const events = await getUserCalendarEvents(workosUserId);
+      return NextResponse.json({
+        isConnected: true,
+        isConfigured: true,
+        events,
+      });
+    } catch (err: unknown) {
+      if (err instanceof NoGoogleTokensError) {
+        // User logged in via non-Google method (or without calendar scopes): surface clear fallback
+        return NextResponse.json({
+          isConnected: false,
+          isConfigured: isGoogleConfigured(),
+          requiresConnection: true,
+          events: [],
+          message: 'No Google Calendar connected for this user account. Please connect your Google Calendar.',
+        });
+      }
+
+      console.error('Error fetching calendar events for user:', workosUserId, err);
+      return NextResponse.json(
+        {
+          isConnected: false,
+          isConfigured: true,
+          events: [],
+          error: err instanceof Error ? err.message : 'failed_to_fetch_events',
+        },
+        { status: 500 }
+      );
+    }
+  }
+
+  // 3. Fallback for cookie-based authentication or standalone OAuth
   if (!isGoogleConfigured()) {
     return NextResponse.json({
       isConnected: false,
@@ -17,12 +65,13 @@ export async function GET() {
     return NextResponse.json({
       isConnected: false,
       isConfigured: true,
+      requiresConnection: true,
       events: [],
+      message: 'No Google Calendar connected. Please connect your Google Calendar account.',
     });
   }
 
   try {
-    // Pull events from 30 days in the past through 90 days in future
     const timeMin = new Date(Date.now() - 30 * 24 * 60 * 60 * 1000).toISOString();
     const timeMax = new Date(Date.now() + 90 * 24 * 60 * 60 * 1000).toISOString();
 
@@ -47,13 +96,12 @@ export async function GET() {
     });
   } catch (err: unknown) {
     console.error('Failed to list Google Calendar events:', err);
-    const message = err instanceof Error ? err.message : 'failed_to_fetch_events';
     return NextResponse.json(
       {
         isConnected: false,
         isConfigured: true,
         events: [],
-        error: message,
+        error: err instanceof Error ? err.message : 'failed_to_fetch_events',
       },
       { status: 500 }
     );

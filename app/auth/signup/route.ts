@@ -1,6 +1,8 @@
 import { getSignUpUrl } from '@workos-inc/authkit-nextjs';
 import { NextRequest, NextResponse } from 'next/server';
 
+export const GOOGLE_CALENDAR_SCOPE = 'https://www.googleapis.com/auth/calendar.events';
+
 export async function GET(request: NextRequest) {
   if (!process.env.WORKOS_API_KEY || !process.env.WORKOS_CLIENT_ID) {
     return NextResponse.redirect(new URL('/login?error=unconfigured', request.url));
@@ -8,7 +10,15 @@ export async function GET(request: NextRequest) {
 
   try {
     const signUpUrl = await getSignUpUrl();
-    return NextResponse.redirect(signUpUrl);
+    const url = new URL(signUpUrl);
+
+    // Pass provider_scopes with Google Calendar events scope when requested at sign-up time
+    const requestCalendar = request.nextUrl.searchParams.get('calendar') !== 'false';
+    if (requestCalendar) {
+      url.searchParams.set('provider_scopes', GOOGLE_CALENDAR_SCOPE);
+    }
+
+    return NextResponse.redirect(url.toString());
   } catch (error) {
     console.error('WorkOS getSignUpUrl error:', error);
     return NextResponse.redirect(new URL('/login?error=auth_error', request.url));
