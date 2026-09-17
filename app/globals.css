@@ -127,16 +127,61 @@
   --text-label-md: 13px;
   --text-label-md--line-height: 18px;
   --text-label-md--letter-spacing: -0.005em;
+  --color-apple-blue: #007aff;
+  --color-apple-teal: #00c7be;
+  --color-apple-cyan: #32ade6;
+  --color-apple-indigo: #5856d6;
+  --color-apple-orange: #ff9500;
+  --color-apple-red: #ff3b30;
+  --color-apple-green: #34c759;
+  --color-apple-gray: #8e8e93;
+  --color-apple-subtext: #636366;
+  --color-apple-bg-subtle: #f2f4f7;
+
   --text-label-md--font-weight: 500;
 }
+
+@custom-variant dark (&:where([data-theme="dark"], [data-theme="dark"] *, .dark, .dark *));
 
 @layer base {
   html, body {
     margin: 0;
     padding: 0;
+    font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "SF Pro Text", "Inter", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
   }
   body {
     overscroll-behavior: none;
+    background: radial-gradient(circle at 10% 20%, #f4f8fc 0%, #ffffff 40%, #eff6fc 100%);
+    color: #1d1d1f;
+    min-height: 100vh;
+    transition: background 0.3s ease, color 0.3s ease;
+  }
+  html.dark body {
+    background: radial-gradient(circle at 15% 15%, #18191d 0%, #0d0e11 50%, #08090a 100%);
+    color: #f5f5f7;
+  }
+  html.dark,
+  [data-theme="dark"] {
+    --color-surface-container-lowest: #1c1c1e;
+    --color-surface-container-low: #242426;
+    --color-surface-container: #2c2c2e;
+    --color-surface-container-high: #3a3a3c;
+    --color-surface-container-highest: #48484a;
+    --color-surface: #1c1c1e;
+    --color-surface-bright: #2c2c2e;
+    --color-surface-dim: #161618;
+    --color-on-surface: #f5f5f7;
+    --color-on-surface-variant: #aeaeb2;
+    --color-outline: #8e8e93;
+    --color-outline-variant: #3a3a3c;
+    --color-background: #0d0e11;
+    --color-on-background: #f5f5f7;
+    --color-primary: #0a84ff;
+    --color-primary-container: #0056b3;
+    --color-on-primary: #ffffff;
+    --color-on-primary-container: #d0e1fd;
   }
   main > :first-child {
     margin-top: 0 !important;
@@ -144,8 +189,128 @@
   main > :last-child {
     margin-bottom: 0 !important;
   }
+  .tabular-nums {
+    font-variant-numeric: tabular-nums;
+  }
 }
 
 ::-webkit-scrollbar {
   display: none;
 }
+
+/* Apple Cupertino Materials & Glassmorphism (Light Mode) */
+.apple-glass {
+  background: rgba(255, 255, 255, 0.75);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.85);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95), 0 10px 30px -10px rgba(0, 0, 0, 0.04), 0 1px 3px rgba(0, 0, 0, 0.02);
+  transition: background 0.25s ease, border-color 0.25s ease, box-shadow 0.25s ease, color 0.25s ease;
+}
+
+/* Apple Cupertino Materials & Glassmorphism (Dark Mode) */
+html.dark .apple-glass {
+  background: rgba(28, 28, 30, 0.75);
+  backdrop-filter: blur(28px) saturate(190%);
+  -webkit-backdrop-filter: blur(28px) saturate(190%);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.08), 0 10px 30px -10px rgba(0, 0, 0, 0.6), 0 1px 3px rgba(0, 0, 0, 0.4);
+  color: #f5f5f7;
+}
+
+.apple-card-hover {
+  transition: all 0.25s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.apple-card-hover:hover {
+  transform: translateY(-2px);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.95), 0 18px 36px -12px rgba(0, 50, 100, 0.08), 0 2px 6px rgba(0, 0, 0, 0.03);
+}
+
+html.dark .apple-card-hover:hover {
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.14), 0 18px 36px -12px rgba(0, 0, 0, 0.8), 0 2px 6px rgba(0, 0, 0, 0.5);
+}
+
+.apple-segmented-bg {
+  background: rgba(118, 118, 128, 0.12);
+  transition: background 0.25s ease;
+}
+
+html.dark .apple-segmented-bg {
+  background: rgba(118, 118, 128, 0.28);
+}
+
+.apple-keycap {
+  background: linear-gradient(180deg, #ffffff 0%, #f2f4f7 100%);
+  border: 1px solid rgba(0, 0, 0, 0.12);
+  box-shadow: 0 1px 1px rgba(0, 0, 0, 0.08), inset 0 1px 0 #ffffff;
+  color: #1d1d1f;
+  transition: all 0.2s ease;
+}
+
+html.dark .apple-keycap {
+  background: linear-gradient(180deg, #2c2c2e 0%, #1c1c1e 100%);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  box-shadow: 0 1px 2px rgba(0, 0, 0, 0.5), inset 0 1px 0 rgba(255, 255, 255, 0.1);
+  color: #f5f5f7;
+}
+
+/* Apple HIG Dark Mode Automatic Inversions for Cards & Modals */
+html.dark .apple-glass h2,
+html.dark .apple-glass h3 {
+  color: #f5f5f7 !important;
+}
+
+html.dark .apple-glass input,
+html.dark .apple-glass textarea {
+  color: #f5f5f7;
+  background-color: rgba(255, 255, 255, 0.05);
+  border-color: rgba(255, 255, 255, 0.12);
+}
+
+html.dark .apple-glass [class*="text-gray-950"],
+html.dark .apple-glass [class*="text-gray-900"],
+html.dark .apple-glass [class*="text-[#1D1D1F]"] {
+  color: #f5f5f7;
+}
+
+html.dark .apple-glass [class*="text-gray-800"],
+html.dark .apple-glass [class*="text-gray-700"] {
+  color: #e5e5ea;
+}
+
+html.dark .apple-glass [class*="text-gray-600"],
+html.dark .apple-glass [class*="text-gray-500"],
+html.dark .apple-glass [class*="text-[#86868B]"] {
+  color: #98989d;
+}
+
+html.dark .apple-glass [class*="border-white/80"],
+html.dark .apple-glass [class*="border-white"] {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+html.dark .apple-glass [class*="bg-white/60"],
+html.dark .apple-glass [class*="bg-white/50"],
+html.dark .apple-glass [class*="bg-white/40"],
+html.dark .apple-glass [class*="bg-white/30"] {
+  background-color: rgba(255, 255, 255, 0.05);
+}
+
+html.dark .apple-glass [class*="bg-white/70"],
+html.dark .apple-glass [class*="bg-white/80"],
+html.dark .apple-glass [class*="bg-white/85"] {
+  background-color: rgba(255, 255, 255, 0.08);
+}
+
+html.dark .apple-glass [class*="border-black/5"],
+html.dark .apple-glass [class*="border-black/10"] {
+  border-color: rgba(255, 255, 255, 0.1);
+}
+
+html.dark .apple-glass [class*="bg-black/[0.03]"],
+html.dark .apple-glass [class*="bg-black/[0.04]"],
+html.dark .apple-glass [class*="bg-black/[0.05]"] {
+  background-color: rgba(255, 255, 255, 0.06);
+}
+

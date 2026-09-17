@@ -1,6 +1,7 @@
 import React from 'react';
 import Link from 'next/link';
 import { useAuth } from '@/context/AuthContext';
+import ThemeSwitcher from './ThemeSwitcher';
 
 type HeaderProps = {
   onMenuClick: () => void;
@@ -9,68 +10,73 @@ type HeaderProps = {
 export default function Header({ onMenuClick }: HeaderProps) {
   const { user, signOut } = useAuth();
 
+  const formattedDate = new Intl.DateTimeFormat('en-US', {
+    weekday: 'short',
+    month: 'short',
+    day: 'numeric',
+  }).format(new Date());
+
   return (
-    <header className="fixed top-0 left-0 md:left-sidebar-width right-0 h-14 z-30 bg-surface/75 backdrop-blur-xl shadow-[0_1px_8px_rgba(0,0,0,0.03)] flex items-center justify-between px-space-md md:px-space-lg transition-all duration-300">
-      <div className="flex items-center gap-space-sm md:gap-space-md">
+    <header className="fixed top-0 left-0 md:left-sidebar-width right-0 h-14 z-30 bg-white/70 dark:bg-[#1c1c1e]/75 backdrop-blur-[24px] border-b border-black/[0.06] dark:border-white/10 shadow-[0_1px_5px_rgba(0,0,0,0.02)] dark:shadow-[0_4px_16px_rgba(0,0,0,0.3)] flex items-center justify-between px-4 md:px-6 transition-all duration-300">
+      <div className="flex items-center gap-3 md:gap-4">
         <button 
           onClick={onMenuClick} 
-          className="md:hidden w-9 h-9 rounded-lg flex items-center justify-center text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-colors"
+          className="md:hidden w-8 h-8 rounded-full flex items-center justify-center text-gray-600 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/10 transition-colors"
         >
           <span className="material-symbols-outlined text-[20px]">menu</span>
         </button>
-        <div className="md:hidden flex items-center gap-space-xs">
-          <img alt="Fixates Logo" className="w-7 h-7 rounded-lg object-cover ring-1 ring-outline-variant/30" src="/logo.jpg" />
-          <span className="font-headline-sm text-body-md text-on-surface font-semibold">Fixates</span>
+        <div className="md:hidden flex items-center gap-2">
+          <img alt="FocusDeck Logo" className="w-6 h-6 rounded-lg object-cover ring-1 ring-black/10 dark:ring-white/10" src="/logo.jpg" />
+          <span className="font-semibold text-[14px] text-gray-950 dark:text-white">FocusDeck</span>
         </div>
-        <div className="hidden md:flex items-center gap-space-xs text-outline">
-          <span className="material-symbols-outlined text-[18px]">calendar_month</span>
-          <span className="font-label-md text-label-md">Today, May 24</span>
+        <div className="hidden md:flex items-center gap-2 text-gray-600 dark:text-gray-300">
+          <span className="material-symbols-outlined text-[18px] text-[#007AFF]">calendar_today</span>
+          <span className="text-[13px] font-medium text-gray-900 dark:text-gray-100">{formattedDate}</span>
         </div>
-        <div className="hidden md:flex items-center gap-space-xs bg-surface-container/70 px-space-sm py-1 rounded-lg text-on-surface-variant w-72">
-          <span className="material-symbols-outlined text-[18px] text-outline">search</span>
-          <span className="font-body-sm text-body-sm text-outline flex-1 truncate">Search Fixates...</span>
-          <kbd className="font-code-kbd text-code-kbd bg-surface-container-highest px-1 py-0.5 rounded text-on-surface-variant">⌘K</kbd>
+        <div className="hidden md:flex items-center gap-2 bg-black/[0.04] dark:bg-white/[0.06] hover:bg-black/[0.06] dark:hover:bg-white/[0.1] transition-colors px-3 py-1.5 rounded-full text-gray-600 dark:text-gray-300 w-72 border border-black/5 dark:border-white/10">
+          <span className="material-symbols-outlined text-[17px] text-gray-400 dark:text-gray-500">search</span>
+          <span className="text-[12px] text-gray-400 dark:text-gray-500 flex-1 truncate">Search FocusDeck...</span>
+          <kbd className="apple-keycap font-mono text-[10px] text-gray-600 dark:text-gray-300 px-1.5 py-0.2 rounded font-semibold">⌘K</kbd>
         </div>
       </div>
-      <div className="flex items-center gap-space-sm">
+      <div className="flex items-center gap-2">
+        {/* Apple Appearance Switcher (Light / Dark / Auto) */}
+        <ThemeSwitcher compact />
+
         {user ? (
           <div className="flex items-center gap-2">
-            <div className="hidden sm:flex items-center gap-space-xs px-2.5 py-1 rounded-lg bg-surface-container text-xs text-outline border border-outline-variant/20">
+            <div className="hidden sm:flex items-center gap-2 px-2.5 py-1 rounded-full bg-black/[0.03] dark:bg-white/[0.06] border border-black/5 dark:border-white/10 text-xs text-gray-700 dark:text-gray-300">
               {user.profilePictureUrl ? (
                 <img src={user.profilePictureUrl} alt="" className="w-4 h-4 rounded-full object-cover" />
               ) : (
-                <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+                <span className="w-2 h-2 rounded-full bg-[#34C759] animate-pulse" />
               )}
-              <span className="truncate max-w-[140px] text-on-surface font-medium">{user.name || user.email}</span>
+              <span className="truncate max-w-[130px] font-medium">{user.name || user.email}</span>
             </div>
             <button
               onClick={() => signOut()}
               title="Sign Out"
-              className="h-8 px-2.5 rounded-lg bg-surface-container hover:bg-surface-container-high text-outline hover:text-error text-xs font-medium transition-colors flex items-center gap-1 border border-outline-variant/20"
+              className="h-7 px-2.5 rounded-full bg-black/[0.04] dark:bg-white/[0.06] hover:bg-red-50 dark:hover:bg-red-950/40 text-gray-500 dark:text-gray-400 hover:text-red-600 dark:hover:text-red-400 text-xs font-medium transition-colors flex items-center gap-1 border border-black/5 dark:border-white/10"
             >
-              <span className="material-symbols-outlined text-[16px]">logout</span>
+              <span className="material-symbols-outlined text-[14px]">logout</span>
               <span className="hidden sm:inline">Sign Out</span>
             </button>
           </div>
         ) : (
           <Link
             href="/login"
-            className="h-8 px-space-sm rounded-lg bg-surface-container-high/70 hover:bg-surface-container text-on-surface hover:text-primary transition-colors flex items-center gap-space-2xs text-label-md font-label-md"
+            className="h-8 px-3 rounded-full bg-[#007AFF] text-white hover:bg-blue-600 shadow-sm transition-colors flex items-center gap-1 text-[12px] font-medium"
           >
             <span className="material-symbols-outlined text-[16px]">login</span>
             <span>Sign In</span>
           </Link>
         )}
-        <button className="h-8 px-space-sm rounded-lg bg-surface-container-high/60 text-on-surface hover:bg-surface-container-high hover:text-on-surface transition-colors flex items-center gap-space-2xs text-label-md font-label-md">
-          <span className="material-symbols-outlined text-[16px]">add</span>
-          <span>Add Card</span>
-        </button>
-        <button className="w-8 h-8 rounded-lg bg-surface-container-high/60 text-on-surface-variant hover:text-on-surface hover:bg-surface-container-high flex items-center justify-center transition-colors">
+        <button className="w-8 h-8 rounded-full bg-black/[0.04] dark:bg-white/[0.06] hover:bg-black/[0.07] dark:hover:bg-white/[0.1] text-gray-700 dark:text-gray-200 flex items-center justify-center transition-colors">
           <span className="material-symbols-outlined text-[18px]">notifications</span>
         </button>
         <Link 
           href="/focus"
-          className="h-8 px-space-sm rounded-lg bg-primary text-on-primary hover:bg-primary-container hover:text-on-primary-container transition-colors flex items-center gap-space-2xs text-label-md font-label-md"
+          className="h-8 px-3.5 rounded-full bg-[#007AFF] text-white hover:bg-blue-600 transition-all flex items-center gap-1.5 text-[12px] font-semibold shadow-[0_1px_4px_rgba(0,122,255,0.25)]"
         >
           <span className="material-symbols-outlined text-[16px]">self_improvement</span>
           <span>Focus</span>

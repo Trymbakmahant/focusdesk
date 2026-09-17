@@ -2,6 +2,7 @@ import React from 'react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { useAuth } from '@/context/AuthContext';
+import ThemeSwitcher from './ThemeSwitcher';
 
 type SidebarProps = {
   isOpen: boolean;
@@ -22,117 +23,198 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
         />
       )}
       
-      <aside className={`fixed top-0 left-0 h-screen w-sidebar-width z-50 flex flex-col bg-surface-container-low/80 backdrop-blur-2xl shadow-[0_1px_8px_rgba(0,0,0,0.04)] justify-between transition-transform duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
+      <aside className={`fixed top-0 left-0 h-screen w-sidebar-width z-50 flex flex-col bg-[#F6F8FB]/80 dark:bg-[#141517]/85 backdrop-blur-[36px] border-r border-white/60 dark:border-white/10 shadow-[1px_0_15px_rgba(0,0,0,0.03)] dark:shadow-[1px_0_20px_rgba(0,0,0,0.4)] justify-between transition-all duration-300 ${isOpen ? 'translate-x-0' : '-translate-x-full md:translate-x-0'}`}>
       <div className="flex flex-col">
+        {/* Genuine macOS Traffic Lights with tactile depth & inner border */}
+        <div className="h-12 px-5 flex items-center gap-2">
+          <div className="w-3 h-3 rounded-full bg-[#FF5F56] border border-[#E0443E]/80 shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)] transition-transform hover:scale-105 cursor-pointer" />
+          <div className="w-3 h-3 rounded-full bg-[#FFBD2E] border border-[#DEA123]/80 shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)] transition-transform hover:scale-105 cursor-pointer" />
+          <div className="w-3 h-3 rounded-full bg-[#27C93F] border border-[#1AAB29]/80 shadow-[inset_0_1px_1px_rgba(255,255,255,0.4)] transition-transform hover:scale-105 cursor-pointer" />
+        </div>
        
-        <div className="px-space-md py-space-xs flex items-center gap-space-sm">
-          <img alt="Fixates Logo" className="h-8 w-8 rounded-lg object-cover ring-1 ring-outline-variant/30 shrink-0 shadow-sm" src="/logo.jpg" />
+        {/* App Branding with Squircle Icon */}
+        <div className="px-4 py-2 flex items-center gap-3">
+          <div className="w-9 h-9 rounded-xl overflow-hidden shadow-sm ring-1 ring-black/5 dark:ring-white/10 shrink-0 bg-gradient-to-b from-white to-gray-50 dark:from-[#2C2C2E] dark:to-[#1C1C1E] flex items-center justify-center p-0.5">
+            <img alt="FocusDeck Icon" className="w-full h-full object-contain rounded-lg" src="/logo.jpg" />
+          </div>
           <div className="flex flex-col min-w-0">
-            <span className="font-headline-sm text-body-md text-on-surface truncate leading-tight">Fixates</span>
-            <span className="font-label-sm text-label-sm text-outline truncate leading-tight">Command Center</span>
+            <div className="flex items-center gap-1.5">
+              <span className="font-semibold text-[14px] text-gray-900 dark:text-white tracking-tight leading-tight">FocusDeck</span>
+              <span className="text-[9px] font-bold px-1.5 py-0.5 rounded-full bg-[#007AFF]/10 text-[#007AFF] uppercase tracking-wider">v2.4</span>
+            </div>
+            <span className="text-[11px] text-gray-400 dark:text-gray-500 truncate leading-tight mt-0.5">macOS Sequoia Native</span>
           </div>
         </div>
-        <div className="px-space-md pt-space-md">
-          <div className="px-space-sm pb-space-2xs font-label-sm text-label-sm text-outline uppercase tracking-wider">Focus View</div>
-          <nav className="flex flex-col gap-space-2xs">
-            <Link aria-current="page" className="flex items-center justify-between px-space-sm py-space-xs transition-all bg-secondary-fixed text-on-surface font-label-md rounded-lg shadow-[0_1px_3px_rgba(0,0,0,0.04)]" href="/">
-              <div className="flex items-center gap-space-sm">
-                <span className="material-symbols-outlined text-[18px] text-primary">space_dashboard</span>
-                <span className="font-label-md text-label-md">Home</span>
+
+        {/* Navigation Section: Focus Views */}
+        <div className="px-3 pt-3">
+          <div className="px-2.5 pb-1.5 text-[11px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Focus View</div>
+          <nav className="flex flex-col gap-0.5">
+            <Link 
+              href="/" 
+              className={`flex items-center justify-between px-2.5 py-1.5 rounded-xl text-[13px] transition-all ${
+                pathname === '/' 
+                  ? 'bg-[#007AFF] text-white font-medium shadow-[0_2px_8px_rgba(0,122,255,0.28)]' 
+                  : 'text-gray-700 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/5 font-normal'
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                <span className={`material-symbols-outlined text-[18px] ${pathname === '/' ? 'text-white' : 'text-[#007AFF]'}`}>dashboard</span>
+                <span>Dashboard</span>
               </div>
+              <kbd className={`font-mono text-[10px] px-1.5 py-0.2 rounded font-semibold ${pathname === '/' ? 'bg-white/20 text-white' : 'apple-keycap text-gray-500 dark:text-gray-400'}`}>⌘1</kbd>
             </Link>
-            <Link className="flex items-center justify-between px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" href="/tasks">
-              <div className="flex items-center gap-space-sm">
-                <span className="material-symbols-outlined text-[18px]">check_circle</span>
-                <span className="font-label-md text-label-md">Tasks</span>
+
+            <Link 
+              href="/tasks" 
+              className={`flex items-center justify-between px-2.5 py-1.5 rounded-xl text-[13px] transition-all ${
+                pathname === '/tasks' 
+                  ? 'bg-[#007AFF] text-white font-medium shadow-[0_2px_8px_rgba(0,122,255,0.28)]' 
+                  : 'text-gray-700 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/5 font-normal'
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                <span className={`material-symbols-outlined text-[18px] ${pathname === '/tasks' ? 'text-white' : 'text-[#34C759]'}`}>check_circle</span>
+                <span>Tasks</span>
               </div>
+              <kbd className={`font-mono text-[10px] px-1.5 py-0.2 rounded font-semibold ${pathname === '/tasks' ? 'bg-white/20 text-white' : 'apple-keycap text-gray-500 dark:text-gray-400'}`}>⌘2</kbd>
             </Link>
-            <Link className="flex items-center justify-between px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" href="/calendar">
-              <div className="flex items-center gap-space-sm">
-                <span className="material-symbols-outlined text-[18px]">calendar_today</span>
-                <span className="font-label-md text-label-md">Calendar</span>
+
+            <Link 
+              href="/calendar" 
+              className={`flex items-center justify-between px-2.5 py-1.5 rounded-xl text-[13px] transition-all ${
+                pathname === '/calendar' 
+                  ? 'bg-[#007AFF] text-white font-medium shadow-[0_2px_8px_rgba(0,122,255,0.28)]' 
+                  : 'text-gray-700 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/5 font-normal'
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                <span className={`material-symbols-outlined text-[18px] ${pathname === '/calendar' ? 'text-white' : 'text-[#00C7BE]'}`}>calendar_today</span>
+                <span>Calendar</span>
               </div>
+              <kbd className={`font-mono text-[10px] px-1.5 py-0.2 rounded font-semibold ${pathname === '/calendar' ? 'bg-white/20 text-white' : 'apple-keycap text-gray-500 dark:text-gray-400'}`}>⌘3</kbd>
             </Link>
-            <Link className="flex items-center justify-between px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" href="/reminders">
-              <div className="flex items-center gap-space-sm">
-                <span className="material-symbols-outlined text-[18px]">notifications_active</span>
-                <span className="font-label-md text-label-md">Reminders</span>
+
+            <Link 
+              href="/reminders" 
+              className={`flex items-center justify-between px-2.5 py-1.5 rounded-xl text-[13px] transition-all ${
+                pathname === '/reminders' 
+                  ? 'bg-[#007AFF] text-white font-medium shadow-[0_2px_8px_rgba(0,122,255,0.28)]' 
+                  : 'text-gray-700 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/5 font-normal'
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                <span className={`material-symbols-outlined text-[18px] ${pathname === '/reminders' ? 'text-white' : 'text-[#FF9500]'}`}>notifications_active</span>
+                <span>Reminders</span>
               </div>
+              <kbd className={`font-mono text-[10px] px-1.5 py-0.2 rounded font-semibold ${pathname === '/reminders' ? 'bg-white/20 text-white' : 'apple-keycap text-gray-500 dark:text-gray-400'}`}>⌘4</kbd>
             </Link>
-            <Link className="flex items-center justify-between px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" href="/focus">
-              <div className="flex items-center gap-space-sm">
-                <span className="material-symbols-outlined text-[18px]">timer</span>
-                <span className="font-label-md text-label-md">Focus</span>
+
+            <Link 
+              href="/focus" 
+              className={`flex items-center justify-between px-2.5 py-1.5 rounded-xl text-[13px] transition-all ${
+                pathname === '/focus' 
+                  ? 'bg-[#007AFF] text-white font-medium shadow-[0_2px_8px_rgba(0,122,255,0.28)]' 
+                  : 'text-gray-700 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/5 font-normal'
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                <span className={`material-symbols-outlined text-[18px] ${pathname === '/focus' ? 'text-white' : 'text-[#5856D6]'}`}>timer</span>
+                <span>Focus</span>
               </div>
+              <kbd className={`font-mono text-[10px] px-1.5 py-0.2 rounded font-semibold ${pathname === '/focus' ? 'bg-white/20 text-white' : 'apple-keycap text-gray-500 dark:text-gray-400'}`}>⌘5</kbd>
             </Link>
-            <Link className="flex items-center justify-between px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" href="/activity">
-              <div className="flex items-center gap-space-sm">
-                <span className="material-symbols-outlined text-[18px]">insights</span>
-                <span className="font-label-md text-label-md">Activity</span>
+
+            <Link 
+              href="/activity" 
+              className={`flex items-center justify-between px-2.5 py-1.5 rounded-xl text-[13px] transition-all ${
+                pathname === '/activity' 
+                  ? 'bg-[#007AFF] text-white font-medium shadow-[0_2px_8px_rgba(0,122,255,0.28)]' 
+                  : 'text-gray-700 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/5 font-normal'
+              }`}
+            >
+              <div className="flex items-center gap-2.5">
+                <span className={`material-symbols-outlined text-[18px] ${pathname === '/activity' ? 'text-white' : 'text-[#32ADE6]'}`}>vital_signs</span>
+                <span>Habits &amp; Activity</span>
               </div>
+              <kbd className={`font-mono text-[10px] px-1.5 py-0.2 rounded font-semibold ${pathname === '/activity' ? 'bg-white/20 text-white' : 'apple-keycap text-gray-500 dark:text-gray-400'}`}>⌘6</kbd>
             </Link>
           </nav>
         </div>
-        <div className="px-space-md pt-space-lg">
-          <div className="px-space-sm pb-space-2xs font-label-sm text-label-sm text-outline uppercase tracking-wider">Collections</div>
-          <nav className="flex flex-col gap-space-2xs">
-            <a className="flex items-center px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" href="#">
-              <span className="w-2 h-2 rounded-full bg-secondary mr-space-sm"></span>
-              <span className="font-label-md text-label-md">Personal</span>
+
+        {/* Collections */}
+        <div className="px-3 pt-4">
+          <div className="px-2.5 pb-1.5 text-[11px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider">Collections</div>
+          <nav className="flex flex-col gap-0.5">
+            <a className="flex items-center px-2.5 py-1.5 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/5 transition-all text-[13px]" href="#">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#00C7BE] mr-2.5 shadow-xs"></span>
+              <span>Personal</span>
             </a>
-            <a className="flex items-center px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" href="#">
-              <span className="w-2 h-2 rounded-full bg-primary mr-space-sm"></span>
-              <span className="font-label-md text-label-md">Work</span>
+            <a className="flex items-center px-2.5 py-1.5 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/5 transition-all text-[13px]" href="#">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#007AFF] mr-2.5 shadow-xs"></span>
+              <span>Work</span>
             </a>
-            <a className="flex items-center px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" href="#">
-              <span className="w-2 h-2 rounded-full bg-tertiary mr-space-sm"></span>
-              <span className="font-label-md text-label-md">Development</span>
+            <a className="flex items-center px-2.5 py-1.5 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/5 transition-all text-[13px]" href="#">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#5856D6] mr-2.5 shadow-xs"></span>
+              <span>Development</span>
             </a>
-            <a className="flex items-center px-space-sm py-space-xs rounded-lg text-on-surface-variant hover:bg-surface-container hover:text-on-surface transition-all" href="#">
-              <span className="w-2 h-2 rounded-full bg-primary-container mr-space-sm"></span>
-              <span className="font-label-md text-label-md">Projects</span>
+            <a className="flex items-center px-2.5 py-1.5 rounded-xl text-gray-700 dark:text-gray-300 hover:bg-black/5 dark:hover:bg-white/5 transition-all text-[13px]" href="#">
+              <span className="w-2.5 h-2.5 rounded-full bg-[#FF9500] mr-2.5 shadow-xs"></span>
+              <span>Projects</span>
             </a>
           </nav>
         </div>
       </div>
-      <div className="p-space-md flex flex-col gap-space-sm">
-        <div className="flex items-center justify-between px-space-sm py-space-xs rounded-lg bg-surface-container/60 text-outline">
-          <span className="font-body-sm text-body-sm flex items-center gap-space-xs">
-            <span className="material-symbols-outlined text-[16px]">cloud_download</span>
-            Command
-          </span>
-          <span className="font-code-kbd text-code-kbd px-1.5 py-0.5 rounded bg-surface-container-highest text-on-surface-variant">⌘K</span>
+
+      {/* Footer Appearance, Profile & Command Palette */}
+      <div className="p-3 flex flex-col gap-2.5 border-t border-black/5 dark:border-white/10">
+        {/* Apple macOS Appearance Switcher */}
+        <div className="flex flex-col gap-1">
+          <span className="text-[10px] font-semibold text-gray-400 dark:text-gray-500 uppercase tracking-wider px-1">Appearance</span>
+          <ThemeSwitcher />
         </div>
-        <div className="pt-space-xs border-t border-outline-variant/20">
+
+        <div className="flex items-center justify-between px-2.5 py-1.5 rounded-xl bg-white/70 dark:bg-white/[0.04] text-gray-600 dark:text-gray-300 border border-black/5 dark:border-white/10 shadow-[0_1px_2px_rgba(0,0,0,0.02)]">
+          <span className="text-[12px] flex items-center gap-1.5 font-medium">
+            <span className="material-symbols-outlined text-[15px] text-[#007AFF]">terminal</span>
+            Command Menu
+          </span>
+          <kbd className="apple-keycap font-mono text-[10px] font-semibold px-1.5 py-0.5 rounded text-gray-700 dark:text-gray-300">⌘K</kbd>
+        </div>
+
+        <div className="pt-0.5">
           {user ? (
-            <div className="flex items-center justify-between p-1 rounded-lg bg-surface-container/40">
-              <div className="flex items-center gap-space-xs min-w-0 pr-2">
-                {user.profilePictureUrl ? (
-                  <img src={user.profilePictureUrl} alt="" className="w-7 h-7 rounded-full object-cover ring-1 ring-primary/30 shrink-0" />
-                ) : (
-                  <div className="w-7 h-7 rounded-full bg-primary/20 text-primary flex items-center justify-center font-semibold text-xs shrink-0 ring-1 ring-primary/30">
-                    {user.name ? user.name[0].toUpperCase() : user.email ? user.email[0].toUpperCase() : 'U'}
-                  </div>
-                )}
+            <div className="flex items-center justify-between p-1.5 rounded-xl bg-white/60 dark:bg-white/[0.04] border border-black/5 dark:border-white/10">
+              <div className="flex items-center gap-2 min-w-0 pr-2">
+                <div className="relative shrink-0">
+                  {user.profilePictureUrl ? (
+                    <img src={user.profilePictureUrl} alt="" className="w-8 h-8 rounded-full object-cover ring-1 ring-black/10 dark:ring-white/10" />
+                  ) : (
+                    <div className="w-8 h-8 rounded-full bg-[#007AFF]/15 text-[#007AFF] flex items-center justify-center font-bold text-xs">
+                      {user.name ? user.name[0].toUpperCase() : user.email ? user.email[0].toUpperCase() : 'U'}
+                    </div>
+                  )}
+                  <span className="absolute bottom-0 right-0 w-2.5 h-2.5 rounded-full bg-[#34C759] ring-1.5 ring-white dark:ring-[#1C1C1E]" />
+                </div>
                 <div className="flex flex-col min-w-0">
-                  <span className="font-label-sm text-label-sm text-on-surface truncate">{user.name || user.email}</span>
-                  <span className="text-[10px] text-primary leading-none">WorkOS Authenticated</span>
+                  <span className="text-[12px] font-semibold text-gray-900 dark:text-white truncate">{user.name || user.email}</span>
+                  <span className="text-[10px] text-gray-400 dark:text-gray-500 leading-none">macOS Pro</span>
                 </div>
               </div>
               <button
                 onClick={() => signOut()}
                 title="Sign Out"
-                className="w-7 h-7 rounded-lg text-outline hover:text-error hover:bg-error/10 flex items-center justify-center transition-colors shrink-0"
+                className="w-7 h-7 rounded-lg text-gray-400 hover:text-red-600 hover:bg-red-50 dark:hover:bg-red-950/40 flex items-center justify-center transition-colors shrink-0"
               >
-                <span className="material-symbols-outlined text-[18px]">logout</span>
+                <span className="material-symbols-outlined text-[16px]">logout</span>
               </button>
             </div>
           ) : (
             <Link
               href="/login"
-              className="flex items-center justify-center gap-space-xs w-full py-2 px-space-sm rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors font-label-md text-label-md"
+              className="flex items-center justify-center gap-1.5 w-full py-1.5 px-3 rounded-xl bg-[#007AFF] text-white hover:bg-blue-600 shadow-sm transition-colors text-[12px] font-medium"
             >
-              <span className="material-symbols-outlined text-[18px] text-primary">login</span>
+              <span className="material-symbols-outlined text-[16px]">login</span>
               <span>Sign In with WorkOS</span>
             </Link>
           )}
