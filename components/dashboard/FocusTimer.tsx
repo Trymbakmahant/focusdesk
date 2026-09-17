@@ -204,18 +204,20 @@ export default function FocusTimer() {
   };
 
   return (
-    <div className="md:col-span-4 flex flex-col justify-between bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm hover:shadow-md transition-shadow relative overflow-hidden">
+    <div className="apple-glass apple-card-hover md:col-span-4 flex flex-col justify-between rounded-3xl p-6 border border-white/80 shadow-sm relative overflow-hidden">
       {/* Visual pulse glow on timer finish */}
       {isFinished && (
-        <div className="absolute inset-0 bg-primary/10 border-2 border-primary rounded-2xl animate-pulse pointer-events-none" />
+        <div className="absolute inset-0 bg-[#5856D6]/10 border-2 border-[#5856D6] rounded-3xl animate-pulse pointer-events-none" />
       )}
 
-      <div className="flex flex-col gap-space-sm">
+      <div className="flex flex-col gap-3">
         {/* Header */}
         <div className="flex items-center justify-between">
-          <div className="flex items-center gap-space-xs">
-            <span className="material-symbols-outlined text-primary text-[20px]">timer</span>
-            <h2 className="font-headline-sm text-headline-sm text-on-surface">Focus Timer</h2>
+          <div className="flex items-center gap-2">
+            <div className="w-7 h-7 rounded-lg bg-[#5856D6]/10 flex items-center justify-center text-[#5856D6]">
+              <span className="material-symbols-outlined text-[18px]">timer</span>
+            </div>
+            <h2 className="text-[16px] font-semibold text-gray-950 tracking-tight">Focus Timer</h2>
           </div>
           <div className="flex items-center gap-1">
             {/* Mute/Sound Alarm Toggle */}
@@ -223,13 +225,13 @@ export default function FocusTimer() {
               type="button"
               onClick={() => setIsMuted(!isMuted)}
               title={isMuted ? 'Unmute Alarm Sound' : 'Mute Alarm Sound'}
-              className={`w-7 h-7 rounded-lg flex items-center justify-center transition-colors ${
+              className={`w-7 h-7 rounded-full flex items-center justify-center transition-colors ${
                 isMuted
-                  ? 'text-outline-variant hover:text-outline'
-                  : 'text-primary hover:bg-surface-container'
+                  ? 'text-gray-400 hover:text-gray-600'
+                  : 'text-[#5856D6] hover:bg-[#5856D6]/10'
               }`}
             >
-              <span className="material-symbols-outlined text-[18px]">
+              <span className="material-symbols-outlined text-[17px]">
                 {isMuted ? 'volume_off' : 'volume_up'}
               </span>
             </button>
@@ -239,33 +241,33 @@ export default function FocusTimer() {
               type="button"
               onClick={playAlarmSound}
               title="Test Alarm Sound"
-              className="w-7 h-7 rounded-lg text-outline hover:bg-surface-container hover:text-on-surface flex items-center justify-center transition-colors"
+              className="w-7 h-7 rounded-full text-gray-400 hover:bg-black/5 hover:text-gray-800 flex items-center justify-center transition-colors"
             >
-              <span className="material-symbols-outlined text-[18px]">notifications</span>
+              <span className="material-symbols-outlined text-[17px]">notifications</span>
             </button>
           </div>
         </div>
 
-        {/* Mode Selectors */}
-        <div className="grid grid-cols-4 gap-1 p-1 rounded-xl bg-surface-container-low text-[11px]">
+        {/* Apple Segmented Preset Toggle */}
+        <div className="apple-segmented-bg p-1 rounded-full flex items-center text-[11px] font-medium gap-0.5">
           <button
             type="button"
             onClick={() => changeMode('pomodoro')}
-            className={`py-1 rounded-lg text-center font-medium transition-all ${
+            className={`flex-1 py-1 rounded-full text-center transition-all ${
               mode === 'pomodoro'
-                ? 'bg-surface-container-lowest text-primary shadow-xs font-semibold'
-                : 'text-on-surface-variant hover:text-on-surface'
+                ? 'bg-white text-[#5856D6] shadow-[0_1px_3px_rgba(0,0,0,0.12)] font-semibold'
+                : 'text-gray-600 hover:text-gray-900'
             }`}
           >
-            25m
+            Pomodoro (25m)
           </button>
           <button
             type="button"
             onClick={() => changeMode('shortBreak')}
-            className={`py-1 rounded-lg text-center font-medium transition-all ${
+            className={`flex-1 py-1 rounded-full text-center transition-all ${
               mode === 'shortBreak'
-                ? 'bg-surface-container-lowest text-primary shadow-xs font-semibold'
-                : 'text-on-surface-variant hover:text-on-surface'
+                ? 'bg-white text-[#5856D6] shadow-[0_1px_3px_rgba(0,0,0,0.12)] font-semibold'
+                : 'text-gray-600 hover:text-gray-900'
             }`}
           >
             Short (5m)
@@ -273,10 +275,10 @@ export default function FocusTimer() {
           <button
             type="button"
             onClick={() => changeMode('longBreak')}
-            className={`py-1 rounded-lg text-center font-medium transition-all ${
+            className={`flex-1 py-1 rounded-full text-center transition-all ${
               mode === 'longBreak'
-                ? 'bg-surface-container-lowest text-primary shadow-xs font-semibold'
-                : 'text-on-surface-variant hover:text-on-surface'
+                ? 'bg-white text-[#5856D6] shadow-[0_1px_3px_rgba(0,0,0,0.12)] font-semibold'
+                : 'text-gray-600 hover:text-gray-900'
             }`}
           >
             Long (15m)
@@ -284,31 +286,30 @@ export default function FocusTimer() {
           <button
             type="button"
             onClick={() => changeMode('custom')}
-            className={`py-1 rounded-lg text-center font-medium transition-all flex items-center justify-center gap-0.5 ${
+            className={`px-2.5 py-1 rounded-full text-center transition-all flex items-center justify-center gap-0.5 ${
               mode === 'custom'
-                ? 'bg-surface-container-lowest text-primary shadow-xs font-semibold'
-                : 'text-on-surface-variant hover:text-on-surface'
+                ? 'bg-white text-[#5856D6] shadow-[0_1px_3px_rgba(0,0,0,0.12)] font-semibold'
+                : 'text-gray-600 hover:text-gray-900'
             }`}
           >
             <span className="material-symbols-outlined text-[13px]">tune</span>
-            <span>Custom</span>
           </button>
         </div>
 
         {/* Custom Duration Controls (when Custom mode is active) */}
         {mode === 'custom' && (
-          <div className="p-2.5 rounded-xl bg-surface-container-low/70 border border-outline-variant/30 flex flex-col gap-2 text-xs">
+          <div className="p-2.5 rounded-2xl bg-black/[0.03] border border-black/5 flex flex-col gap-2 text-xs">
             <div className="flex items-center justify-between">
-              <span className="text-[11px] font-medium text-outline">Custom Duration</span>
+              <span className="text-[11px] font-medium text-gray-500">Custom Duration</span>
               <div className="flex items-center gap-1.5">
                 <button
                   type="button"
                   onClick={() => handleCustomMinutesChange(customMinutes - 5)}
-                  className="w-6 h-6 rounded-md bg-surface-container hover:bg-surface-container-high flex items-center justify-center text-outline hover:text-on-surface transition-colors"
+                  className="w-6 h-6 rounded-md bg-white border border-black/5 flex items-center justify-center text-gray-600 hover:text-[#5856D6] transition-colors"
                 >
                   -
                 </button>
-                <div className="flex items-center gap-1 bg-surface-container-lowest px-2 py-0.5 rounded-md border border-outline-variant/30 font-mono font-semibold text-primary">
+                <div className="flex items-center gap-1 bg-white px-2 py-0.5 rounded-md border border-black/10 font-mono font-semibold text-[#5856D6]">
                   <input
                     type="number"
                     min="1"
@@ -317,12 +318,12 @@ export default function FocusTimer() {
                     onChange={(e) => handleCustomMinutesChange(parseInt(e.target.value) || 1)}
                     className="w-8 text-center bg-transparent focus:outline-none"
                   />
-                  <span className="text-[10px] text-outline">min</span>
+                  <span className="text-[10px] text-gray-400">min</span>
                 </div>
                 <button
                   type="button"
                   onClick={() => handleCustomMinutesChange(customMinutes + 5)}
-                  className="w-6 h-6 rounded-md bg-surface-container hover:bg-surface-container-high flex items-center justify-center text-outline hover:text-on-surface transition-colors"
+                  className="w-6 h-6 rounded-md bg-white border border-black/5 flex items-center justify-center text-gray-600 hover:text-[#5856D6] transition-colors"
                 >
                   +
                 </button>
@@ -336,10 +337,10 @@ export default function FocusTimer() {
                   key={mins}
                   type="button"
                   onClick={() => handleCustomMinutesChange(mins)}
-                  className={`flex-1 py-1 rounded-md text-[10px] font-medium transition-all ${
+                  className={`flex-1 py-1 rounded-lg text-[10px] font-medium transition-all ${
                     customMinutes === mins
-                      ? 'bg-primary text-on-primary font-semibold shadow-xs'
-                      : 'bg-surface-container text-outline hover:text-on-surface'
+                      ? 'bg-[#5856D6] text-white font-semibold shadow-xs'
+                      : 'bg-white text-gray-600 border border-black/5 hover:text-gray-900'
                   }`}
                 >
                   {mins}m
@@ -349,50 +350,50 @@ export default function FocusTimer() {
           </div>
         )}
 
-        {/* Display Timer */}
-        <div className="my-space-sm text-center flex flex-col items-center justify-center py-space-sm bg-surface-container-low/50 rounded-2xl relative">
+        {/* Tabular Large Timer Display */}
+        <div className="my-2 py-4 flex flex-col items-center justify-center rounded-2xl bg-gradient-to-b from-black/[0.02] to-black/[0.04] border border-black/5">
           <span
-            className={`font-display-lg text-[46px] leading-none tracking-tight font-semibold transition-colors ${
-              isFinished ? 'text-primary animate-bounce' : 'text-on-surface'
+            className={`text-[46px] font-bold tracking-tight tabular-nums leading-none transition-colors ${
+              isFinished ? 'text-[#34C759] animate-bounce' : 'text-gray-950'
             }`}
           >
             {formatTime(timeLeft)}
           </span>
 
-          <span className="font-label-sm text-label-sm text-primary mt-2 flex items-center gap-1.5">
+          <span className="text-[11px] font-semibold mt-2.5 flex items-center gap-1.5">
             {isFinished ? (
-              <span className="flex items-center gap-1 text-emerald-400 font-semibold animate-pulse">
+              <span className="flex items-center gap-1 text-[#34C759] font-semibold animate-pulse">
                 <span className="material-symbols-outlined text-[16px]">alarm_on</span>
-                Session Complete! Alarm Sounded
+                Session Complete!
               </span>
             ) : (
-              <>
+              <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-[#5856D6]/10 text-[#5856D6]">
                 <span
-                  className={`w-2 h-2 rounded-full bg-primary ${
+                  className={`w-1.5 h-1.5 rounded-full bg-[#5856D6] ${
                     isActive ? 'animate-pulse' : ''
                   }`}
                 />
                 {isActive ? 'Flow State Active' : 'Paused'}
-              </>
+              </span>
             )}
           </span>
         </div>
       </div>
 
       {/* Control Buttons */}
-      <div className="flex items-center gap-space-sm">
+      <div className="flex items-center gap-2.5 pt-2">
         <button
           type="button"
           onClick={toggleTimer}
-          className={`flex-1 h-10 rounded-xl font-label-md text-label-md shadow-xs transition-all flex items-center justify-center gap-1.5 ${
+          className={`flex-1 h-9 rounded-xl font-medium text-[13px] shadow-[0_2px_8px_rgba(88,86,214,0.25)] transition-all flex items-center justify-center gap-1.5 ${
             isFinished
-              ? 'bg-emerald-500 hover:bg-emerald-600 text-white font-semibold'
+              ? 'bg-[#34C759] hover:bg-green-600 text-white font-semibold'
               : isActive
-              ? 'bg-amber-500 hover:bg-amber-600 text-white'
-              : 'bg-primary text-on-primary hover:bg-primary/90'
+              ? 'bg-[#FF9500] hover:bg-amber-600 text-white'
+              : 'bg-[#5856D6] text-white hover:bg-indigo-600'
           }`}
         >
-          <span className="material-symbols-outlined text-[18px]">
+          <span className="material-symbols-outlined text-[17px]">
             {isFinished ? 'replay' : isActive ? 'pause' : 'play_arrow'}
           </span>
           <span>{isFinished ? 'Start Next' : isActive ? 'Pause' : 'Start'}</span>
@@ -401,9 +402,9 @@ export default function FocusTimer() {
         <button
           type="button"
           onClick={resetTimer}
-          className="h-10 px-space-md rounded-xl bg-surface-container-high text-on-surface hover:bg-surface-container font-label-md text-label-md transition-all flex items-center justify-center gap-1"
+          className="h-9 px-4 rounded-xl bg-black/[0.05] hover:bg-black/[0.08] text-gray-800 font-medium text-[13px] transition-all flex items-center justify-center gap-1"
         >
-          <span className="material-symbols-outlined text-[18px]">restart_alt</span>
+          <span className="material-symbols-outlined text-[17px]">restart_alt</span>
           <span>Reset</span>
         </button>
       </div>

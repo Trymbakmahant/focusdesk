@@ -52,43 +52,62 @@ export default function QuickNote() {
   };
 
   return (
-    <div className="md:col-span-7 flex flex-col justify-between bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm hover:shadow-md transition-shadow">
+    <div className="apple-glass apple-card-hover md:col-span-7 flex flex-col justify-between rounded-3xl p-6 border border-white/80 shadow-[0_4px_24px_rgba(0,0,0,0.04)] relative overflow-hidden transition-all">
+      {/* Ambient Apple Notes warm yellow glow */}
+      <div className="absolute top-0 right-0 w-48 h-48 bg-[#FFCC00]/10 rounded-full blur-3xl pointer-events-none" />
+
       <div>
-        <div className="flex items-center justify-between pb-space-xs">
-          <div className="flex items-center gap-space-xs">
-            <span className="material-symbols-outlined text-primary text-[20px]">edit_note</span>
-            <h2 className="font-headline-sm text-headline-sm text-on-surface">Quick Note</h2>
+        <div className="flex items-center justify-between pb-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-[#FF9500]/10 text-[#FF9500] flex items-center justify-center shadow-xs">
+              <span className="material-symbols-outlined text-[19px]">edit_note</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <h2 className="text-base font-semibold text-[#1D1D1F] tracking-tight">Quick Note</h2>
+              <span className="text-[11px] font-semibold text-[#86868B] px-2 py-0.5 rounded-full bg-black/[0.04]">Notes</span>
+            </div>
           </div>
-          <div className="flex items-center gap-space-xs">
-            <span className="font-label-sm text-label-sm text-outline">{isSaving ? 'Saving...' : 'Edited just now'}</span>
-            <button onClick={deleteNote} className="w-7 h-7 rounded-lg text-outline hover:text-error hover:bg-surface-container flex items-center justify-center transition-colors" title="Clear Note">
-              <span className="material-symbols-outlined text-[18px]">delete</span>
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] text-[#86868B] font-medium">{isSaving ? 'Saving...' : 'Edited just now'}</span>
+            <button
+              onClick={deleteNote}
+              className="w-7 h-7 rounded-full text-[#86868B] hover:text-[#FF3B30] hover:bg-[#FF3B30]/10 flex items-center justify-center transition-colors"
+              title="Clear Note"
+            >
+              <span className="material-symbols-outlined text-[16px]">delete</span>
             </button>
           </div>
         </div>
-        
+
         {isEditing ? (
           <textarea
             value={content}
             onChange={(e) => setContent(e.target.value)}
             onBlur={handleSave}
             autoFocus
-            className="w-full bg-surface-container-low/80 rounded-xl p-space-md text-on-surface font-body-md text-body-md leading-relaxed mt-space-xs outline-none focus:ring-2 focus:ring-primary-fixed resize-none min-h-[100px]"
+            className="w-full bg-white/60 border border-white/80 rounded-2xl p-4 text-[#1D1D1F] text-sm leading-relaxed mt-2 outline-none focus:ring-2 focus:ring-[#007AFF]/30 resize-none min-h-[110px] shadow-[inset_0_1px_2px_rgba(0,0,0,0.03)]"
           />
         ) : (
-          <div 
+          <div
             onClick={() => setIsEditing(true)}
-            className="bg-surface-container-low/60 rounded-xl p-space-md text-on-surface font-body-md text-body-md leading-relaxed mt-space-xs cursor-text min-h-[100px] whitespace-pre-wrap"
+            className="bg-white/50 hover:bg-white/70 border border-white/80 rounded-2xl p-4 text-[#1D1D1F] text-sm leading-relaxed mt-2 cursor-text min-h-[110px] whitespace-pre-wrap transition-all shadow-[0_1px_4px_rgba(0,0,0,0.02)]"
           >
-            {content || <span className="text-outline">Click to add a note...</span>}
+            {content || <span className="text-[#86868B] italic">Click here to jot down a quick note...</span>}
           </div>
         )}
       </div>
-      <div className="pt-space-md flex items-center justify-between text-label-sm font-label-sm">
-        <span className="text-outline">Saved locally to notes.db</span>
-        <button onClick={() => setIsEditing(true)} className="text-primary hover:text-primary-container font-label-md text-label-md flex items-center gap-1">
+
+      <div className="pt-4 flex items-center justify-between text-xs text-[#86868B] border-t border-black/5 mt-3 font-medium">
+        <div className="flex items-center gap-1.5 text-[11px]">
+          <span className="w-1.5 h-1.5 rounded-full bg-[#34C759]" />
+          <span>Saved to Apple Cloud / Supabase</span>
+        </div>
+        <button
+          onClick={() => setIsEditing(true)}
+          className="text-[#007AFF] hover:text-[#0071EB] font-semibold flex items-center gap-1 transition-colors"
+        >
           <span>Open Full Editor</span>
-          <span className="material-symbols-outlined text-[16px]">arrow_forward</span>
+          <span className="material-symbols-outlined text-[15px]">arrow_forward</span>
         </button>
       </div>
     </div>

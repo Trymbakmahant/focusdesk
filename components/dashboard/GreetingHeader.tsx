@@ -71,64 +71,64 @@ export default function GreetingHeader() {
   }, [tasks, todayString]);
 
   return (
-    <section className="flex flex-col md:flex-row md:items-end justify-between gap-space-lg">
-      <div className="flex flex-col gap-space-xs">
-        <div className="flex items-center gap-space-sm flex-wrap">
-          <h1 className="font-display-lg text-display-lg text-on-surface tracking-tight">
+    <section className="flex flex-col md:flex-row md:items-end justify-between gap-4">
+      <div className="flex flex-col gap-1.5">
+        <div className="flex items-center gap-2.5 flex-wrap">
+          <h1 className="text-[30px] md:text-[34px] font-bold tracking-tight text-gray-950 dark:text-white">
             {mounted ? `${greeting}, ${displayName}` : "Good morning, Trymbak"}
           </h1>
-          <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm font-medium">
-            macOS Native
+          <span className="inline-flex items-center gap-1 px-2.5 py-0.5 rounded-full bg-[#007AFF]/10 dark:bg-[#007AFF]/20 text-[#007AFF] dark:text-[#0A84FF] font-semibold text-[11px] border border-[#007AFF]/15 dark:border-[#007AFF]/30 shadow-xs">
+            <span className="w-1.5 h-1.5 rounded-full bg-[#007AFF] animate-pulse" />
+            Sequoia Flow
           </span>
         </div>
-        <div className="flex flex-wrap items-center gap-space-xs font-body-lg text-body-lg text-on-surface-variant">
+        <div className="flex flex-wrap items-center gap-2 text-[13px] text-gray-500 dark:text-gray-400">
           <span>{mounted && currentDate ? currentDate : "Today"}</span>
-          <span className="text-outline">·</span>
-          <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container text-on-surface text-body-sm font-body-sm">
-            <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-            <span>{tasksRemaining} {tasksRemaining === 1 ? 'task' : 'tasks'} remaining today</span>
-            <span className="text-outline">·</span>
-            <span className="text-primary font-label-sm font-medium">{formattedTodayTime} deep work logged</span>
+          <span className="text-gray-300 dark:text-gray-600">·</span>
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/80 dark:bg-white/10 border border-black/5 dark:border-white/10 shadow-xs text-gray-800 dark:text-gray-200 text-[12px] font-medium">
+            <span className="w-2 h-2 rounded-full bg-[#34C759]" />
+            <span>{tasksRemaining} {tasksRemaining === 1 ? 'task' : 'tasks'} remaining</span>
+            <span className="text-gray-300 dark:text-gray-600">·</span>
+            <span className="text-[#007AFF] dark:text-[#0A84FF] font-semibold">{formattedTodayTime} logged</span>
           </div>
         </div>
       </div>
 
-      <div className="flex items-center gap-space-sm self-start md:self-end flex-wrap">
-        <div
-          className="flex items-center gap-space-xs bg-surface-container-lowest shadow-sm px-space-md py-1.5 rounded-xl text-on-surface w-56 hover:shadow transition-shadow border border-transparent"
-        >
-          <span className="material-symbols-outlined text-[18px] text-outline">search</span>
-          <span className="font-body-sm text-body-sm text-outline flex-1">⌘K Search</span>
-          <span className="font-code-kbd text-code-kbd px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant">⌘K</span>
+      <div className="flex items-center gap-2.5 self-start md:self-end flex-wrap">
+        {/* Quick Shortcut Badges */}
+        <div className="hidden lg:flex items-center gap-2 text-[12px] text-gray-500 dark:text-gray-400">
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white/70 dark:bg-white/[0.05] border border-black/5 dark:border-white/10 shadow-xs">
+            <span className="text-gray-400 dark:text-gray-500">Task:</span>
+            <kbd className="apple-keycap font-mono text-[10px] font-bold px-1 py-0.2 rounded text-gray-700 dark:text-gray-300">⌘T</kbd>
+          </span>
+          <span className="inline-flex items-center gap-1 px-2.5 py-1 rounded-xl bg-white/70 dark:bg-white/[0.05] border border-black/5 dark:border-white/10 shadow-xs">
+            <span className="text-gray-400 dark:text-gray-500">Timer:</span>
+            <kbd className="apple-keycap font-mono text-[10px] font-bold px-1 py-0.2 rounded text-gray-700 dark:text-gray-300">⌘P</kbd>
+          </span>
         </div>
 
-        <div className="relative">
-          <button className="w-9 h-9 rounded-xl bg-surface-container-lowest text-on-surface-variant hover:text-on-surface shadow-sm flex items-center justify-center transition-all">
-            <span className="material-symbols-outlined text-[20px]">notifications</span>
-          </button>
-          <span className="absolute top-1.5 right-1.5 w-2 h-2 rounded-full bg-secondary ring-2 ring-surface"></span>
-        </div>
-        <div className="flex items-center p-1 rounded-xl bg-surface-container-low shadow-sm">
+        {/* Apple Segmented View Mode Switcher */}
+        <div className="apple-segmented-bg p-1 rounded-full flex items-center border border-black/5 dark:border-white/10">
           <button
             onClick={() => setViewMode("canvas")}
-            className={`px-2.5 py-1 rounded-lg shadow-xs flex items-center gap-1 text-label-sm font-label-sm transition-all ${
+            className={`px-3 py-1 rounded-full flex items-center gap-1.5 text-[11px] font-semibold transition-all ${
               viewMode === "canvas"
-                ? "bg-surface-container-lowest text-primary"
-                : "text-on-surface-variant hover:text-on-surface"
+                ? "bg-white dark:bg-[#3A3A3C] text-[#007AFF] dark:text-[#0A84FF] shadow-[0_1px_3px_rgba(0,0,0,0.12)]"
+                : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
             }`}
           >
-            <span className="material-symbols-outlined text-[16px]">grid_view</span>
+            <span className="material-symbols-outlined text-[14px]">grid_view</span>
             <span>Canvas</span>
           </button>
           <button
             onClick={() => setViewMode("feed")}
-            className={`px-2.5 py-1 rounded-lg flex items-center gap-1 text-label-sm font-label-sm transition-all ${
+            className={`px-3 py-1 rounded-full flex items-center gap-1.5 text-[11px] font-semibold transition-all ${
               viewMode === "feed"
-                ? "bg-surface-container-lowest text-primary shadow-xs"
-                : "text-on-surface-variant hover:text-on-surface"
+                ? "bg-white dark:bg-[#3A3A3C] text-[#007AFF] dark:text-[#0A84FF] shadow-[0_1px_3px_rgba(0,0,0,0.12)]"
+                : "text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white"
             }`}
           >
-            <span className="material-symbols-outlined text-[16px]">view_agenda</span>
+            <span className="material-symbols-outlined text-[14px]">view_agenda</span>
             <span>Feed</span>
           </button>
         </div>

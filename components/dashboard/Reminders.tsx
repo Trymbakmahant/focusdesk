@@ -86,45 +86,96 @@ export default function Reminders() {
   const activeCount = reminders.filter(r => !r.completed).length;
 
   return (
-    <div className="md:col-span-5 flex flex-col justify-between bg-surface-container-lowest rounded-2xl p-space-lg shadow-sm hover:shadow-md transition-shadow">
+    <div className="apple-glass apple-card-hover md:col-span-5 flex flex-col justify-between rounded-3xl p-6 border border-white/80 shadow-[0_4px_24px_rgba(0,0,0,0.04)] relative overflow-hidden transition-all">
+      {/* Ambient Apple Reminders glow */}
+      <div className="absolute top-0 right-0 w-48 h-48 bg-[#FF9500]/10 rounded-full blur-3xl pointer-events-none" />
+
       <div>
-        <div className="flex items-center justify-between pb-space-sm">
-          <div className="flex items-center gap-space-xs">
-            <span className="material-symbols-outlined text-primary text-[20px]">notifications_active</span>
-            <h2 className="font-headline-sm text-headline-sm text-on-surface">Reminders</h2>
+        <div className="flex items-center justify-between pb-3">
+          <div className="flex items-center gap-2.5">
+            <div className="w-8 h-8 rounded-xl bg-[#FF9500]/10 text-[#FF9500] flex items-center justify-center shadow-xs">
+              <span className="material-symbols-outlined text-[19px]">notifications_active</span>
+            </div>
+            <div className="flex items-center gap-2">
+              <h2 className="text-base font-semibold text-[#1D1D1F] tracking-tight">Reminders</h2>
+              <span className="text-[11px] font-semibold text-[#86868B] px-2 py-0.5 rounded-full bg-black/[0.04]">Alerts</span>
+            </div>
           </div>
-          <button className="w-7 h-7 rounded-lg text-outline hover:bg-surface-container hover:text-on-surface flex items-center justify-center">
-            <span className="material-symbols-outlined text-[18px]">more_horiz</span>
+          <button
+            onClick={addReminder}
+            className="w-7 h-7 rounded-full text-[#86868B] hover:text-[#007AFF] hover:bg-black/5 flex items-center justify-center transition-colors"
+            title="Add Reminder"
+          >
+            <span className="material-symbols-outlined text-[18px]">add</span>
           </button>
         </div>
-        <div className="flex flex-col gap-space-sm max-h-64 overflow-y-auto">
-          {reminders.map(reminder => (
-            <div key={reminder.id} className={`flex items-start gap-space-sm p-space-sm rounded-xl transition-all group ${reminder.completed ? 'bg-surface-container-low/40 opacity-50' : 'bg-surface-container-low/70'}`}>
-              <span className="text-primary text-[18px] shrink-0">🔔</span>
+
+        <div className="flex flex-col gap-2 max-h-64 overflow-y-auto pr-0.5">
+          {reminders.map((reminder) => (
+            <div
+              key={reminder.id}
+              className={`flex items-center gap-3 p-3 rounded-2xl transition-all group border ${
+                reminder.completed
+                  ? 'bg-white/30 border-black/[0.03] opacity-60'
+                  : 'bg-white/60 hover:bg-white/80 border-white/80 shadow-[0_1px_4px_rgba(0,0,0,0.02)]'
+              }`}
+            >
+              {/* Apple Reminders circular checkbox ring */}
+              <button
+                onClick={() => toggleReminder(reminder.id, reminder.completed)}
+                className={`w-5 h-5 rounded-full border-2 flex items-center justify-center shrink-0 transition-all ${
+                  reminder.completed
+                    ? 'border-[#007AFF] bg-[#007AFF] text-white'
+                    : 'border-[#C7C7CC] hover:border-[#007AFF] bg-white'
+                }`}
+                title={reminder.completed ? 'Mark incomplete' : 'Mark complete'}
+              >
+                {reminder.completed && (
+                  <span className="material-symbols-outlined text-[13px] font-bold">check</span>
+                )}
+              </button>
+
               <div className="flex flex-col flex-1 min-w-0">
-                <span className={`font-label-md text-label-md truncate ${reminder.completed ? 'line-through text-outline' : 'text-on-surface'}`}>{reminder.title}</span>
-                <span className="font-body-sm text-body-sm text-outline">{reminder.time}</span>
-              </div>
-              
-              <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                <button onClick={() => editReminder(reminder.id, reminder.title, reminder.time)} className="text-outline hover:text-primary transition-colors">
-                  <span className="material-symbols-outlined text-[16px]">edit</span>
-                </button>
-                <button onClick={() => deleteReminder(reminder.id)} className="text-outline hover:text-error transition-colors">
-                  <span className="material-symbols-outlined text-[16px]">delete</span>
-                </button>
+                <span
+                  className={`text-xs font-medium truncate ${
+                    reminder.completed ? 'line-through text-[#86868B]' : 'text-[#1D1D1F]'
+                  }`}
+                >
+                  {reminder.title}
+                </span>
+                <span className="text-[11px] text-[#86868B] font-medium">{reminder.time}</span>
               </div>
 
-              <button onClick={() => toggleReminder(reminder.id, reminder.completed)} className={`hover:text-primary shrink-0 ml-1 ${reminder.completed ? 'text-primary' : 'text-outline'}`}>
-                <span className="material-symbols-outlined text-[18px]">done</span>
-              </button>
+              <div className="flex items-center gap-1 shrink-0 opacity-0 group-hover:opacity-100 transition-opacity">
+                <button
+                  onClick={() => editReminder(reminder.id, reminder.title, reminder.time)}
+                  className="w-6 h-6 rounded-full text-[#86868B] hover:text-[#007AFF] hover:bg-black/5 flex items-center justify-center transition-colors"
+                  title="Edit"
+                >
+                  <span className="material-symbols-outlined text-[14px]">edit</span>
+                </button>
+                <button
+                  onClick={() => deleteReminder(reminder.id)}
+                  className="w-6 h-6 rounded-full text-[#86868B] hover:text-[#FF3B30] hover:bg-[#FF3B30]/10 flex items-center justify-center transition-colors"
+                  title="Delete"
+                >
+                  <span className="material-symbols-outlined text-[14px]">delete</span>
+                </button>
+              </div>
             </div>
           ))}
         </div>
       </div>
-      <div className="pt-space-md flex items-center justify-between text-label-sm font-label-sm mt-4">
-        <span className="text-outline">{activeCount} active trigger{activeCount !== 1 ? 's' : ''}</span>
-        <button onClick={addReminder} className="text-primary hover:underline">+ New Reminder</button>
+
+      <div className="pt-4 flex items-center justify-between text-xs text-[#86868B] border-t border-black/5 mt-3 font-medium">
+        <span className="text-[11px]">{activeCount} active reminder{activeCount !== 1 ? 's' : ''}</span>
+        <button
+          onClick={addReminder}
+          className="text-[#007AFF] hover:text-[#0071EB] font-semibold flex items-center gap-1 transition-colors"
+        >
+          <span className="material-symbols-outlined text-[14px]">add</span>
+          <span>New Reminder</span>
+        </button>
       </div>
     </div>
   );
