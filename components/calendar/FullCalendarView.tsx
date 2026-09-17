@@ -168,33 +168,33 @@ export default function FullCalendarView({
       }`}
     >
       {/* Top Controls Bar */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 bg-surface-container-lowest p-4 rounded-2xl border border-outline-variant/20 shadow-sm">
+      <div className="apple-glass rounded-2xl p-4 border border-black/5 dark:border-white/10 shadow-sm flex flex-col md:flex-row md:items-center justify-between gap-4">
         {/* Month Navigation */}
         <div className="flex items-center gap-3">
-          <div className="flex items-center gap-1 bg-surface-container/70 p-1 rounded-xl">
+          <div className="apple-segmented-bg p-1 rounded-xl flex items-center gap-1">
             <button
               onClick={prevMonth}
               title="Previous Month"
-              className="w-8 h-8 rounded-lg text-outline hover:text-on-surface hover:bg-surface flex items-center justify-center transition-colors"
+              className="w-8 h-8 rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-white/80 dark:hover:bg-white/10 flex items-center justify-center transition-colors cursor-pointer"
             >
               <span className="material-symbols-outlined text-[18px]">chevron_left</span>
             </button>
             <button
               onClick={goToToday}
-              className="px-3 h-8 rounded-lg text-xs font-semibold text-on-surface hover:bg-surface transition-colors"
+              className="px-3 h-8 rounded-lg text-xs font-semibold text-gray-800 dark:text-gray-200 hover:bg-white/80 dark:hover:bg-white/15 transition-colors cursor-pointer"
             >
               Today
             </button>
             <button
               onClick={nextMonth}
               title="Next Month"
-              className="w-8 h-8 rounded-lg text-outline hover:text-on-surface hover:bg-surface flex items-center justify-center transition-colors"
+              className="w-8 h-8 rounded-lg text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-white/80 dark:hover:bg-white/10 flex items-center justify-center transition-colors cursor-pointer"
             >
               <span className="material-symbols-outlined text-[18px]">chevron_right</span>
             </button>
           </div>
 
-          <h2 className="font-display-lg text-xl font-bold text-on-surface tracking-tight min-w-[180px]">
+          <h2 className="text-xl font-bold text-gray-900 dark:text-white tracking-tight min-w-[180px]">
             {currentMonthName}
           </h2>
         </div>
@@ -203,7 +203,7 @@ export default function FullCalendarView({
         <div className="flex items-center gap-2.5 flex-wrap">
           {/* Search bar */}
           <div className="relative">
-            <span className="material-symbols-outlined absolute left-2.5 top-2 text-outline text-[16px]">
+            <span className="material-symbols-outlined absolute left-2.5 top-2 text-gray-400 dark:text-gray-500 text-[16px]">
               search
             </span>
             <input
@@ -211,18 +211,18 @@ export default function FullCalendarView({
               placeholder="Search meetings..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
-              className="pl-8 pr-3 py-1.5 rounded-xl bg-surface-container border border-outline-variant/30 text-xs text-on-surface placeholder:text-outline/60 focus:outline-none focus:border-primary w-40 sm:w-52"
+              className="pl-8 pr-3 py-1.5 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-xs text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:border-[#007AFF] w-40 sm:w-52 transition-all"
             />
           </div>
 
           {/* View Mode Switcher */}
-          <div className="flex bg-surface-container/70 p-1 rounded-xl text-xs font-semibold">
+          <div className="apple-segmented-bg p-1 rounded-xl flex text-xs font-semibold">
             <button
               onClick={() => setViewMode('month')}
-              className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all ${
+              className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all cursor-pointer ${
                 viewMode === 'month'
-                  ? 'bg-surface text-primary shadow-xs'
-                  : 'text-outline hover:text-on-surface'
+                  ? 'bg-white dark:bg-[#2C2C2E] text-[#007AFF] dark:text-[#0A84FF] shadow-xs'
+                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
               }`}
             >
               <span className="material-symbols-outlined text-[15px]">calendar_view_month</span>
@@ -230,10 +230,10 @@ export default function FullCalendarView({
             </button>
             <button
               onClick={() => setViewMode('agenda')}
-              className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all ${
+              className={`px-3 py-1.5 rounded-lg flex items-center gap-1.5 transition-all cursor-pointer ${
                 viewMode === 'agenda'
-                  ? 'bg-surface text-primary shadow-xs'
-                  : 'text-outline hover:text-on-surface'
+                  ? 'bg-white dark:bg-[#2C2C2E] text-[#007AFF] dark:text-[#0A84FF] shadow-xs'
+                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
               }`}
             >
               <span className="material-symbols-outlined text-[15px]">view_agenda</span>
@@ -245,7 +245,7 @@ export default function FullCalendarView({
           <button
             onClick={() => setIsExpanded(!isExpanded)}
             title={isExpanded ? 'Collapse View' : 'Full Canvas View'}
-            className="w-9 h-9 rounded-xl bg-surface-container hover:bg-surface-container-high border border-outline-variant/30 text-outline hover:text-on-surface flex items-center justify-center transition-colors"
+            className="w-9 h-9 rounded-xl bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 border border-black/10 dark:border-white/10 text-gray-600 dark:text-gray-300 flex items-center justify-center transition-colors cursor-pointer"
           >
             <span className="material-symbols-outlined text-[18px]">
               {isExpanded ? 'close_fullscreen' : 'open_in_full'}
@@ -255,7 +255,7 @@ export default function FullCalendarView({
           {/* Import Google Calendar Button */}
           <button
             onClick={onOpenImportModal}
-            className="px-3.5 py-2 rounded-xl bg-primary hover:bg-primary-container text-on-primary text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5"
+            className="px-3.5 py-2 rounded-xl bg-[#007AFF] hover:bg-[#0062cc] text-white text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
           >
             <div className="w-4 h-4 bg-white rounded p-0.5 flex items-center justify-center shrink-0">
               <svg viewBox="0 0 24 24" className="w-3.5 h-3.5">
@@ -274,7 +274,7 @@ export default function FullCalendarView({
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 flex-wrap">
         {/* Category Pills */}
         <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
-          <span className="text-xs text-outline mr-1 font-medium">Category:</span>
+          <span className="text-xs text-gray-500 dark:text-gray-400 mr-1 font-medium">Category:</span>
           {(['All', 'Work', 'Meeting', 'Focus', 'Personal', 'Design'] as (EventCategory | 'All')[]).map(
             (cat) => {
               const isSelected = filterCategory === cat;
@@ -282,10 +282,10 @@ export default function FullCalendarView({
                 <button
                   key={cat}
                   onClick={() => setFilterCategory(cat)}
-                  className={`px-3 py-1 rounded-xl text-xs font-medium border transition-all ${
+                  className={`px-3 py-1 rounded-xl text-xs font-medium border transition-all cursor-pointer ${
                     isSelected
-                      ? 'bg-primary text-on-primary border-primary shadow-xs font-semibold'
-                      : 'bg-surface-container-lowest border-outline-variant/30 text-outline hover:text-on-surface'
+                      ? 'bg-[#007AFF] text-white border-[#007AFF] shadow-xs font-semibold'
+                      : 'apple-glass border-black/5 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white hover:bg-white/80 dark:hover:bg-white/10'
                   }`}
                 >
                   {cat}
@@ -296,23 +296,23 @@ export default function FullCalendarView({
         </div>
 
         {/* Status Filter: All, Active, Finished */}
-        <div className="flex items-center gap-1 bg-surface-container/60 p-1 rounded-xl border border-outline-variant/20 text-xs self-start sm:self-auto">
-          <span className="text-[11px] text-outline px-1.5 font-medium">Status:</span>
+        <div className="apple-segmented-bg p-1 rounded-xl border border-black/5 dark:border-white/10 text-xs flex items-center gap-1 self-start sm:self-auto">
+          <span className="text-[11px] text-gray-500 dark:text-gray-400 px-1.5 font-medium">Status:</span>
           {(['All', 'Active', 'Finished'] as StatusFilter[]).map((st) => (
             <button
               key={st}
               onClick={() => setStatusFilter(st)}
-              className={`px-2.5 py-1 rounded-lg transition-all font-medium flex items-center gap-1.5 ${
+              className={`px-2.5 py-1 rounded-lg transition-all font-medium flex items-center gap-1.5 cursor-pointer ${
                 statusFilter === st
-                  ? 'bg-surface text-on-surface font-semibold shadow-xs'
-                  : 'text-outline hover:text-on-surface'
+                  ? 'bg-white dark:bg-[#2C2C2E] text-gray-900 dark:text-white font-semibold shadow-xs'
+                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
               }`}
             >
               {st === 'Finished' && (
-                <span className="material-symbols-outlined text-[13px] text-emerald-400">check_circle</span>
+                <span className="material-symbols-outlined text-[13px] text-emerald-500 dark:text-emerald-400">check_circle</span>
               )}
               {st === 'Active' && (
-                <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+                <span className="w-1.5 h-1.5 rounded-full bg-[#007AFF] dark:bg-[#0A84FF]" />
               )}
               <span>{st}</span>
             </button>
@@ -324,9 +324,9 @@ export default function FullCalendarView({
       {viewMode === 'month' ? (
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
           {/* Calendar Grid (8 cols on large screen) */}
-          <div className="lg:col-span-8 bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-4 shadow-sm flex flex-col gap-2">
+          <div className="lg:col-span-8 apple-glass border border-black/5 dark:border-white/10 rounded-2xl p-4 shadow-sm flex flex-col gap-2">
             {/* Weekday Names Header */}
-            <div className="grid grid-cols-7 text-center font-mono text-xs font-semibold text-outline pb-2 border-b border-outline-variant/20">
+            <div className="grid grid-cols-7 text-center font-mono text-xs font-semibold text-gray-400 dark:text-gray-500 pb-2 border-b border-black/5 dark:border-white/10">
               <span>SUN</span>
               <span>MON</span>
               <span>TUE</span>
@@ -349,10 +349,10 @@ export default function FullCalendarView({
                     onClick={() => setSelectedDateStr(cell.dateStr)}
                     className={`min-h-[88px] p-1.5 rounded-xl border flex flex-col justify-between cursor-pointer transition-all ${
                       isSelected
-                        ? 'border-primary ring-2 ring-primary/40 bg-surface-container/60 shadow-xs'
+                        ? 'border-[#007AFF] ring-2 ring-[#007AFF]/30 bg-blue-500/10 dark:bg-blue-500/15 shadow-xs'
                         : cell.isCurrentMonth
-                        ? 'border-outline-variant/20 bg-surface-container/25 hover:bg-surface-container/50 hover:border-outline-variant/40'
-                        : 'border-outline-variant/10 bg-surface-container-lowest/40 opacity-40 hover:opacity-75'
+                        ? 'border-black/5 dark:border-white/5 bg-white/40 dark:bg-white/[0.03] hover:bg-white/80 dark:hover:bg-white/[0.08] hover:border-black/10 dark:hover:border-white/10'
+                        : 'border-black/[0.03] dark:border-white/[0.02] bg-black/[0.01] dark:bg-white/[0.01] opacity-40 hover:opacity-75'
                     }`}
                   >
                     {/* Date Number Badge */}
@@ -360,10 +360,10 @@ export default function FullCalendarView({
                       <span
                         className={`w-6 h-6 rounded-full flex items-center justify-center text-xs font-medium font-mono ${
                           isToday
-                            ? 'bg-primary text-on-primary font-bold shadow-xs'
+                            ? 'bg-[#007AFF] text-white font-bold shadow-xs'
                             : isSelected
-                            ? 'text-primary font-bold'
-                            : 'text-on-surface'
+                            ? 'text-[#007AFF] dark:text-[#0A84FF] font-bold'
+                            : 'text-gray-900 dark:text-gray-200'
                         }`}
                       >
                         {cell.dayNumber}
@@ -371,7 +371,7 @@ export default function FullCalendarView({
 
                       {/* Dot Count if multiple events */}
                       {dayEvents.length > 0 && (
-                        <span className="text-[10px] font-mono text-outline font-semibold">
+                        <span className="text-[10px] font-mono text-gray-500 dark:text-gray-400 font-semibold">
                           {dayEvents.length}
                         </span>
                       )}
@@ -391,14 +391,14 @@ export default function FullCalendarView({
                             title={`${evt.startTime} — ${evt.title} (${isFinished ? 'Finished' : isOngoing ? 'Happening Now' : 'Upcoming'})`}
                             className={`px-1.5 py-0.5 rounded text-[10px] font-medium truncate flex items-center gap-1 border transition-all ${
                               isFinished
-                                ? 'bg-surface-container/50 text-outline/80 border-outline-variant/20 line-through decoration-outline/50 opacity-60 hover:opacity-100 hover:no-underline'
+                                ? 'bg-black/5 dark:bg-white/5 text-gray-400 dark:text-gray-500 border-black/5 dark:border-white/5 line-through opacity-60 hover:opacity-100 hover:no-underline'
                                 : isOngoing
-                                ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/40 ring-1 ring-emerald-500/30 font-semibold'
+                                ? 'bg-emerald-500/15 text-emerald-700 dark:text-emerald-300 border-emerald-500/40 ring-1 ring-emerald-500/30 font-semibold'
                                 : `${style.bg} ${style.text} ${style.border}`
                             }`}
                           >
                             {isFinished ? (
-                              <span className="material-symbols-outlined text-[11px] text-emerald-400 shrink-0 no-underline">
+                              <span className="material-symbols-outlined text-[11px] text-emerald-500 dark:text-emerald-400 shrink-0 no-underline">
                                 check
                               </span>
                             ) : isOngoing ? (
@@ -412,7 +412,7 @@ export default function FullCalendarView({
                       })}
 
                       {dayEvents.length > 2 && (
-                        <span className="text-[9px] text-outline px-1 font-mono">
+                        <span className="text-[9px] text-gray-400 dark:text-gray-500 px-1 font-mono">
                           +{dayEvents.length - 2} more
                         </span>
                       )}
@@ -424,22 +424,22 @@ export default function FullCalendarView({
           </div>
 
           {/* Selected Day Agenda Drawer (4 cols on large screen) */}
-          <div className="lg:col-span-4 bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-5 shadow-sm flex flex-col gap-4 sticky top-24">
-            <div className="border-b border-outline-variant/20 pb-3">
-              <span className="text-[11px] font-semibold text-primary uppercase tracking-wider">
+          <div className="lg:col-span-4 apple-glass border border-black/5 dark:border-white/10 rounded-2xl p-5 shadow-sm flex flex-col gap-4 sticky top-24">
+            <div className="border-b border-black/5 dark:border-white/10 pb-3">
+              <span className="text-[11px] font-semibold text-[#007AFF] dark:text-[#0A84FF] uppercase tracking-wider">
                 Daily Schedule
               </span>
-              <h3 className="font-headline-sm text-base font-bold text-on-surface mt-0.5 leading-snug">
+              <h3 className="font-headline-sm text-base font-bold text-gray-900 dark:text-white mt-0.5 leading-snug">
                 {selectedDayFormatted}
               </h3>
-              <span className="text-xs text-outline">
+              <span className="text-xs text-gray-500 dark:text-gray-400">
                 {selectedDayEvents.length} event{selectedDayEvents.length !== 1 ? 's' : ''} scheduled
               </span>
             </div>
 
             {/* List of events on this day */}
             {selectedDayEvents.length === 0 ? (
-              <div className="py-12 flex flex-col items-center text-center gap-2 text-outline">
+              <div className="py-12 flex flex-col items-center text-center gap-2 text-gray-400 dark:text-gray-500">
                 <span className="material-symbols-outlined text-[32px] opacity-40">event_busy</span>
                 <span className="text-xs">No meetings or events on this date.</span>
               </div>
@@ -456,15 +456,15 @@ export default function FullCalendarView({
                       key={evt.id}
                       className={`p-3.5 rounded-xl border flex flex-col gap-2 transition-all ${
                         isFinished
-                          ? 'bg-surface-container/20 border-outline-variant/15 opacity-75 hover:opacity-100'
+                          ? 'bg-black/[0.02] dark:bg-white/[0.02] border-black/5 dark:border-white/5 opacity-70 hover:opacity-100'
                           : isOngoing
-                          ? 'bg-emerald-500/10 border-emerald-500/30 ring-1 ring-emerald-500/20'
-                          : 'bg-surface-container/40 border-outline-variant/25 hover:border-outline-variant/60'
+                          ? 'bg-emerald-500/10 dark:bg-emerald-500/15 border-emerald-500/30 ring-1 ring-emerald-500/20'
+                          : 'bg-white/60 dark:bg-white/[0.04] border-black/5 dark:border-white/10 hover:border-black/15 dark:hover:border-white/20'
                       }`}
                     >
                       <div className="flex items-start justify-between gap-2">
                         <span className={`text-xs font-semibold leading-tight ${
-                          isFinished ? 'text-on-surface/70 line-through decoration-outline/50' : 'text-on-surface'
+                          isFinished ? 'text-gray-500 dark:text-gray-400 line-through' : 'text-gray-900 dark:text-white'
                         }`}>
                           {evt.title}
                         </span>
@@ -472,12 +472,12 @@ export default function FullCalendarView({
                         <div className="flex items-center gap-1.5 shrink-0">
                           {/* Finished / Ongoing Status Pill */}
                           {isFinished ? (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-outline text-[10px] font-medium border border-outline-variant/30">
-                              <span className="material-symbols-outlined text-[12px] text-emerald-400">check_circle</span>
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/10 text-gray-500 dark:text-gray-400 text-[10px] font-medium border border-black/5 dark:border-white/5">
+                              <span className="material-symbols-outlined text-[12px] text-emerald-500 dark:text-emerald-400">check_circle</span>
                               <span>Finished</span>
                             </span>
                           ) : isOngoing ? (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-semibold border border-emerald-500/40">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-[10px] font-semibold border border-emerald-500/40">
                               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                               <span>Happening Now</span>
                             </span>
@@ -490,26 +490,26 @@ export default function FullCalendarView({
                       </div>
 
                       <div className="flex items-center gap-1.5 text-xs font-medium">
-                        <span className="material-symbols-outlined text-[15px] text-outline">schedule</span>
-                        <span className={isFinished ? 'text-outline line-through decoration-outline/40' : isOngoing ? 'text-emerald-400 font-semibold' : 'text-primary'}>
+                        <span className="material-symbols-outlined text-[15px] text-gray-400 dark:text-gray-500">schedule</span>
+                        <span className={isFinished ? 'text-gray-400 dark:text-gray-500 line-through' : isOngoing ? 'text-emerald-600 dark:text-emerald-400 font-semibold' : 'text-[#007AFF] dark:text-[#0A84FF]'}>
                           {evt.startTime} — {evt.endTime}
                         </span>
                         {isFinished && (
-                          <span className="text-[10px] text-outline font-normal font-mono">
+                          <span className="text-[10px] text-gray-400 dark:text-gray-500 font-normal font-mono">
                             · Ended
                           </span>
                         )}
                       </div>
 
                       {evt.location && (
-                        <div className="flex items-center gap-1.5 text-[11px] text-outline">
+                        <div className="flex items-center gap-1.5 text-[11px] text-gray-500 dark:text-gray-400">
                           <span className="material-symbols-outlined text-[14px]">location_on</span>
                           <span className="truncate">{evt.location}</span>
                         </div>
                       )}
 
                       {evt.description && (
-                        <p className="text-[11px] text-outline/80 leading-relaxed line-clamp-3">
+                        <p className="text-[11px] text-gray-500 dark:text-gray-400 leading-relaxed line-clamp-3">
                           {evt.description}
                         </p>
                       )}
@@ -521,8 +521,8 @@ export default function FullCalendarView({
                           rel="noopener noreferrer"
                           className={`mt-1 h-7 px-3 rounded-lg text-[11px] font-medium flex items-center justify-center gap-1.5 transition-colors ${
                             isFinished
-                              ? 'bg-surface-container/60 hover:bg-surface-container text-outline border border-outline-variant/20'
-                              : 'bg-primary/15 hover:bg-primary text-primary hover:text-on-primary'
+                              ? 'bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-gray-500 dark:text-gray-400 border border-black/5 dark:border-white/5'
+                              : 'bg-[#007AFF]/15 hover:bg-[#007AFF] text-[#007AFF] hover:text-white'
                           }`}
                         >
                           <span className="material-symbols-outlined text-[14px]">videocam</span>
@@ -538,16 +538,16 @@ export default function FullCalendarView({
         </div>
       ) : (
         /* Agenda Timeline View */
-        <div className="bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-6 shadow-sm flex flex-col gap-4">
-          <div className="flex items-center justify-between border-b border-outline-variant/20 pb-3">
-            <h3 className="font-headline-sm text-base font-bold text-on-surface">
+        <div className="apple-glass border border-black/5 dark:border-white/10 rounded-2xl p-6 shadow-sm flex flex-col gap-4">
+          <div className="flex items-center justify-between border-b border-black/5 dark:border-white/10 pb-3">
+            <h3 className="font-headline-sm text-base font-bold text-gray-900 dark:text-white">
               Upcoming Schedule ({filteredEvents.length} Events)
             </h3>
-            <span className="text-xs text-outline font-mono">Sorted chronologically</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400 font-mono">Sorted chronologically</span>
           </div>
 
           {filteredEvents.length === 0 ? (
-            <div className="py-16 text-center text-outline flex flex-col items-center gap-2">
+            <div className="py-16 text-center text-gray-400 dark:text-gray-500 flex flex-col items-center gap-2">
               <span className="material-symbols-outlined text-4xl opacity-30">event_busy</span>
               <p className="text-sm">No events found matching your filter criteria.</p>
             </div>
@@ -565,21 +565,21 @@ export default function FullCalendarView({
                     key={evt.id}
                     className={`p-4 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-colors ${
                       isFinished
-                        ? 'bg-surface-container/20 border-outline-variant/15 opacity-75 hover:opacity-95'
+                        ? 'bg-black/[0.02] dark:bg-white/[0.02] border-black/5 dark:border-white/5 opacity-70 hover:opacity-95'
                         : isOngoing
-                        ? 'bg-emerald-500/10 border-emerald-500/30 ring-1 ring-emerald-500/20'
+                        ? 'bg-emerald-500/10 dark:bg-emerald-500/15 border-emerald-500/30 ring-1 ring-emerald-500/20'
                         : isToday
-                        ? 'bg-primary-fixed/15 border-primary/30'
-                        : 'bg-surface-container/30 border-outline-variant/20 hover:border-outline-variant/50'
+                        ? 'bg-blue-500/10 dark:bg-blue-500/15 border-blue-500/30'
+                        : 'bg-white/60 dark:bg-white/[0.04] border-black/5 dark:border-white/10 hover:border-black/15 dark:hover:border-white/20'
                     }`}
                   >
                     <div className="flex items-start sm:items-center gap-3 min-w-0 flex-1">
                       <div className={`w-12 h-12 rounded-xl flex flex-col items-center justify-center shrink-0 border font-mono ${
                         isFinished
-                          ? 'bg-surface-container/40 border-outline-variant/15 text-outline'
+                          ? 'bg-black/5 dark:bg-white/5 border-black/5 dark:border-white/5 text-gray-400 dark:text-gray-500'
                           : isOngoing
-                          ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400'
-                          : 'bg-surface-container border-outline-variant/20'
+                          ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-600 dark:text-emerald-400'
+                          : 'bg-black/5 dark:bg-white/5 border-black/5 dark:border-white/10 text-gray-900 dark:text-white'
                       }`}>
                         <span className="text-[10px] uppercase font-semibold leading-none">
                           {new Date(`${evt.date}T00:00:00`).toLocaleDateString('en-US', { month: 'short' })}
@@ -591,41 +591,41 @@ export default function FullCalendarView({
 
                       <div className="flex flex-col min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className={`font-semibold text-sm ${isFinished ? 'text-on-surface/75 line-through decoration-outline/50' : 'text-on-surface'}`}>
+                          <span className={`font-semibold text-sm ${isFinished ? 'text-gray-500 dark:text-gray-400 line-through' : 'text-gray-900 dark:text-white'}`}>
                             {evt.title}
                           </span>
                           <span className={`px-2 py-0.5 rounded text-[10px] font-medium border ${style.bg} ${style.text} ${style.border}`}>
                             {evt.category}
                           </span>
                           {isFinished ? (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-outline text-[10px] font-medium border border-outline-variant/30">
-                              <span className="material-symbols-outlined text-[12px] text-emerald-400">check_circle</span>
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-black/5 dark:bg-white/10 text-gray-500 dark:text-gray-400 text-[10px] font-medium border border-black/5 dark:border-white/5">
+                              <span className="material-symbols-outlined text-[12px] text-emerald-500 dark:text-emerald-400">check_circle</span>
                               <span>Finished</span>
                             </span>
                           ) : isOngoing ? (
-                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-semibold border border-emerald-500/40">
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-700 dark:text-emerald-300 text-[10px] font-semibold border border-emerald-500/40">
                               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
                               <span>Happening Now</span>
                             </span>
                           ) : isToday ? (
-                            <span className="px-2 py-0.5 rounded bg-primary text-on-primary text-[10px] font-bold">
+                            <span className="px-2 py-0.5 rounded bg-[#007AFF] text-white text-[10px] font-bold">
                               Today
                             </span>
                           ) : null}
                         </div>
 
                         <div className="flex items-center gap-2 text-xs mt-1 flex-wrap">
-                          <span className={`font-medium ${isFinished ? 'text-outline line-through decoration-outline/40' : isOngoing ? 'text-emerald-400 font-semibold' : 'text-primary'}`}>
+                          <span className={`font-medium ${isFinished ? 'text-gray-400 dark:text-gray-500 line-through' : isOngoing ? 'text-emerald-600 dark:text-emerald-400 font-semibold' : 'text-[#007AFF] dark:text-[#0A84FF]'}`}>
                             {evt.startTime} — {evt.endTime}
                           </span>
                           {evt.location && (
                             <>
-                              <span className="text-outline">·</span>
-                              <span className="truncate max-w-xs text-outline">{evt.location}</span>
+                              <span className="text-gray-400 dark:text-gray-500">·</span>
+                              <span className="truncate max-w-xs text-gray-500 dark:text-gray-400">{evt.location}</span>
                             </>
                           )}
                           {isFinished && (
-                            <span className="text-[10px] text-outline font-normal font-mono">
+                            <span className="text-[10px] text-gray-400 dark:text-gray-500 font-normal font-mono">
                               · Ended
                             </span>
                           )}
@@ -640,8 +640,8 @@ export default function FullCalendarView({
                         rel="noopener noreferrer"
                         className={`h-8 px-3.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all shadow-xs shrink-0 self-start sm:self-auto ${
                           isFinished
-                            ? 'bg-surface-container hover:bg-surface-container-high text-outline border border-outline-variant/30'
-                            : 'bg-primary hover:bg-primary-container text-on-primary'
+                            ? 'bg-black/5 dark:bg-white/5 hover:bg-black/10 dark:hover:bg-white/10 text-gray-500 dark:text-gray-400 border border-black/5 dark:border-white/5'
+                            : 'bg-[#007AFF] hover:bg-[#0062cc] text-white'
                         }`}
                       >
                         <span className="material-symbols-outlined text-[15px]">videocam</span>
