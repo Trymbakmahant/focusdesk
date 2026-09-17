@@ -1,7 +1,8 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { CalendarEvent, EventCategory, CATEGORY_COLORS } from '@/types/calendar';
+import { getEventStatus, isEventFinished, isEventOngoing, EventStatus } from '@/lib/calendarUtils';
 
 interface FullCalendarViewProps {
   events: CalendarEvent[];
@@ -10,6 +11,7 @@ interface FullCalendarViewProps {
 }
 
 type CalendarViewMode = 'month' | 'agenda';
+type StatusFilter = 'All' | 'Active' | 'Finished';
 
 export default function FullCalendarView({
   events,
@@ -20,15 +22,27 @@ export default function FullCalendarView({
   const [selectedDateStr, setSelectedDateStr] = useState(() => new Date().toISOString().split('T')[0]);
   const [viewMode, setViewMode] = useState<CalendarViewMode>('month');
   const [filterCategory, setFilterCategory] = useState<EventCategory | 'All'>('All');
+  const [statusFilter, setStatusFilter] = useState<StatusFilter>('All');
   const [searchQuery, setSearchQuery] = useState('');
   const [isExpanded, setIsExpanded] = useState(false);
+  const [now, setNow] = useState(() => Date.now());
+
+  // Update clock every 30s so event statuses (ongoing -> finished) transition in real-time
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setNow(Date.now());
+    }, 30000);
+    return () => clearInterval(timer);
+  }, []);
 
   const todayStr = useMemo(() => new Date().toISOString().split('T')[0], []);
 
-  // Filter events by search & category
+  // Filter events by search, category & status
   const filteredEvents = useMemo(() => {
     return events.filter((e) => {
       if (filterCategory !== 'All' && e.category !== filterCategory) return false;
+      if (statusFilter === 'Active' && isEventFinished(e, now)) return false;
+      if (statusFilter === 'Finished' && !isEventFinished(e, now)) return false;
       if (searchQuery.trim()) {
         const query = searchQuery.toLowerCase();
         const matchTitle = e.title.toLowerCase().includes(query);
@@ -38,7 +52,7 @@ export default function FullCalendarView({
       }
       return true;
     });
-  }, [events, filterCategory, searchQuery]);
+  }, [events, filterCategory, statusFilter, searchQuery, now]);
 
   // Map events by date: { 'YYYY-MM-DD': CalendarEvent[] }
   const eventsByDate = useMemo(() => {
@@ -256,27 +270,54 @@ export default function FullCalendarView({
         </div>
       </div>
 
-      {/* Category Pills Filter */}
-      <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
-        <span className="text-xs text-outline mr-1">Filter:</span>
-        {(['All', 'Work', 'Meeting', 'Focus', 'Personal', 'Design'] as (EventCategory | 'All')[]).map(
-          (cat) => {
-            const isSelected = filterCategory === cat;
-            return (
-              <button
-                key={cat}
-                onClick={() => setFilterCategory(cat)}
-                className={`px-3 py-1 rounded-xl text-xs font-medium border transition-all ${
-                  isSelected
-                    ? 'bg-primary text-on-primary border-primary shadow-xs font-semibold'
-                    : 'bg-surface-container-lowest border-outline-variant/30 text-outline hover:text-on-surface'
-                }`}
-              >
-                {cat}
-              </button>
-            );
-          }
-        )}
+      {/* Category & Status Filter Bar */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 flex-wrap">
+        {/* Category Pills */}
+        <div className="flex items-center gap-1.5 overflow-x-auto pb-1">
+          <span className="text-xs text-outline mr-1 font-medium">Category:</span>
+          {(['All', 'Work', 'Meeting', 'Focus', 'Personal', 'Design'] as (EventCategory | 'All')[]).map(
+            (cat) => {
+              const isSelected = filterCategory === cat;
+              return (
+                <button
+                  key={cat}
+                  onClick={() => setFilterCategory(cat)}
+                  className={`px-3 py-1 rounded-xl text-xs font-medium border transition-all ${
+                    isSelected
+                      ? 'bg-primary text-on-primary border-primary shadow-xs font-semibold'
+                      : 'bg-surface-container-lowest border-outline-variant/30 text-outline hover:text-on-surface'
+                  }`}
+                >
+                  {cat}
+                </button>
+              );
+            }
+          )}
+        </div>
+
+        {/* Status Filter: All, Active, Finished */}
+        <div className="flex items-center gap-1 bg-surface-container/60 p-1 rounded-xl border border-outline-variant/20 text-xs self-start sm:self-auto">
+          <span className="text-[11px] text-outline px-1.5 font-medium">Status:</span>
+          {(['All', 'Active', 'Finished'] as StatusFilter[]).map((st) => (
+            <button
+              key={st}
+              onClick={() => setStatusFilter(st)}
+              className={`px-2.5 py-1 rounded-lg transition-all font-medium flex items-center gap-1.5 ${
+                statusFilter === st
+                  ? 'bg-surface text-on-surface font-semibold shadow-xs'
+                  : 'text-outline hover:text-on-surface'
+              }`}
+            >
+              {st === 'Finished' && (
+                <span className="material-symbols-outlined text-[13px] text-emerald-400">check_circle</span>
+              )}
+              {st === 'Active' && (
+                <span className="w-1.5 h-1.5 rounded-full bg-primary" />
+              )}
+              <span>{st}</span>
+            </button>
+          ))}
+        </div>
       </div>
 
       {/* MAIN VIEW: Month Grid + Day Detail Drawer OR Agenda List */}
@@ -340,13 +381,31 @@ export default function FullCalendarView({
                     <div className="flex flex-col gap-1 mt-1 overflow-hidden">
                       {dayEvents.slice(0, 2).map((evt) => {
                         const style = CATEGORY_COLORS[evt.category] || CATEGORY_COLORS.Work;
+                        const status = getEventStatus(evt, now);
+                        const isFinished = status === 'finished';
+                        const isOngoing = status === 'ongoing';
+
                         return (
                           <div
                             key={evt.id}
-                            title={`${evt.startTime} — ${evt.title}`}
-                            className={`px-1.5 py-0.5 rounded text-[10px] font-medium truncate flex items-center gap-1 border ${style.bg} ${style.text} ${style.border}`}
+                            title={`${evt.startTime} — ${evt.title} (${isFinished ? 'Finished' : isOngoing ? 'Happening Now' : 'Upcoming'})`}
+                            className={`px-1.5 py-0.5 rounded text-[10px] font-medium truncate flex items-center gap-1 border transition-all ${
+                              isFinished
+                                ? 'bg-surface-container/50 text-outline/80 border-outline-variant/20 line-through decoration-outline/50 opacity-60 hover:opacity-100 hover:no-underline'
+                                : isOngoing
+                                ? 'bg-emerald-500/15 text-emerald-300 border-emerald-500/40 ring-1 ring-emerald-500/30 font-semibold'
+                                : `${style.bg} ${style.text} ${style.border}`
+                            }`}
                           >
-                            <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${style.dot}`} />
+                            {isFinished ? (
+                              <span className="material-symbols-outlined text-[11px] text-emerald-400 shrink-0 no-underline">
+                                check
+                              </span>
+                            ) : isOngoing ? (
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse shrink-0" />
+                            ) : (
+                              <span className={`w-1.5 h-1.5 rounded-full shrink-0 ${style.dot}`} />
+                            )}
                             <span className="truncate">{evt.title}</span>
                           </div>
                         );
@@ -388,23 +447,58 @@ export default function FullCalendarView({
               <div className="flex flex-col gap-2.5 max-h-[480px] overflow-y-auto pr-1">
                 {selectedDayEvents.map((evt) => {
                   const style = CATEGORY_COLORS[evt.category] || CATEGORY_COLORS.Work;
+                  const status = getEventStatus(evt, now);
+                  const isFinished = status === 'finished';
+                  const isOngoing = status === 'ongoing';
+
                   return (
                     <div
                       key={evt.id}
-                      className="p-3.5 rounded-xl bg-surface-container/40 border border-outline-variant/25 flex flex-col gap-2 hover:border-outline-variant/60 transition-colors"
+                      className={`p-3.5 rounded-xl border flex flex-col gap-2 transition-all ${
+                        isFinished
+                          ? 'bg-surface-container/20 border-outline-variant/15 opacity-75 hover:opacity-100'
+                          : isOngoing
+                          ? 'bg-emerald-500/10 border-emerald-500/30 ring-1 ring-emerald-500/20'
+                          : 'bg-surface-container/40 border-outline-variant/25 hover:border-outline-variant/60'
+                      }`}
                     >
                       <div className="flex items-start justify-between gap-2">
-                        <span className="text-xs font-semibold text-on-surface leading-tight">
+                        <span className={`text-xs font-semibold leading-tight ${
+                          isFinished ? 'text-on-surface/70 line-through decoration-outline/50' : 'text-on-surface'
+                        }`}>
                           {evt.title}
                         </span>
-                        <span className={`px-2 py-0.5 rounded text-[10px] font-medium border shrink-0 ${style.bg} ${style.text} ${style.border}`}>
-                          {evt.category}
-                        </span>
+
+                        <div className="flex items-center gap-1.5 shrink-0">
+                          {/* Finished / Ongoing Status Pill */}
+                          {isFinished ? (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-outline text-[10px] font-medium border border-outline-variant/30">
+                              <span className="material-symbols-outlined text-[12px] text-emerald-400">check_circle</span>
+                              <span>Finished</span>
+                            </span>
+                          ) : isOngoing ? (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-semibold border border-emerald-500/40">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                              <span>Happening Now</span>
+                            </span>
+                          ) : null}
+
+                          <span className={`px-2 py-0.5 rounded text-[10px] font-medium border shrink-0 ${style.bg} ${style.text} ${style.border}`}>
+                            {evt.category}
+                          </span>
+                        </div>
                       </div>
 
-                      <div className="flex items-center gap-1.5 text-xs text-primary font-medium">
-                        <span className="material-symbols-outlined text-[15px]">schedule</span>
-                        <span>{evt.startTime} — {evt.endTime}</span>
+                      <div className="flex items-center gap-1.5 text-xs font-medium">
+                        <span className="material-symbols-outlined text-[15px] text-outline">schedule</span>
+                        <span className={isFinished ? 'text-outline line-through decoration-outline/40' : isOngoing ? 'text-emerald-400 font-semibold' : 'text-primary'}>
+                          {evt.startTime} — {evt.endTime}
+                        </span>
+                        {isFinished && (
+                          <span className="text-[10px] text-outline font-normal font-mono">
+                            · Ended
+                          </span>
+                        )}
                       </div>
 
                       {evt.location && (
@@ -425,10 +519,14 @@ export default function FullCalendarView({
                           href={evt.url}
                           target="_blank"
                           rel="noopener noreferrer"
-                          className="mt-1 h-7 px-3 rounded-lg bg-primary/15 hover:bg-primary text-primary hover:text-on-primary text-[11px] font-medium flex items-center justify-center gap-1.5 transition-colors"
+                          className={`mt-1 h-7 px-3 rounded-lg text-[11px] font-medium flex items-center justify-center gap-1.5 transition-colors ${
+                            isFinished
+                              ? 'bg-surface-container/60 hover:bg-surface-container text-outline border border-outline-variant/20'
+                              : 'bg-primary/15 hover:bg-primary text-primary hover:text-on-primary'
+                          }`}
                         >
                           <span className="material-symbols-outlined text-[14px]">videocam</span>
-                          <span>Join Meeting Link</span>
+                          <span>{isFinished ? 'Meeting Link (Concluded)' : 'Join Meeting Link'}</span>
                         </a>
                       )}
                     </div>
@@ -458,46 +556,78 @@ export default function FullCalendarView({
               {filteredEvents.map((evt) => {
                 const style = CATEGORY_COLORS[evt.category] || CATEGORY_COLORS.Work;
                 const isToday = evt.date === todayStr;
+                const status = getEventStatus(evt, now);
+                const isFinished = status === 'finished';
+                const isOngoing = status === 'ongoing';
 
                 return (
                   <div
                     key={evt.id}
                     className={`p-4 rounded-2xl border flex flex-col sm:flex-row sm:items-center justify-between gap-3 transition-colors ${
-                      isToday
+                      isFinished
+                        ? 'bg-surface-container/20 border-outline-variant/15 opacity-75 hover:opacity-95'
+                        : isOngoing
+                        ? 'bg-emerald-500/10 border-emerald-500/30 ring-1 ring-emerald-500/20'
+                        : isToday
                         ? 'bg-primary-fixed/15 border-primary/30'
                         : 'bg-surface-container/30 border-outline-variant/20 hover:border-outline-variant/50'
                     }`}
                   >
                     <div className="flex items-start sm:items-center gap-3 min-w-0 flex-1">
-                      <div className="w-12 h-12 rounded-xl bg-surface-container flex flex-col items-center justify-center shrink-0 border border-outline-variant/20 font-mono">
-                        <span className="text-[10px] text-outline uppercase font-semibold leading-none">
+                      <div className={`w-12 h-12 rounded-xl flex flex-col items-center justify-center shrink-0 border font-mono ${
+                        isFinished
+                          ? 'bg-surface-container/40 border-outline-variant/15 text-outline'
+                          : isOngoing
+                          ? 'bg-emerald-500/15 border-emerald-500/30 text-emerald-400'
+                          : 'bg-surface-container border-outline-variant/20'
+                      }`}>
+                        <span className="text-[10px] uppercase font-semibold leading-none">
                           {new Date(`${evt.date}T00:00:00`).toLocaleDateString('en-US', { month: 'short' })}
                         </span>
-                        <span className="text-base font-bold text-on-surface leading-none mt-1">
+                        <span className="text-base font-bold leading-none mt-1">
                           {new Date(`${evt.date}T00:00:00`).getDate()}
                         </span>
                       </div>
 
                       <div className="flex flex-col min-w-0">
                         <div className="flex items-center gap-2 flex-wrap">
-                          <span className="font-semibold text-sm text-on-surface">{evt.title}</span>
+                          <span className={`font-semibold text-sm ${isFinished ? 'text-on-surface/75 line-through decoration-outline/50' : 'text-on-surface'}`}>
+                            {evt.title}
+                          </span>
                           <span className={`px-2 py-0.5 rounded text-[10px] font-medium border ${style.bg} ${style.text} ${style.border}`}>
                             {evt.category}
                           </span>
-                          {isToday && (
+                          {isFinished ? (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-outline text-[10px] font-medium border border-outline-variant/30">
+                              <span className="material-symbols-outlined text-[12px] text-emerald-400">check_circle</span>
+                              <span>Finished</span>
+                            </span>
+                          ) : isOngoing ? (
+                            <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 text-[10px] font-semibold border border-emerald-500/40">
+                              <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse" />
+                              <span>Happening Now</span>
+                            </span>
+                          ) : isToday ? (
                             <span className="px-2 py-0.5 rounded bg-primary text-on-primary text-[10px] font-bold">
                               Today
                             </span>
-                          )}
+                          ) : null}
                         </div>
 
-                        <div className="flex items-center gap-2 text-xs text-outline mt-1 flex-wrap">
-                          <span className="text-primary font-medium">{evt.startTime} — {evt.endTime}</span>
+                        <div className="flex items-center gap-2 text-xs mt-1 flex-wrap">
+                          <span className={`font-medium ${isFinished ? 'text-outline line-through decoration-outline/40' : isOngoing ? 'text-emerald-400 font-semibold' : 'text-primary'}`}>
+                            {evt.startTime} — {evt.endTime}
+                          </span>
                           {evt.location && (
                             <>
-                              <span>·</span>
-                              <span className="truncate max-w-xs">{evt.location}</span>
+                              <span className="text-outline">·</span>
+                              <span className="truncate max-w-xs text-outline">{evt.location}</span>
                             </>
+                          )}
+                          {isFinished && (
+                            <span className="text-[10px] text-outline font-normal font-mono">
+                              · Ended
+                            </span>
                           )}
                         </div>
                       </div>
@@ -508,10 +638,14 @@ export default function FullCalendarView({
                         href={evt.url}
                         target="_blank"
                         rel="noopener noreferrer"
-                        className="h-8 px-3.5 rounded-xl bg-primary hover:bg-primary-container text-on-primary text-xs font-semibold flex items-center justify-center gap-1.5 transition-all shadow-xs shrink-0 self-start sm:self-auto"
+                        className={`h-8 px-3.5 rounded-xl text-xs font-semibold flex items-center justify-center gap-1.5 transition-all shadow-xs shrink-0 self-start sm:self-auto ${
+                          isFinished
+                            ? 'bg-surface-container hover:bg-surface-container-high text-outline border border-outline-variant/30'
+                            : 'bg-primary hover:bg-primary-container text-on-primary'
+                        }`}
                       >
                         <span className="material-symbols-outlined text-[15px]">videocam</span>
-                        <span>Join Meeting</span>
+                        <span>{isFinished ? 'Ended' : 'Join Meeting'}</span>
                       </a>
                     )}
                   </div>

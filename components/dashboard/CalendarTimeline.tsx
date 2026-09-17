@@ -1,10 +1,11 @@
 "use client";
 
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import Link from 'next/link';
 import { useCalendar } from '@/hooks/useCalendar';
 import GoogleCalendarModal from '@/components/calendar/GoogleCalendarModal';
 import { CATEGORY_COLORS } from '@/types/calendar';
+import { getEventStatus } from '@/lib/calendarUtils';
 
 export default function CalendarTimeline() {
   const {
@@ -19,6 +20,15 @@ export default function CalendarTimeline() {
   } = useCalendar();
 
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const [now, setNow] = useState(() => Date.now());
+
+  // Update clock every 30s so finished events update dynamically
+  useEffect(() => {
+    const timer = setInterval(() => {
+      setNow(Date.now());
+    }, 30000);
+    return () => clearInterval(timer);
+  }, []);
 
   const todayStr = useMemo(() => {
     const d = new Date();
@@ -117,47 +127,95 @@ export default function CalendarTimeline() {
           <div className="flex flex-col gap-space-sm relative pr-1 max-h-72 overflow-y-auto">
             <div className="absolute left-2.5 top-2 bottom-2 w-0.5 bg-surface-container-high" />
 
-            {displayedEvents.map((event, index) => {
-              const catConfig = CATEGORY_COLORS[event.category] || CATEGORY_COLORS.Work;
-              const isFirst = index === 0;
+            {/* Find the next upcoming or ongoing event */}
+            {(() => {
+              const ongoing = displayedEvents.find((e) => getEventStatus(e, now) === 'ongoing');
+              const upcoming = displayedEvents.find((e) => getEventStatus(e, now) === 'upcoming');
+              const nextEventId = ongoing ? ongoing.id : upcoming ? upcoming.id : null;
 
-              return (
-                <div
-                  key={event.id}
-                  className={`flex items-start gap-space-md relative pl-6 transition-all rounded-xl p-2 ${
-                    isFirst ? 'bg-primary-fixed/20 border border-primary/20' : 'hover:bg-surface-container-low/60'
-                  }`}
-                >
-                  <span
-                    className={`w-2.5 h-2.5 rounded-full absolute left-1.5 top-3 ${catConfig.dot} ${
-                      isFirst ? 'ring-4 ring-primary/20 animate-pulse' : ''
+              return displayedEvents.map((event) => {
+                const catConfig = CATEGORY_COLORS[event.category] || CATEGORY_COLORS.Work;
+                const status = getEventStatus(event, now);
+                const isFinished = status === 'finished';
+                const isOngoing = status === 'ongoing';
+                const isNextUp = event.id === nextEventId && !isOngoing;
+                const isHighlighted = isOngoing || isNextUp;
+
+                return (
+                  <div
+                    key={event.id}
+                    className={`flex items-start gap-space-md relative pl-6 transition-all rounded-xl p-2 ${
+                      isFinished
+                        ? 'opacity-65 hover:opacity-100 bg-surface-container-low/30'
+                        : isOngoing
+                        ? 'bg-emerald-500/10 border border-emerald-500/30'
+                        : isNextUp
+                        ? 'bg-primary-fixed/20 border border-primary/20'
+                        : 'hover:bg-surface-container-low/60'
                     }`}
-                  />
-                  <div className="flex flex-col flex-1 min-w-0">
-                    <div className="flex items-center justify-between gap-2">
-                      <span className={`font-label-md text-label-md text-on-surface truncate ${isFirst ? 'font-semibold' : ''}`}>
-                        {event.title}
+                  >
+                    {isFinished ? (
+                      <span className="w-3.5 h-3.5 rounded-full absolute left-1 top-2.5 bg-surface-container-high border border-outline-variant/40 flex items-center justify-center text-emerald-400">
+                        <span className="material-symbols-outlined text-[11px]">check</span>
                       </span>
-                      <span className={`px-2 py-0.5 rounded-md text-[10px] font-medium shrink-0 ${catConfig.bg} ${catConfig.text}`}>
-                        {event.category}
-                      </span>
-                    </div>
+                    ) : (
+                      <span
+                        className={`w-2.5 h-2.5 rounded-full absolute left-1.5 top-3 ${
+                          isOngoing ? 'bg-emerald-400 ring-4 ring-emerald-500/20 animate-pulse' : catConfig.dot
+                        } ${isNextUp ? 'ring-4 ring-primary/20 animate-pulse' : ''}`}
+                      />
+                    )}
 
-                    <div className="flex items-center gap-2 mt-0.5 text-xs">
-                      <span className={`font-body-sm text-body-sm ${isFirst ? 'text-primary font-medium' : 'text-outline'}`}>
-                        {event.startTime} — {event.endTime} {isFirst ? '· Next up' : ''}
-                      </span>
-                      {event.location && (
-                        <>
-                          <span className="text-outline">·</span>
-                          <span className="text-outline text-[11px] truncate max-w-[150px]">{event.location}</span>
-                        </>
-                      )}
+                    <div className="flex flex-col flex-1 min-w-0">
+                      <div className="flex items-center justify-between gap-2">
+                        <span className={`font-label-md text-label-md truncate ${
+                          isFinished
+                            ? 'text-on-surface/70 line-through decoration-outline/50'
+                            : isHighlighted
+                            ? 'font-semibold text-on-surface'
+                            : 'text-on-surface'
+                        }`}>
+                          {event.title}
+                        </span>
+
+                        <div className="flex items-center gap-1 shrink-0">
+                          {isFinished && (
+                            <span className="px-1.5 py-0.5 rounded text-[9px] font-medium bg-surface-container-high text-outline border border-outline-variant/30 flex items-center gap-0.5">
+                              <span className="material-symbols-outlined text-[10px] text-emerald-400">check</span>
+                              Finished
+                            </span>
+                          )}
+                          <span className={`px-2 py-0.5 rounded-md text-[10px] font-medium shrink-0 ${catConfig.bg} ${catConfig.text}`}>
+                            {event.category}
+                          </span>
+                        </div>
+                      </div>
+
+                      <div className="flex items-center gap-2 mt-0.5 text-xs">
+                        <span className={`font-body-sm text-body-sm ${
+                          isFinished
+                            ? 'text-outline line-through decoration-outline/40'
+                            : isOngoing
+                            ? 'text-emerald-400 font-medium'
+                            : isNextUp
+                            ? 'text-primary font-medium'
+                            : 'text-outline'
+                        }`}>
+                          {event.startTime} — {event.endTime}
+                          {isFinished ? ' · Finished' : isOngoing ? ' · Happening now' : isNextUp ? ' · Next up' : ''}
+                        </span>
+                        {event.location && (
+                          <>
+                            <span className="text-outline">·</span>
+                            <span className="text-outline text-[11px] truncate max-w-[150px]">{event.location}</span>
+                          </>
+                        )}
+                      </div>
                     </div>
                   </div>
-                </div>
-              );
-            })}
+                );
+              });
+            })()}
           </div>
         )}
       </div>

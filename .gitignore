@@ -42,9 +42,8 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
-# skills & agents
-.agents/
-skills/
-*SKILL.md
-*skill.md
+# OpenNext & Cloudflare
+.open-next/
+.wrangler/
+.dev.vars
 

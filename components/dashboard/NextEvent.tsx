@@ -165,8 +165,9 @@ export default function NextEvent() {
                 Live Now
               </span>
             ) : isPast ? (
-              <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-surface-container text-outline text-[10px] font-medium">
-                Concluded
+              <span className="inline-flex items-center gap-1 px-2 py-0.5 rounded-full bg-surface-container-high text-outline text-[10px] font-medium border border-outline-variant/30">
+                <span className="material-symbols-outlined text-[12px] text-emerald-400">check_circle</span>
+                Finished
               </span>
             ) : (
               <span className={`px-2 py-0.5 rounded-full text-[10px] font-medium border ${catConfig.bg} ${catConfig.text} ${catConfig.border}`}>
@@ -188,43 +189,52 @@ export default function NextEvent() {
         <div className="mt-1">
           <Link
             href="/calendar"
-            className="font-body-sm text-body-sm text-on-surface font-semibold hover:text-primary transition-colors line-clamp-1"
+            className={`font-body-sm text-body-sm font-semibold hover:text-primary transition-colors line-clamp-1 ${
+              isPast ? 'text-on-surface/75 line-through decoration-outline/50' : 'text-on-surface'
+            }`}
             title={nextEvent.title}
           >
             {nextEvent.title}
           </Link>
           <div className="text-[11px] text-outline mt-0.5 flex items-center gap-1">
-            <span>{isHappeningNow ? 'Ends in:' : isPast ? 'Completed' : 'Starts in:'}</span>
+            <span>{isHappeningNow ? 'Ends in:' : isPast ? 'Event finished' : 'Starts in:'}</span>
           </div>
         </div>
 
-        {/* Countdown Timer Grid */}
-        <div className="grid grid-cols-4 gap-1.5 my-space-md text-center">
-          <div className="flex flex-col bg-surface-container-low rounded-xl p-2 border border-outline-variant/15">
-            <span className="font-headline-lg text-headline-lg text-on-surface font-semibold">
-              {formatNumber(timeLeft.days)}
-            </span>
-            <span className="font-label-sm text-[10px] text-outline uppercase">Days</span>
+        {/* Countdown Timer Grid OR Concluded Card */}
+        {isPast ? (
+          <div className="my-space-md p-4 rounded-xl bg-surface-container-low/50 border border-outline-variant/15 flex items-center justify-center gap-2.5 text-center text-outline">
+            <span className="material-symbols-outlined text-[20px] text-emerald-400">task_alt</span>
+            <span className="text-xs font-medium text-on-surface/80">Event has concluded</span>
           </div>
-          <div className="flex flex-col bg-surface-container-low rounded-xl p-2 border border-outline-variant/15">
-            <span className="font-headline-lg text-headline-lg text-on-surface font-semibold">
-              {formatNumber(timeLeft.hours)}
-            </span>
-            <span className="font-label-sm text-[10px] text-outline uppercase">Hours</span>
+        ) : (
+          <div className="grid grid-cols-4 gap-1.5 my-space-md text-center">
+            <div className="flex flex-col bg-surface-container-low rounded-xl p-2 border border-outline-variant/15">
+              <span className="font-headline-lg text-headline-lg text-on-surface font-semibold">
+                {formatNumber(timeLeft.days)}
+              </span>
+              <span className="font-label-sm text-[10px] text-outline uppercase">Days</span>
+            </div>
+            <div className="flex flex-col bg-surface-container-low rounded-xl p-2 border border-outline-variant/15">
+              <span className="font-headline-lg text-headline-lg text-on-surface font-semibold">
+                {formatNumber(timeLeft.hours)}
+              </span>
+              <span className="font-label-sm text-[10px] text-outline uppercase">Hours</span>
+            </div>
+            <div className="flex flex-col bg-surface-container-low rounded-xl p-2 border border-outline-variant/15">
+              <span className="font-headline-lg text-headline-lg text-on-surface font-semibold">
+                {formatNumber(timeLeft.mins)}
+              </span>
+              <span className="font-label-sm text-[10px] text-outline uppercase">Mins</span>
+            </div>
+            <div className="flex flex-col bg-surface-container-low rounded-xl p-2 border border-outline-variant/15">
+              <span className="font-headline-lg text-headline-lg text-primary font-semibold">
+                {formatNumber(timeLeft.secs)}
+              </span>
+              <span className="font-label-sm text-[10px] text-outline uppercase">Secs</span>
+            </div>
           </div>
-          <div className="flex flex-col bg-surface-container-low rounded-xl p-2 border border-outline-variant/15">
-            <span className="font-headline-lg text-headline-lg text-on-surface font-semibold">
-              {formatNumber(timeLeft.mins)}
-            </span>
-            <span className="font-label-sm text-[10px] text-outline uppercase">Mins</span>
-          </div>
-          <div className="flex flex-col bg-surface-container-low rounded-xl p-2 border border-outline-variant/15">
-            <span className="font-headline-lg text-headline-lg text-primary font-semibold">
-              {formatNumber(timeLeft.secs)}
-            </span>
-            <span className="font-label-sm text-[10px] text-outline uppercase">Secs</span>
-          </div>
-        </div>
+        )}
       </div>
 
       {/* Footer: Date / Time and optional Meeting Link */}
