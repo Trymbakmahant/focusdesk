@@ -45,20 +45,40 @@ CREATE TABLE IF NOT EXISTS reminders (
   created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- 5. Daily Focus & Workday Analysis Table
+CREATE TABLE IF NOT EXISTS daily_focus (
+  id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+  user_id TEXT NOT NULL,            -- WorkOS User ID
+  date DATE NOT NULL DEFAULT CURRENT_DATE,
+  focus_intention TEXT NOT NULL,
+  category TEXT DEFAULT 'Deep Work',
+  workday_hours NUMERIC DEFAULT 8.0,
+  target_minutes INTEGER DEFAULT 240,
+  actual_minutes INTEGER DEFAULT 0,
+  completed_sessions INTEGER DEFAULT 0,
+  created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  updated_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+  UNIQUE(user_id, date)
+);
+
 -- Performance Indexes on user_id
 CREATE INDEX IF NOT EXISTS idx_tasks_user_id ON tasks(user_id);
 CREATE INDEX IF NOT EXISTS idx_habits_user_id ON habits(user_id);
 CREATE INDEX IF NOT EXISTS idx_notes_user_id ON notes(user_id);
 CREATE INDEX IF NOT EXISTS idx_reminders_user_id ON reminders(user_id);
+CREATE INDEX IF NOT EXISTS idx_daily_focus_user_date ON daily_focus(user_id, date);
 
 -- Enable Row Level Security (RLS)
 ALTER TABLE tasks ENABLE ROW LEVEL SECURITY;
 ALTER TABLE habits ENABLE ROW LEVEL SECURITY;
 ALTER TABLE notes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE reminders ENABLE ROW LEVEL SECURITY;
+ALTER TABLE daily_focus ENABLE ROW LEVEL SECURITY;
 
 -- Allow authenticated and anon access via API keys scoped by user_id filter
 CREATE POLICY "Allow anon and auth access for tasks" ON tasks FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Allow anon and auth access for habits" ON habits FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Allow anon and auth access for notes" ON notes FOR ALL USING (true) WITH CHECK (true);
 CREATE POLICY "Allow anon and auth access for reminders" ON reminders FOR ALL USING (true) WITH CHECK (true);
+CREATE POLICY "Allow anon and auth access for daily_focus" ON daily_focus FOR ALL USING (true) WITH CHECK (true);
+
