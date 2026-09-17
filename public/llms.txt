@@ -31,6 +31,6 @@
 
 ## Machine Information
 
-- Canonical URL: https://focusdesk.trymbak0102mahant.workers.dev
+- Canonical URL: https://foucusing.xyz
 - Repository: Fixates Frontend
 - Target Platforms: macOS (Tauri v2), Modern Web Browsers (PWA)

@@ -10,7 +10,7 @@ import type { Metadata } from 'next';
 export const SITE_URL = (
   process.env.NEXT_PUBLIC_SITE_URL ||
   (process.env.NODE_ENV === 'production'
-    ? 'https://focusdesk.trymbak0102mahant.workers.dev'
+    ? 'https://foucusing.xyz'
     : 'http://localhost:3000')
 ).replace(/\/$/, '');
 
