@@ -9,7 +9,12 @@ const GOOGLE_REDIRECT_URI = process.env.GOOGLE_REDIRECT_URI || 'http://localhost
 export const GOOGLE_TOKEN_COOKIE_NAME = 'focusdeck_gcal_tokens';
 
 export function isGoogleConfigured(): boolean {
-  return Boolean(GOOGLE_CLIENT_ID && GOOGLE_CLIENT_SECRET);
+  return Boolean(
+    GOOGLE_CLIENT_ID &&
+    GOOGLE_CLIENT_SECRET &&
+    !GOOGLE_CLIENT_ID.includes('your_client_id') &&
+    !GOOGLE_CLIENT_SECRET.includes('your_client_secret')
+  );
 }
 
 export function getOAuth2Client() {
@@ -26,6 +31,8 @@ export function getGoogleConsentUrl(): string {
     access_type: 'offline', // needed to receive a refresh token
     prompt: 'consent',      // forces refresh token generation
     scope: [
+      'https://www.googleapis.com/auth/calendar.events',
+      'https://www.googleapis.com/auth/calendar',
       'https://www.googleapis.com/auth/calendar.readonly',
       'https://www.googleapis.com/auth/calendar.events.readonly',
     ],

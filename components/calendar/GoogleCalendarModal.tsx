@@ -124,9 +124,29 @@ export default function GoogleCalendarModal({
 
         {/* Feedback alerts */}
         {errorMsg && (
-          <div className="bg-error/15 border border-error/30 text-error-container rounded-xl p-3 flex items-start gap-2 text-xs">
-            <span className="material-symbols-outlined text-[18px] text-error shrink-0">error</span>
-            <span className="leading-relaxed">{errorMsg}</span>
+          <div className="bg-error/15 border border-error/30 text-error-container rounded-xl p-3 flex flex-col gap-2 text-xs">
+            <div className="flex items-start gap-2">
+              <span className="material-symbols-outlined text-[18px] text-error shrink-0">error</span>
+              <span className="leading-relaxed flex-1">{errorMsg}</span>
+            </div>
+            {(errorMsg.toLowerCase().includes('permission') ||
+              errorMsg.toLowerCase().includes('scope') ||
+              errorMsg.toLowerCase().includes('connect') ||
+              errorMsg.toLowerCase().includes('grant')) && (
+              <button
+                type="button"
+                onClick={connectGoogleOAuth}
+                className="self-start mt-1 px-3 py-1.5 rounded-lg bg-primary hover:bg-primary-container text-on-primary font-semibold text-[11px] flex items-center gap-1.5 transition-all shadow-xs"
+              >
+                <svg viewBox="0 0 24 24" className="w-3.5 h-3.5 bg-white rounded p-0.5">
+                  <path fill="#4285F4" d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-2 .9-2 2v14c0 1.1.89 2 2 2h14c1.1 0 2-.9 2-2V5c0-1.1-.9-2-2-2zm0 16H5V8h14v11z"/>
+                  <path fill="#34A853" d="M7 10h5v5H7z"/>
+                  <path fill="#FBBC05" d="M12 10h5v5h-5z"/>
+                  <path fill="#EA4335" d="M7 15h5v5H7z"/>
+                </svg>
+                <span>Authorize Google Calendar Access</span>
+              </button>
+            )}
           </div>
         )}
 

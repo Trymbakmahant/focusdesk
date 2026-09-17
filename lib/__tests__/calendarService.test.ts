@@ -7,6 +7,8 @@ import {
   encryptTokens,
   decryptTokens,
   NoGoogleTokensError,
+  InsufficientCalendarScopeError,
+  hasCalendarScope,
   GoogleApiCalendarClient,
   TokenRefresher,
   _resetTokenStoreForTesting,
@@ -186,6 +188,52 @@ describe('Google Calendar Service & WorkOS Production Integration', () => {
 
       await expect(getUserCalendarEvents(userId)).rejects.toThrow(
         NoGoogleTokensError
+      );
+    });
+  });
+
+  describe('4. Calendar Scopes Verification & InsufficientCalendarScopeError', () => {
+    it('correctly evaluates hasCalendarScope for diverse OAuth scopes', () => {
+      expect(hasCalendarScope(null)).toBe(false);
+      expect(hasCalendarScope({ accessToken: '' })).toBe(false);
+
+      // Email/Profile only (WorkOS without calendar scopes)
+      expect(hasCalendarScope({
+        accessToken: 'valid_token',
+        scopes: ['https://www.googleapis.com/auth/userinfo.email', 'openid', 'profile']
+      })).toBe(false);
+
+      // Valid Calendar scopes
+      expect(hasCalendarScope({
+        accessToken: 'valid_token',
+        scopes: ['https://www.googleapis.com/auth/calendar.events']
+      })).toBe(true);
+
+      expect(hasCalendarScope({
+        accessToken: 'valid_token',
+        scopes: ['https://www.googleapis.com/auth/calendar.readonly']
+      })).toBe(true);
+
+      expect(hasCalendarScope({
+        accessToken: 'valid_token',
+        scopes: ['https://www.googleapis.com/auth/calendar']
+      })).toBe(true);
+    });
+
+    it('throws InsufficientCalendarScopeError when user token only contains basic profile scopes', async () => {
+      const userId = 'user_with_basic_email_scopes_only';
+      await storeUserGoogleTokens(userId, {
+        accessToken: 'ya29.basic_profile_only_token',
+        expiresAt: Date.now() + 3600 * 1000,
+        scopes: [
+          'https://www.googleapis.com/auth/userinfo.email',
+          'https://www.googleapis.com/auth/userinfo.profile',
+          'openid'
+        ]
+      });
+
+      await expect(getUserCalendarEvents(userId)).rejects.toThrow(
+        InsufficientCalendarScopeError
       );
     });
   });

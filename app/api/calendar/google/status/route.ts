@@ -1,18 +1,24 @@
 import { NextResponse } from 'next/server';
 import { withAuth } from '@workos-inc/authkit-nextjs';
 import { getStoredGoogleTokens, isGoogleConfigured } from '@/lib/googleCalendar';
-import { getUserGoogleTokens } from '@/lib/calendarService';
+import { getUserGoogleTokens, hasCalendarScope } from '@/lib/calendarService';
 
 export async function GET() {
   const configured = isGoogleConfigured();
 
   let connected = false;
+  let hasTokensWithoutCalendarScope = false;
+
   try {
     const { user } = await withAuth();
     if (user?.id) {
       const userTokens = await getUserGoogleTokens(user.id);
       if (userTokens?.accessToken) {
-        connected = true;
+        if (hasCalendarScope(userTokens)) {
+          connected = true;
+        } else {
+          hasTokensWithoutCalendarScope = true;
+        }
       }
     }
   } catch {
@@ -21,11 +27,15 @@ export async function GET() {
 
   if (!connected) {
     const tokens = await getStoredGoogleTokens();
-    connected = Boolean(tokens && tokens.access_token);
+    if (tokens && tokens.access_token) {
+      connected = true;
+    }
   }
 
   return NextResponse.json({
     isConnected: connected,
     isConfigured: configured,
+    requiresCalendarConsent: hasTokensWithoutCalendarScope && !connected,
+    requiresConnection: !connected,
   });
 }

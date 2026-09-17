@@ -20,7 +20,13 @@ export default function CalendarTimeline() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const todayStr = useMemo(() => new Date().toISOString().split('T')[0], []);
+  const todayStr = useMemo(() => {
+    const d = new Date();
+    const year = d.getFullYear();
+    const month = String(d.getMonth() + 1).padStart(2, '0');
+    const day = String(d.getDate()).padStart(2, '0');
+    return `${year}-${month}-${day}`;
+  }, []);
 
   const formattedCurrentDate = useMemo(() => {
     return new Intl.DateTimeFormat('en-US', {
@@ -104,7 +110,7 @@ export default function CalendarTimeline() {
                 <path fill="#FBBC05" d="M12 10h5v5h-5z"/>
                 <path fill="#EA4335" d="M7 15h5v5H7z"/>
               </svg>
-              <span>Import Google Calendar</span>
+              <span>Connect Google Calendar</span>
             </button>
           </div>
         ) : (

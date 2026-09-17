@@ -22,6 +22,26 @@ export class NoGoogleTokensError extends Error {
   }
 }
 
+export class InsufficientCalendarScopeError extends Error {
+  readonly code = 'INSUFFICIENT_CALENDAR_SCOPE';
+  constructor(userId: string) {
+    super(`Google Calendar permissions are not granted for user ${userId}. Please grant Calendar access.`);
+    this.name = 'InsufficientCalendarScopeError';
+  }
+}
+
+export function hasCalendarScope(tokens: StoredGoogleTokens | null): boolean {
+  if (!tokens || !tokens.accessToken) return false;
+  if (Array.isArray(tokens.scopes) && tokens.scopes.length > 0) {
+    return tokens.scopes.some((s) =>
+      s.includes('calendar') ||
+      s.includes('calendar.events') ||
+      s.includes('calendar.readonly')
+    );
+  }
+  return true;
+}
+
 // ---------------------------------------------------------
 // 1. Encryption Utilities (AES-256-GCM)
 // ---------------------------------------------------------
@@ -305,6 +325,10 @@ export async function getUserCalendarEvents(
 
   if (!tokens || !tokens.accessToken) {
     throw new NoGoogleTokensError(userId);
+  }
+
+  if (!hasCalendarScope(tokens)) {
+    throw new InsufficientCalendarScopeError(userId);
   }
 
   let effectiveAccessToken = tokens.accessToken;

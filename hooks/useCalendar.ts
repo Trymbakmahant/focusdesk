@@ -72,11 +72,8 @@ export function useCalendar() {
     setIsSyncing(true);
     try {
       const res = await fetch('/api/calendar/google/events');
-      if (!res.ok) {
-        throw new Error('Failed to fetch events from Google Calendar API');
-      }
-
       const data = await res.json();
+
       setIsGoogleConnected(Boolean(data.isConnected));
       setIsGoogleConfigured(Boolean(data.isConfigured));
 
@@ -88,10 +85,22 @@ export function useCalendar() {
         });
         return data.events.length;
       }
+
+      if (data.requiresCalendarConsent || data.requiresConnection) {
+        setIsGoogleConnected(false);
+        if (data.message) {
+          throw new Error(data.message);
+        }
+      }
+
+      if (!res.ok) {
+        throw new Error(data.error || 'Failed to fetch events from Google Calendar API');
+      }
+
       return 0;
     } catch (err) {
       console.error('Error syncing Google Calendar:', err);
-      return 0;
+      throw err;
     } finally {
       setIsSyncing(false);
     }
@@ -99,13 +108,23 @@ export function useCalendar() {
 
   // 5. Check Google OAuth connection status on mount and sync if connected
   useEffect(() => {
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      if (params.get('google_sync') === 'success') {
+        const url = new URL(window.location.href);
+        url.searchParams.delete('google_sync');
+        window.history.replaceState({}, document.title, url.pathname + (url.search ? url.search : ''));
+        syncGoogleCalendar().catch(() => {});
+      }
+    }
+
     fetch('/api/calendar/google/status')
       .then((res) => res.json())
       .then((data) => {
         setIsGoogleConnected(Boolean(data.isConnected));
         setIsGoogleConfigured(Boolean(data.isConfigured));
         if (data.isConnected) {
-          syncGoogleCalendar();
+          syncGoogleCalendar().catch(() => {});
         }
       })
       .catch(() => {});

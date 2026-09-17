@@ -8,34 +8,10 @@ import Footer from '@/components/layout/Footer';
 import { AuthProvider } from '@/context/AuthContext';
 import { ViewModeProvider } from '@/context/ViewModeContext';
 import AuthGuard from '@/components/auth/AuthGuard';
-import AgentVoiceModal from '@/components/harness/AgentVoiceModal';
-
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-  const [isAgentVoiceModalOpen, setIsAgentVoiceModalOpen] = useState(false);
   const pathname = usePathname();
   const isAuthPage = pathname === '/login' || pathname.startsWith('/auth') || pathname.startsWith('/callback');
-
-  // Global ⌘K shortcut & custom event to open Agent & Voice Harness
-  useEffect(() => {
-    const handleKeyDown = (e: KeyboardEvent) => {
-      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === 'k') {
-        e.preventDefault();
-        setIsAgentVoiceModalOpen((prev) => !prev);
-      }
-    };
-
-    const handleOpenModal = () => {
-      setIsAgentVoiceModalOpen(true);
-    };
-
-    window.addEventListener('keydown', handleKeyDown);
-    window.addEventListener('focusdeck-open-agent-modal', handleOpenModal);
-    return () => {
-      window.removeEventListener('keydown', handleKeyDown);
-      window.removeEventListener('focusdeck-open-agent-modal', handleOpenModal);
-    };
-  }, []);
 
   return (
     <AuthProvider>
@@ -63,10 +39,6 @@ export default function ClientLayout({ children }: { children: React.ReactNode }
             </>
           )}
         </AuthGuard>
-        <AgentVoiceModal
-          isOpen={isAgentVoiceModalOpen}
-          onClose={() => setIsAgentVoiceModalOpen(false)}
-        />
       </ViewModeProvider>
     </AuthProvider>
   );
