@@ -98,11 +98,13 @@ export default function TasksPage() {
       {/* Top Header & Metrics Banner */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
         <div>
-          <div className="flex items-center gap-2">
-            <span className="material-symbols-outlined text-primary text-[28px]">task_alt</span>
-            <h1 className="font-display-lg text-2xl md:text-3xl font-bold text-on-surface">Tasks</h1>
+          <div className="flex items-center gap-2.5">
+            <div className="w-10 h-10 rounded-2xl bg-[#007AFF]/10 dark:bg-[#007AFF]/20 text-[#007AFF] dark:text-[#0A84FF] flex items-center justify-center shadow-xs">
+              <span className="material-symbols-outlined text-[24px]">task_alt</span>
+            </div>
+            <h1 className="text-2xl md:text-3xl font-bold text-[#1D1D1F] dark:text-white tracking-tight">Tasks</h1>
           </div>
-          <p className="text-body-sm text-outline mt-1">
+          <p className="text-xs sm:text-sm text-[#86868B] dark:text-gray-400 mt-1.5">
             Prioritized task management with automated importance sorting, due dates, and custom badges.
           </p>
         </div>
@@ -110,14 +112,14 @@ export default function TasksPage() {
         <div className="flex items-center gap-2.5">
           <button
             onClick={() => setShowBadgeManager(!showBadgeManager)}
-            className="px-3.5 py-2 rounded-xl bg-surface-container border border-outline-variant/30 text-xs font-medium text-on-surface hover:bg-surface-container-high transition-colors flex items-center gap-1.5"
+            className="px-3.5 py-2 rounded-xl apple-glass border border-black/10 dark:border-white/10 text-xs font-semibold text-gray-800 dark:text-gray-200 hover:bg-white/80 dark:hover:bg-white/10 transition-colors flex items-center gap-1.5 cursor-pointer shadow-xs"
           >
-            <span className="material-symbols-outlined text-[16px] text-purple-400">local_offer</span>
+            <span className="material-symbols-outlined text-[16px] text-purple-500 dark:text-purple-400">local_offer</span>
             <span>Badge Box ({badgeBox.length})</span>
           </button>
           <button
             onClick={handleOpenAdd}
-            className="px-4 py-2 rounded-xl bg-primary hover:bg-primary-container text-on-primary text-xs font-medium shadow-md transition-all flex items-center gap-1.5"
+            className="px-4 py-2 rounded-xl bg-[#007AFF] hover:bg-[#0062cc] text-white text-xs font-semibold shadow-sm transition-all flex items-center gap-1.5 cursor-pointer active:scale-95"
           >
             <span className="material-symbols-outlined text-[16px]">add</span>
             <span>New Task</span>
@@ -127,39 +129,39 @@ export default function TasksPage() {
 
       {/* Metrics Row */}
       <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
-        <div className="p-4 rounded-2xl bg-surface-container-lowest border border-outline-variant/20 flex flex-col">
-          <span className="text-xs text-outline font-medium">Due Today</span>
-          <span className="text-2xl font-bold text-primary mt-1">{todayCount}</span>
+        <div className="p-4 rounded-2xl apple-glass border border-black/5 dark:border-white/10 flex flex-col shadow-xs">
+          <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Due Today</span>
+          <span className="text-2xl font-bold text-[#007AFF] dark:text-[#0A84FF] mt-1">{todayCount}</span>
         </div>
-        <div className="p-4 rounded-2xl bg-surface-container-lowest border border-rose-500/20 flex flex-col">
+        <div className="p-4 rounded-2xl apple-glass border border-rose-500/25 bg-rose-500/5 dark:bg-rose-500/10 flex flex-col shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs text-rose-400 font-medium">Urgent Priority</span>
+            <span className="text-xs text-rose-600 dark:text-rose-400 font-medium">Urgent Priority</span>
             <span className="w-2 h-2 rounded-full bg-rose-500" />
           </div>
-          <span className="text-2xl font-bold text-rose-400 mt-1">{urgentCount}</span>
+          <span className="text-2xl font-bold text-rose-600 dark:text-rose-400 mt-1">{urgentCount}</span>
         </div>
-        <div className="p-4 rounded-2xl bg-surface-container-lowest border border-amber-500/20 flex flex-col">
+        <div className="p-4 rounded-2xl apple-glass border border-amber-500/25 bg-amber-500/5 dark:bg-amber-500/10 flex flex-col shadow-xs">
           <div className="flex items-center justify-between">
-            <span className="text-xs text-amber-400 font-medium">High Priority</span>
+            <span className="text-xs text-amber-600 dark:text-amber-400 font-medium">High Priority</span>
             <span className="w-2 h-2 rounded-full bg-amber-500" />
           </div>
-          <span className="text-2xl font-bold text-amber-400 mt-1">{highCount}</span>
+          <span className="text-2xl font-bold text-amber-600 dark:text-amber-400 mt-1">{highCount}</span>
         </div>
-        <div className="p-4 rounded-2xl bg-surface-container-lowest border border-outline-variant/20 flex flex-col">
-          <span className="text-xs text-outline font-medium">Completed</span>
-          <span className="text-2xl font-bold text-on-surface mt-1">{completedCount}</span>
+        <div className="p-4 rounded-2xl apple-glass border border-black/5 dark:border-white/10 flex flex-col shadow-xs">
+          <span className="text-xs text-gray-500 dark:text-gray-400 font-medium">Completed</span>
+          <span className="text-2xl font-bold text-gray-900 dark:text-white mt-1">{completedCount}</span>
         </div>
       </div>
 
       {/* Badge Box Manager Panel (Expandable) */}
       {showBadgeManager && (
-        <div className="p-5 rounded-2xl bg-surface-container-lowest border border-purple-500/30 flex flex-col gap-4 animate-in fade-in duration-150">
+        <div className="p-5 rounded-2xl apple-glass border border-purple-500/30 dark:border-purple-500/40 flex flex-col gap-4 animate-in fade-in duration-150 shadow-sm">
           <div className="flex items-center justify-between">
             <div className="flex items-center gap-2">
-              <span className="material-symbols-outlined text-purple-400 text-[20px]">inventory_2</span>
-              <h3 className="text-sm font-semibold text-on-surface">Your Badge Box</h3>
+              <span className="material-symbols-outlined text-purple-500 dark:text-purple-400 text-[20px]">inventory_2</span>
+              <h3 className="text-sm font-semibold text-gray-900 dark:text-white">Your Badge Box</h3>
             </div>
-            <span className="text-xs text-outline">Badges saved here are available for all future tasks</span>
+            <span className="text-xs text-gray-500 dark:text-gray-400">Badges saved here are available for all future tasks</span>
           </div>
 
           {/* Add badge input */}
@@ -169,7 +171,7 @@ export default function TasksPage() {
               placeholder="New badge name (e.g. Finance, Research)..."
               value={newBadgeName}
               onChange={(e) => setNewBadgeName(e.target.value)}
-              className="px-3 py-1.5 text-xs rounded-xl bg-surface-container border border-outline-variant/30 text-on-surface placeholder:text-outline focus:outline-none focus:border-primary flex-1 min-w-[200px]"
+              className="px-3 py-1.5 text-xs rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:border-[#007AFF] flex-1 min-w-[200px]"
             />
             <div className="flex items-center gap-1">
               {PRESET_BADGE_COLORS.map((preset, idx) => (
@@ -177,8 +179,8 @@ export default function TasksPage() {
                   key={preset.name}
                   type="button"
                   onClick={() => setSelectedColorIdx(idx)}
-                  className={`w-5 h-5 rounded-full border transition-all ${
-                    selectedColorIdx === idx ? 'ring-2 ring-primary scale-110' : 'opacity-70 hover:opacity-100'
+                  className={`w-5 h-5 rounded-full border transition-all cursor-pointer ${
+                    selectedColorIdx === idx ? 'ring-2 ring-[#007AFF] scale-110' : 'opacity-70 hover:opacity-100'
                   }`}
                   style={{ backgroundColor: preset.previewHex, borderColor: preset.previewHex }}
                 />
@@ -188,14 +190,14 @@ export default function TasksPage() {
               type="button"
               onClick={handleCreateBadgeFromManager}
               disabled={!newBadgeName.trim()}
-              className="px-3.5 py-1.5 rounded-xl bg-primary hover:bg-primary-container disabled:opacity-40 text-on-primary text-xs font-medium transition-colors"
+              className="px-3.5 py-1.5 rounded-xl bg-[#007AFF] hover:bg-[#0062cc] disabled:opacity-40 text-white text-xs font-semibold transition-colors cursor-pointer active:scale-95"
             >
               Add to Box
             </button>
           </div>
 
           {/* Stored Badges list */}
-          <div className="flex flex-wrap gap-2 pt-1 border-t border-outline-variant/15">
+          <div className="flex flex-wrap gap-2 pt-1 border-t border-black/5 dark:border-white/10">
             {badgeBox.map((b) => (
               <div
                 key={b.id}
@@ -206,7 +208,7 @@ export default function TasksPage() {
                   type="button"
                   onClick={() => deleteBadge(b.id)}
                   title="Remove badge from box"
-                  className="hover:opacity-70 text-[14px]"
+                  className="hover:opacity-70 text-[14px] cursor-pointer"
                 >
                   ×
                 </button>
@@ -217,17 +219,17 @@ export default function TasksPage() {
       )}
 
       {/* Filter Bar: Tabs, Search & Badges */}
-      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 bg-surface-container-lowest p-3 rounded-2xl border border-outline-variant/20">
+      <div className="flex flex-col md:flex-row md:items-center justify-between gap-3 apple-glass p-3 rounded-2xl border border-black/5 dark:border-white/10 shadow-xs">
         {/* Tabs */}
-        <div className="flex items-center gap-1 overflow-x-auto pb-1 md:pb-0">
+        <div className="apple-segmented-bg p-1 rounded-xl flex items-center gap-1 overflow-x-auto pb-1 md:pb-0">
           {(['all', 'today', 'upcoming', 'completed'] as FilterTab[]).map((tab) => (
             <button
               key={tab}
               onClick={() => setActiveTab(tab)}
-              className={`px-3 py-1.5 rounded-xl text-xs font-medium capitalize transition-colors ${
+              className={`px-3 py-1.5 rounded-xl text-xs font-medium capitalize transition-colors cursor-pointer ${
                 activeTab === tab
-                  ? 'bg-primary text-on-primary shadow-sm'
-                  : 'text-outline hover:text-on-surface hover:bg-surface-container'
+                  ? 'bg-white dark:bg-[#2C2C2E] text-[#007AFF] dark:text-[#0A84FF] font-semibold shadow-xs'
+                  : 'text-gray-500 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
               }`}
             >
               {tab}
@@ -237,7 +239,7 @@ export default function TasksPage() {
 
         {/* Search */}
         <div className="relative flex-1 max-w-xs">
-          <span className="material-symbols-outlined absolute left-3 top-2.5 text-outline text-[16px]">
+          <span className="material-symbols-outlined absolute left-3 top-2.5 text-gray-400 dark:text-gray-500 text-[16px]">
             search
           </span>
           <input
@@ -245,20 +247,20 @@ export default function TasksPage() {
             placeholder="Search tasks or badges..."
             value={searchQuery}
             onChange={(e) => setSearchQuery(e.target.value)}
-            className="w-full pl-8 pr-3 py-1.5 rounded-xl bg-surface-container border border-outline-variant/30 text-xs text-on-surface placeholder:text-outline focus:outline-none focus:border-primary"
+            className="w-full pl-8 pr-3 py-1.5 rounded-xl bg-black/5 dark:bg-white/5 border border-black/10 dark:border-white/10 text-xs text-gray-900 dark:text-white placeholder:text-gray-400 dark:placeholder:text-gray-500 focus:outline-none focus:border-[#007AFF] transition-all"
           />
         </div>
       </div>
 
       {/* Badge Quick Filters */}
       <div className="flex items-center gap-1.5 flex-wrap">
-        <span className="text-xs text-outline mr-1">Badge Filter:</span>
+        <span className="text-xs text-gray-500 dark:text-gray-400 mr-1 font-medium">Badge Filter:</span>
         <button
           onClick={() => setSelectedBadgeFilter(null)}
-          className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-colors ${
+          className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-colors cursor-pointer ${
             selectedBadgeFilter === null
-              ? 'bg-primary/15 text-primary border-primary/40'
-              : 'bg-surface-container-lowest border-outline-variant/30 text-outline hover:text-on-surface'
+              ? 'bg-blue-500/15 text-[#007AFF] dark:text-[#0A84FF] border-blue-500/30 font-semibold shadow-xs'
+              : 'apple-glass border-black/5 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
           }`}
         >
           All Badges
@@ -269,10 +271,10 @@ export default function TasksPage() {
             <button
               key={badge.id}
               onClick={() => setSelectedBadgeFilter(isSelected ? null : badge.name)}
-              className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-all ${
+              className={`px-2.5 py-1 rounded-lg text-xs font-medium border transition-all cursor-pointer ${
                 isSelected
-                  ? `${badge.color} ${badge.textColor} ${badge.borderColor} ring-2 ring-primary`
-                  : 'bg-surface-container-lowest border-outline-variant/25 text-outline hover:text-on-surface'
+                  ? `${badge.color} ${badge.textColor} ${badge.borderColor} ring-2 ring-[#007AFF] dark:ring-[#0A84FF] shadow-xs`
+                  : 'apple-glass border-black/5 dark:border-white/10 text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-white'
               }`}
             >
               {badge.name}
@@ -283,21 +285,21 @@ export default function TasksPage() {
 
       {/* Task List (Ordered Top to Bottom by Importance) */}
       <div className="flex flex-col gap-2">
-        <div className="flex items-center justify-between text-xs text-outline px-1">
+        <div className="flex items-center justify-between text-xs text-gray-500 dark:text-gray-400 px-1 font-medium">
           <span className="flex items-center gap-1">
-            <span className="material-symbols-outlined text-[14px] text-amber-400">swap_vert</span>
+            <span className="material-symbols-outlined text-[14px] text-amber-500 dark:text-amber-400">swap_vert</span>
             <span>Sorted Top to Bottom by Importance (Urgent → High → Medium → Low)</span>
           </span>
           <span>Showing {filteredTasks.length} task{filteredTasks.length === 1 ? '' : 's'}</span>
         </div>
 
         {filteredTasks.length === 0 ? (
-          <div className="p-12 text-center rounded-2xl bg-surface-container-lowest border border-outline-variant/20 flex flex-col items-center gap-2">
-            <span className="material-symbols-outlined text-4xl text-outline opacity-40">task_alt</span>
-            <p className="text-sm text-outline">No tasks match your filter criteria.</p>
+          <div className="p-12 text-center rounded-2xl apple-glass border border-black/5 dark:border-white/10 flex flex-col items-center gap-2 shadow-xs">
+            <span className="material-symbols-outlined text-4xl text-gray-400 dark:text-gray-500 opacity-40">task_alt</span>
+            <p className="text-sm text-gray-500 dark:text-gray-400">No tasks match your filter criteria.</p>
             <button
               onClick={handleOpenAdd}
-              className="mt-2 text-xs font-medium text-primary hover:underline"
+              className="mt-2 text-xs font-semibold text-[#007AFF] dark:text-[#0A84FF] hover:underline cursor-pointer"
             >
               + Create a new task
             </button>
@@ -313,8 +315,8 @@ export default function TasksPage() {
                 key={task.id}
                 className={`p-3.5 rounded-2xl border transition-all flex items-center justify-between gap-3 group ${
                   task.completed
-                    ? 'bg-surface-container/20 border-outline-variant/15 opacity-60'
-                    : 'bg-surface-container-lowest border-outline-variant/25 hover:border-outline-variant/60 shadow-sm'
+                    ? 'bg-black/[0.02] dark:bg-white/[0.02] border-black/5 dark:border-white/5 opacity-60'
+                    : 'apple-glass apple-card-hover border-black/5 dark:border-white/10 shadow-xs hover:border-black/15 dark:hover:border-white/20'
                 }`}
               >
                 {/* Checkbox + Details */}
@@ -325,8 +327,8 @@ export default function TasksPage() {
                   <div
                     className={`w-5 h-5 rounded-md flex items-center justify-center shrink-0 border transition-all ${
                       task.completed
-                        ? 'bg-primary border-primary text-on-primary'
-                        : 'border-outline-variant/50 group-hover:border-primary bg-surface-container/60'
+                        ? 'bg-[#007AFF] border-[#007AFF] text-white shadow-xs'
+                        : 'border-black/20 dark:border-white/20 group-hover:border-[#007AFF] bg-black/5 dark:bg-white/5'
                     }`}
                   >
                     {task.completed && (
@@ -337,7 +339,7 @@ export default function TasksPage() {
                   <div className="flex flex-col min-w-0 pr-2">
                     <span
                       className={`text-sm font-medium transition-all ${
-                        task.completed ? 'line-through text-outline' : 'text-on-surface'
+                        task.completed ? 'line-through text-gray-400 dark:text-gray-500' : 'text-gray-900 dark:text-white'
                       }`}
                     >
                       {task.title}
@@ -345,10 +347,10 @@ export default function TasksPage() {
                     <div className="flex items-center gap-2 flex-wrap mt-1">
                       {/* Date */}
                       <span
-                        className={`text-[11px] px-2 py-0.5 rounded-md font-mono ${
+                        className={`text-[11px] px-2 py-0.5 rounded-md font-mono font-medium ${
                           isToday
-                            ? 'text-primary bg-primary/10'
-                            : 'text-outline bg-surface-container'
+                            ? 'text-[#007AFF] dark:text-[#0A84FF] bg-blue-500/10 dark:bg-blue-500/15'
+                            : 'text-gray-500 dark:text-gray-400 bg-black/5 dark:bg-white/5'
                         }`}
                       >
                         {isToday ? 'Today' : task.dueDate}
@@ -360,7 +362,7 @@ export default function TasksPage() {
                           className={`text-[11px] px-2 py-0.5 rounded-md font-medium border ${
                             badgeObj
                               ? `${badgeObj.color} ${badgeObj.textColor} ${badgeObj.borderColor}`
-                              : 'bg-surface-container text-on-surface-variant border-outline-variant/30'
+                              : 'bg-black/5 dark:bg-white/5 text-gray-700 dark:text-gray-300 border-black/10 dark:border-white/10'
                           }`}
                         >
                           {task.badge}
@@ -380,7 +382,7 @@ export default function TasksPage() {
                         handleOpenEdit(task);
                       }}
                       title="Edit task"
-                      className="w-7 h-7 rounded-lg text-outline hover:text-primary hover:bg-surface-container flex items-center justify-center transition-colors"
+                      className="w-7 h-7 rounded-lg text-gray-400 hover:text-[#007AFF] hover:bg-black/5 dark:hover:bg-white/10 flex items-center justify-center transition-colors cursor-pointer"
                     >
                       <span className="material-symbols-outlined text-[16px]">edit</span>
                     </button>
@@ -390,7 +392,7 @@ export default function TasksPage() {
                         deleteTask(task.id);
                       }}
                       title="Delete task"
-                      className="w-7 h-7 rounded-lg text-outline hover:text-error hover:bg-surface-container flex items-center justify-center transition-colors"
+                      className="w-7 h-7 rounded-lg text-gray-400 hover:text-rose-500 hover:bg-rose-500/10 flex items-center justify-center transition-colors cursor-pointer"
                     >
                       <span className="material-symbols-outlined text-[16px]">delete</span>
                     </button>
@@ -399,7 +401,7 @@ export default function TasksPage() {
                   {/* Importance Pill */}
                   <span
                     className={`text-xs px-2.5 py-1 rounded-lg font-medium flex items-center gap-1.5 ${
-                      task.completed ? 'text-outline bg-surface-container' : config.badgeClass
+                      task.completed ? 'text-gray-400 dark:text-gray-500 bg-black/5 dark:bg-white/5' : config.badgeClass
                     }`}
                   >
                     <span className={`w-1.5 h-1.5 rounded-full ${config.dotClass}`} />
