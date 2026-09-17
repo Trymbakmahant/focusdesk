@@ -19,8 +19,8 @@ export default function Header({ onMenuClick }: HeaderProps) {
           <span className="material-symbols-outlined text-[20px]">menu</span>
         </button>
         <div className="md:hidden flex items-center gap-space-xs">
-          <img alt="FocusDeck Logo" className="w-7 h-7 rounded-lg object-cover ring-1 ring-outline-variant/30" src="/logo.jpg" />
-          <span className="font-headline-sm text-body-md text-on-surface font-semibold">FocusDeck</span>
+          <img alt="Fixates Logo" className="w-7 h-7 rounded-lg object-cover ring-1 ring-outline-variant/30" src="/logo.jpg" />
+          <span className="font-headline-sm text-body-md text-on-surface font-semibold">Fixates</span>
         </div>
         <div className="hidden md:flex items-center gap-space-xs text-outline">
           <span className="material-symbols-outlined text-[18px]">calendar_month</span>
@@ -28,7 +28,7 @@ export default function Header({ onMenuClick }: HeaderProps) {
         </div>
         <div className="hidden md:flex items-center gap-space-xs bg-surface-container/70 px-space-sm py-1 rounded-lg text-on-surface-variant w-72">
           <span className="material-symbols-outlined text-[18px] text-outline">search</span>
-          <span className="font-body-sm text-body-sm text-outline flex-1 truncate">Search FocusDeck...</span>
+          <span className="font-body-sm text-body-sm text-outline flex-1 truncate">Search Fixates...</span>
           <kbd className="font-code-kbd text-code-kbd bg-surface-container-highest px-1 py-0.5 rounded text-on-surface-variant">⌘K</kbd>
         </div>
       </div>

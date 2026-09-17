@@ -1,0 +1,36 @@
+# Fixates
+
+> Fixates is your personal command center for work, focus, and time. Built with Next.js 16, React 19, Supabase, and Tauri v2, it unifies deep-work focus timers, Google Calendar and ICS schedule synchronization, priority task checklists, habit streak analytics, and an AI agent voice command harness.
+
+## Core Capabilities
+
+- **Deep Work Focus Timer**: Interactive Pomodoro timer with configurable session lengths (25m standard, 50m deep work, custom durations), sound alarms, and active status tracking.
+- **Calendar & Timeline Sync**: Seamless bi-directional synchronization with Google Calendar (via OAuth2) and Apple / ICS calendar feeds. Features real-time status calculation (ongoing, finished, upcoming) and timeline breakdown.
+- **Smart Task Management**: Hierarchical task checklist supporting urgency/importance badges, priority tagging, completion percentages, and category sorting.
+- **Habit Streaks & Analytics**: Visual habit consistency grid tracking consecutive workday streaks, focus energy, and daily efficiency scores.
+- **AI Agent Tool Harness & Voice Control**: Integrated OpenAI/MCP tool schema harness with browser speech recognition for hands-free workflow actions (e.g. creating tasks, starting timers, checking upcoming meetings).
+- **Dual View Modes**: Switch effortlessly between a 12-column responsive Bento-grid Canvas view and a chronological single-column Feed view.
+- **macOS Desktop Integration**: Packaged with Tauri v2 for native desktop speed, global keyboard shortcuts (⌘K command palette), and local data storage.
+
+## Indexable Routes & Navigation
+
+- [/]: Fixates Dashboard & Command Center overview (live bento grid, greeting, quick notes, and daily target metrics)
+- [/focus]: Dedicated Full-Screen Focus Mode & Pomodoro Workstation
+- [/tasks]: Smart Task Management, Priority Checklist, and Tag Organizer
+- [/calendar]: Interactive Schedule, Timeline Viewer, and Google Calendar Sync
+- [/activity]: Habit Tracking, Workday Analytics, and Productivity Streaks
+- [/reminders]: Time-Sensitive Alerts, Quick Reminders, and Daily Checklists
+
+## Technical Stack & Architecture
+
+- **Frontend Framework**: Next.js 16 (App Router), React 19, TypeScript
+- **Styling**: Tailwind CSS v4 with dark mode design tokens and glassmorphism styling
+- **Hosting**: Cloudflare Workers (via OpenNext) and Tauri v2 desktop runtime
+- **Database & Auth**: Supabase (PostgreSQL, Row Level Security) and WorkOS
+- **API Endpoints**: Lightweight fetch-based OAuth2 and MCP agent tool execution
+
+## Machine Information
+
+- Canonical URL: https://focusdesk.trymbak0102mahant.workers.dev
+- Repository: Fixates Frontend
+- Target Platforms: macOS (Tauri v2), Modern Web Browsers (PWA)

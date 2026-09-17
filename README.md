@@ -1,6 +1,6 @@
-# FocusDeck — macOS Desktop & Dashboard
+# Fixates — your personal command center for work, focus, and time.
 
-FocusDeck is a macOS desktop dashboard and productivity command center built with **Next.js**, **Tailwind CSS**, and **Supabase**.
+Fixates is a macOS desktop dashboard and productivity command center built with **Next.js**, **Tailwind CSS**, and **Supabase**.
 
 ## Features
 

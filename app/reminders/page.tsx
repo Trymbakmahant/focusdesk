@@ -1,5 +1,14 @@
 import React from "react";
+import type { Metadata } from "next";
 import Reminders from "@/components/dashboard/Reminders";
+import { constructMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = constructMetadata({
+  title: "Time-Sensitive Reminders & Daily Alerts",
+  description:
+    "Never miss an important commitment. Manage notifications, time-sensitive alerts, and priority reminders on Fixates.",
+  path: "/reminders",
+});
 
 export default function RemindersPage() {
   return (

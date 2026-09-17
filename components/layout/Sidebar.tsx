@@ -26,10 +26,10 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
       <div className="flex flex-col">
        
         <div className="px-space-md py-space-xs flex items-center gap-space-sm">
-          <img alt="FocusDeck Logo" className="h-8 w-8 rounded-lg object-cover ring-1 ring-outline-variant/30 shrink-0 shadow-sm" src="/logo.jpg" />
+          <img alt="Fixates Logo" className="h-8 w-8 rounded-lg object-cover ring-1 ring-outline-variant/30 shrink-0 shadow-sm" src="/logo.jpg" />
           <div className="flex flex-col min-w-0">
-            <span className="font-headline-sm text-body-md text-on-surface truncate leading-tight">FocusDeck</span>
-            <span className="font-label-sm text-label-sm text-outline truncate leading-tight">macOS Desktop</span>
+            <span className="font-headline-sm text-body-md text-on-surface truncate leading-tight">Fixates</span>
+            <span className="font-label-sm text-label-sm text-outline truncate leading-tight">Command Center</span>
           </div>
         </div>
         <div className="px-space-md pt-space-md">

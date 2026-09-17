@@ -74,9 +74,9 @@ export default function GreetingHeader() {
     <section className="flex flex-col md:flex-row md:items-end justify-between gap-space-lg">
       <div className="flex flex-col gap-space-xs">
         <div className="flex items-center gap-space-sm flex-wrap">
-          <span className="font-display-lg text-display-lg text-on-surface tracking-tight">
+          <h1 className="font-display-lg text-display-lg text-on-surface tracking-tight">
             {mounted ? `${greeting}, ${displayName}` : "Good morning, Trymbak"}
-          </span>
+          </h1>
           <span className="inline-flex items-center px-2.5 py-0.5 rounded-full bg-secondary-fixed text-on-secondary-fixed font-label-sm text-label-sm font-medium">
             macOS Native
           </span>

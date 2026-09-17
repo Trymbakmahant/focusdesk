@@ -1,5 +1,14 @@
 import React from "react";
+import type { Metadata } from "next";
 import HabitActivity from "@/components/dashboard/HabitActivity";
+import { constructMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = constructMetadata({
+  title: "Habit Tracking & Productivity Activity",
+  description:
+    "Track daily habit streaks, analyze workday efficiency, and maintain productive momentum with Fixates's visual activity grid.",
+  path: "/activity",
+});
 
 export default function ActivityPage() {
   return (

@@ -1,5 +1,14 @@
 import React from "react";
+import type { Metadata } from "next";
 import FocusTimer from "@/components/dashboard/FocusTimer";
+import { constructMetadata } from "@/lib/seo";
+
+export const metadata: Metadata = constructMetadata({
+  title: "Deep Work Focus Timer & Pomodoro Mode",
+  description:
+    "Eliminate distractions and maximize productive flow with customizable Pomodoro sessions, countdown timers, and audio alerts on Fixates.",
+  path: "/focus",
+});
 
 export default function FocusPage() {
   return (

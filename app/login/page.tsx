@@ -118,7 +118,7 @@ function LoginContent() {
           <div className="relative">
             <img 
               src="/logo.jpg" 
-              alt="FocusDeck Logo" 
+              alt="Fixates Logo" 
               className="w-16 h-16 rounded-2xl object-cover ring-1 ring-outline-variant/30 shadow-xl shadow-black/40" 
             />
             <div className="absolute -bottom-1 -right-1 bg-surface-container-highest px-1.5 py-0.5 rounded-md border border-outline-variant/40 flex items-center gap-1 shadow-sm">
@@ -127,7 +127,7 @@ function LoginContent() {
             </div>
           </div>
           <h1 className="font-headline-md text-headline-md text-on-surface font-semibold mt-2">
-            Welcome to FocusDeck
+            Welcome to Fixates
           </h1>
           <p className="font-body-sm text-body-sm text-outline max-w-sm">
             Authenticate seamlessly with WorkOS AuthKit for enterprise-grade single sign-on, social logins, and passwordless access.
@@ -232,7 +232,7 @@ function LoginContent() {
             className="inline-flex items-center gap-1 text-xs text-outline hover:text-on-surface transition-colors"
           >
             <span className="material-symbols-outlined text-[14px]">arrow_back</span>
-            <span>Return to FocusDeck dashboard (Guest Preview)</span>
+            <span>Return to Fixates dashboard (Guest Preview)</span>
           </button>
           <span className="text-[10px] text-outline/60">
             Protected by WorkOS AuthKit · Encrypted session tokens

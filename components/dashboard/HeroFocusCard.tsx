@@ -88,7 +88,8 @@ export default function HeroFocusCard() {
 
   return (
     <>
-      <section className="relative rounded-2xl bg-gradient-to-br from-[#EAF7FF] via-[#D9F1FF] to-surface-container-lowest p-space-xl shadow-md border border-outline-variant/20 z-10">
+      <section aria-label="Daily Focus Overview" className="relative rounded-2xl bg-gradient-to-br from-[#EAF7FF] via-[#D9F1FF] to-surface-container-lowest p-space-xl shadow-md border border-outline-variant/20 z-10">
+        <h2 className="sr-only">Daily Focus Target and Progress</h2>
         {/* Background ambient orbs container with isolated overflow-hidden */}
         <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none">
           <div className="absolute -right-20 -top-20 w-96 h-96 rounded-full bg-secondary-container/20 blur-3xl" />

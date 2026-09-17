@@ -34,13 +34,13 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
           <div className="relative">
             <img
               src="/logo.jpg"
-              alt="FocusDeck Logo"
+              alt="Fixates Logo"
               className="w-16 h-16 rounded-2xl object-cover ring-2 ring-primary/40 shadow-2xl shadow-primary/20 animate-pulse"
             />
             <span className="absolute -bottom-1 -right-1 w-4 h-4 rounded-full bg-primary ring-2 ring-background animate-ping" />
           </div>
           <div className="flex flex-col gap-1">
-            <h1 className="font-headline-md text-xl font-bold text-on-surface tracking-tight">FocusDeck</h1>
+            <h1 className="font-headline-md text-xl font-bold text-on-surface tracking-tight">Fixates</h1>
             <p className="text-body-sm text-outline text-xs">Checking authentication & loading your workspace...</p>
           </div>
           <div className="w-44 h-1.5 bg-surface-container rounded-full overflow-hidden mt-2">
@@ -73,7 +73,7 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
               className="w-full h-11 rounded-xl bg-primary text-on-primary hover:bg-primary/90 font-label-md font-semibold text-sm transition-all flex items-center justify-center gap-2 shadow-lg shadow-primary/20 active:scale-[0.99]"
             >
               <span className="material-symbols-outlined text-[18px]">login</span>
-              <span>Sign In to FocusDeck</span>
+              <span>Sign In to Fixates</span>
             </button>
             <span className="text-[11px] text-outline">Redirecting to login page...</span>
           </div>
