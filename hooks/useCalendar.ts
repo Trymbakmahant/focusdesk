@@ -30,7 +30,9 @@ export function useCalendar() {
       if (saved) {
         const parsed = JSON.parse(saved);
         if (Array.isArray(parsed)) {
-          setEvents(parsed);
+          // Remove any legacy sample events to ensure only real calendar events are displayed
+          const cleanEvents = parsed.filter((e) => !e.id?.startsWith('sample-'));
+          setEvents(cleanEvents);
         }
       }
 
