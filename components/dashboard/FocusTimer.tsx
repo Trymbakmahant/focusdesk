@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
+import { useFocusStats } from '@/hooks/useFocusStats';
 
 type TimerMode = 'pomodoro' | 'shortBreak' | 'longBreak' | 'custom';
 
@@ -11,6 +12,7 @@ const MODE_TIMES = {
 };
 
 export default function FocusTimer() {
+  const { addFocusSeconds } = useFocusStats();
   const [mode, setMode] = useState<TimerMode>('pomodoro');
   const [customMinutes, setCustomMinutes] = useState<number>(45);
   const [timeLeft, setTimeLeft] = useState(MODE_TIMES.pomodoro);
@@ -91,6 +93,11 @@ export default function FocusTimer() {
             setIsActive(false);
             setIsFinished(true);
             playAlarmSound();
+            // Automatically log focus time for focus modes
+            if (mode === 'pomodoro' || mode === 'custom') {
+              const sessionDuration = mode === 'custom' ? customMinutes * 60 : MODE_TIMES[mode];
+              addFocusSeconds(sessionDuration);
+            }
             return 0;
           }
           return prev - 1;

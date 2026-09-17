@@ -1,7 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { useAuth } from "@/context/AuthContext";
+import { useFocusStats } from "@/hooks/useFocusStats";
+import { useTasks } from "@/hooks/useTasks";
 
 export default function GreetingHeader() {
   const { user } = useAuth();
@@ -59,6 +61,13 @@ export default function GreetingHeader() {
   };
 
   const displayName = getUserName();
+  const { formattedTodayTime } = useFocusStats();
+  const { tasks, todayString } = useTasks();
+
+  const tasksRemaining = useMemo(() => {
+    const pending = tasks.filter((t) => !t.completed && (!t.dueDate || t.dueDate === todayString));
+    return pending.length;
+  }, [tasks, todayString]);
 
   return (
     <section className="flex flex-col md:flex-row md:items-end justify-between gap-space-lg">
@@ -76,9 +85,9 @@ export default function GreetingHeader() {
           <span className="text-outline">·</span>
           <div className="inline-flex items-center gap-1.5 px-2.5 py-1 rounded-full bg-surface-container text-on-surface text-body-sm font-body-sm">
             <span className="w-2 h-2 rounded-full bg-primary animate-pulse"></span>
-            <span>4 tasks remaining today</span>
+            <span>{tasksRemaining} {tasksRemaining === 1 ? 'task' : 'tasks'} remaining today</span>
             <span className="text-outline">·</span>
-            <span className="text-primary font-label-sm font-medium">3h 24m deep work logged</span>
+            <span className="text-primary font-label-sm font-medium">{formattedTodayTime} deep work logged</span>
           </div>
         </div>
       </div>
