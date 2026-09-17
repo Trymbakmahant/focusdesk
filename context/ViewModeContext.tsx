@@ -26,7 +26,20 @@ export function ViewModeProvider({ children }: { children: React.ReactNode }) {
     } catch {
       // Ignore read errors
     }
+
+    const handleViewModeCommand = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (detail?.mode === 'canvas' || detail?.mode === 'feed') {
+        setViewModeState(detail.mode);
+      }
+    };
+
+    window.addEventListener('focusdeck-viewmode-command', handleViewModeCommand);
+    return () => {
+      window.removeEventListener('focusdeck-viewmode-command', handleViewModeCommand);
+    };
   }, []);
+
 
   const setViewMode = (mode: ViewMode) => {
     setViewModeState(mode);

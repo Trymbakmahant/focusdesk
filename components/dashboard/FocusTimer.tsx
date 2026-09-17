@@ -107,6 +107,52 @@ export default function FocusTimer() {
     return () => clearInterval(interval);
   }, [isActive, timeLeft, playAlarmSound]);
 
+  // Harness & Voice Command listener
+  useEffect(() => {
+    const handleTimerCommand = (e: Event) => {
+      const detail = (e as CustomEvent).detail;
+      if (!detail) return;
+
+      if (detail.action === 'start') {
+        const targetMode: TimerMode = detail.mode || 'pomodoro';
+        setMode(targetMode);
+        setIsFinished(false);
+
+        if (targetMode === 'custom' && detail.durationMinutes) {
+          const mins = Math.max(1, Math.min(180, Number(detail.durationMinutes)));
+          setCustomMinutes(mins);
+          setShowCustomConfig(true);
+          setTimeLeft(mins * 60);
+        } else if (targetMode === 'custom') {
+          setShowCustomConfig(true);
+          setTimeLeft(customMinutes * 60);
+        } else {
+          setShowCustomConfig(false);
+          setTimeLeft(MODE_TIMES[targetMode] || 25 * 60);
+        }
+        setIsActive(true);
+      } else if (detail.action === 'pause') {
+        setIsActive(false);
+      } else if (detail.action === 'resume') {
+        setIsActive(true);
+      } else if (detail.action === 'reset') {
+        setIsActive(false);
+        setIsFinished(false);
+        if (mode === 'custom') {
+          setTimeLeft(customMinutes * 60);
+        } else {
+          setTimeLeft(MODE_TIMES[mode]);
+        }
+      }
+    };
+
+    window.addEventListener('focusdeck-timer-command', handleTimerCommand);
+    return () => {
+      window.removeEventListener('focusdeck-timer-command', handleTimerCommand);
+    };
+  }, [mode, customMinutes]);
+
+
   const toggleTimer = () => {
     if (isFinished) {
       resetTimer();

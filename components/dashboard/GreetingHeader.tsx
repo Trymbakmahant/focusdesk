@@ -94,15 +94,32 @@ export default function GreetingHeader() {
       </div>
 
       <div className="flex items-center gap-space-sm self-start md:self-end flex-wrap">
-        <div className="flex items-center gap-space-xs bg-surface-container-lowest shadow-sm px-space-md py-1.5 rounded-xl text-on-surface w-56 hover:shadow transition-shadow cursor-pointer">
+        <div
+          onClick={() => {
+            if (typeof window !== 'undefined') {
+              window.dispatchEvent(new CustomEvent('focusdeck-open-agent-modal'));
+            }
+          }}
+          className="flex items-center gap-space-xs bg-surface-container-lowest shadow-sm px-space-md py-1.5 rounded-xl text-on-surface w-56 hover:shadow transition-shadow cursor-pointer hover:border-primary/40 border border-transparent"
+        >
           <span className="material-symbols-outlined text-[18px] text-primary">search</span>
-          <span className="font-body-sm text-body-sm text-outline flex-1">⌘K Search</span>
+          <span className="font-body-sm text-body-sm text-outline flex-1">⌘K Agent Harness</span>
           <span className="font-code-kbd text-code-kbd px-1.5 py-0.5 rounded bg-surface-container text-on-surface-variant">⌘K</span>
         </div>
-        <button className="h-9 px-space-md rounded-xl bg-primary text-on-primary shadow-sm hover:bg-primary/90 transition-all flex items-center gap-space-xs font-label-md text-label-md font-medium">
-          <span className="material-symbols-outlined text-[18px]">add</span>
-          <span>Add Card</span>
+        <button
+          type="button"
+          onClick={() => {
+            if (typeof window !== 'undefined') {
+              window.dispatchEvent(new CustomEvent('focusdeck-open-agent-modal'));
+            }
+          }}
+          className="h-9 px-3 rounded-xl bg-gradient-to-r from-primary/15 via-primary/10 to-secondary/15 hover:from-primary/25 hover:to-secondary/25 border border-primary/30 text-primary font-semibold text-xs flex items-center gap-1.5 transition-all shadow-xs"
+          title="Open AI Agent & Voice Command Harness (⌘K)"
+        >
+          <span className="material-symbols-outlined text-[17px]">smart_toy</span>
+          <span>Agent &amp; Voice</span>
         </button>
+
         <div className="relative">
           <button className="w-9 h-9 rounded-xl bg-surface-container-lowest text-on-surface-variant hover:text-on-surface shadow-sm flex items-center justify-center transition-all">
             <span className="material-symbols-outlined text-[20px]">notifications</span>
