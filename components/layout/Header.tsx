@@ -36,8 +36,12 @@ export default function Header({ onMenuClick }: HeaderProps) {
         {user ? (
           <div className="flex items-center gap-2">
             <div className="hidden sm:flex items-center gap-space-xs px-2.5 py-1 rounded-lg bg-surface-container text-xs text-outline border border-outline-variant/20">
-              <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
-              <span className="truncate max-w-[140px] text-on-surface font-medium">{user.email}</span>
+              {user.profilePictureUrl ? (
+                <img src={user.profilePictureUrl} alt="" className="w-4 h-4 rounded-full object-cover" />
+              ) : (
+                <span className="w-2 h-2 rounded-full bg-primary animate-pulse" />
+              )}
+              <span className="truncate max-w-[140px] text-on-surface font-medium">{user.name || user.email}</span>
             </div>
             <button
               onClick={() => signOut()}

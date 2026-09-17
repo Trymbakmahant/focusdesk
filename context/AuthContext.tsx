@@ -1,169 +1,185 @@
 "use client";
 
-import React, { createContext, useContext, useEffect, useState } from 'react';
-import { supabase } from '@/lib/supabase';
-import type { User, Session, AuthError, EmailOtpType } from '@supabase/supabase-js';
+import React, { createContext, useContext, useEffect, useState, useMemo, useCallback } from 'react';
+import { useRouter } from 'next/navigation';
+import { AuthKitProvider, useAuth as useWorkOSAuth } from '@workos-inc/authkit-nextjs/components';
 
-type AuthContextType = {
-  user: User | null;
-  session: Session | null;
+export interface AuthUser {
+  id: string;
+  email: string;
+  firstName?: string | null;
+  lastName?: string | null;
+  name?: string | null;
+  profilePictureUrl?: string | null;
+  user_metadata?: {
+    full_name?: string | null;
+    name?: string | null;
+    avatar_url?: string | null;
+  };
+  raw?: unknown;
+}
+
+export interface AuthContextType {
+  user: AuthUser | null;
+  session: { user: AuthUser } | null;
   loading: boolean;
   isConfigured: boolean;
-  signInWithPassword: (email: string, password: string) => Promise<{ error: AuthError | null }>;
-  signUpWithPassword: (email: string, password: string) => Promise<{ error: AuthError | null; needsEmailConfirmation?: boolean }>;
-  signInWithOtp: (email: string) => Promise<{ error: AuthError | null }>;
-  verifyOtp: (email: string, token: string, type?: EmailOtpType) => Promise<{ error: AuthError | null }>;
-  signOut: () => Promise<{ error: AuthError | null }>;
-};
+  signIn: () => void;
+  signUp: () => void;
+  signOut: () => Promise<{ error: unknown | null }>;
+  // Compatibility stubs for existing code
+  signInWithPassword: (email: string, password: string) => Promise<{ error: unknown | null }>;
+  signUpWithPassword: (email: string, password: string) => Promise<{ error: unknown | null; needsEmailConfirmation?: boolean }>;
+  signInWithOtp: (email: string) => Promise<{ error: unknown | null }>;
+  verifyOtp: (email: string, token: string, type?: unknown) => Promise<{ error: unknown | null }>;
+}
 
-const AuthContext = createContext<AuthContextType>({
+const defaultContext: AuthContextType = {
   user: null,
   session: null,
   loading: true,
   isConfigured: false,
+  signIn: () => {},
+  signUp: () => {},
+  signOut: async () => ({ error: null }),
   signInWithPassword: async () => ({ error: null }),
   signUpWithPassword: async () => ({ error: null }),
   signInWithOtp: async () => ({ error: null }),
   verifyOtp: async () => ({ error: null }),
-  signOut: async () => ({ error: null }),
-});
+};
 
-export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
-  const [user, setUser] = useState<User | null>(null);
-  const [session, setSession] = useState<Session | null>(null);
-  const [loading, setLoading] = useState(true);
+const AuthContext = createContext<AuthContextType>(defaultContext);
 
-  const isConfigured = Boolean(
-    process.env.NEXT_PUBLIC_SUPABASE_URL && 
-    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY
+function InnerAuthProvider({ children }: { children: React.ReactNode }) {
+  const router = useRouter();
+  const { user: workosUser, loading: workosLoading, signOut: workosSignOut } = useWorkOSAuth();
+  const [isConfigured, setIsConfigured] = useState<boolean>(
+    Boolean(process.env.NEXT_PUBLIC_WORKOS_CLIENT_ID)
   );
 
   useEffect(() => {
-    if (!supabase) {
-      setLoading(false);
-      return;
-    }
-
-    // Get current session
-    supabase.auth.getSession().then(({ data: { session } }) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    }).catch(() => {
-      setLoading(false);
-    });
-
-    // Listen for auth changes
-    const { data: { subscription } } = supabase.auth.onAuthStateChange((_event, session) => {
-      setSession(session);
-      setUser(session?.user ?? null);
-      setLoading(false);
-    });
-
-    return () => {
-      subscription.unsubscribe();
-    };
+    // Verify server-side configuration status
+    fetch('/api/auth/config')
+      .then((res) => res.json())
+      .then((data) => {
+        if (typeof data?.isConfigured === 'boolean') {
+          setIsConfigured(data.isConfigured);
+        }
+      })
+      .catch(() => {
+        // Fallback to client-side flag
+        setIsConfigured(Boolean(process.env.NEXT_PUBLIC_WORKOS_CLIENT_ID));
+      });
   }, []);
 
-  const getCallbackUrl = () => {
-    if (typeof window === 'undefined') return undefined;
-    return `${window.location.origin}/auth/callback`;
-  };
+  const normalizedUser = useMemo<AuthUser | null>(() => {
+    if (!workosUser) return null;
 
-  const signInWithPassword = async (email: string, password: string) => {
-    if (!supabase) {
-      return { 
-        error: { 
-          name: 'NotConfigured', 
-          message: 'Supabase is not configured yet. Please add your cloud Supabase keys to .env.local' 
-        } as AuthError 
-      };
-    }
-    const { error } = await supabase.auth.signInWithPassword({ email, password });
-    return { error };
-  };
+    const fullName = [workosUser.firstName, workosUser.lastName].filter(Boolean).join(' ') || undefined;
 
-  const signUpWithPassword = async (email: string, password: string) => {
-    if (!supabase) {
-      return { 
-        error: { 
-          name: 'NotConfigured', 
-          message: 'Supabase is not configured yet. Please add your cloud Supabase keys to .env.local' 
-        } as AuthError 
-      };
-    }
-    const { data, error } = await supabase.auth.signUp({ 
-      email, 
-      password,
-      options: {
-        emailRedirectTo: getCallbackUrl(),
-      }
-    });
-
-    const needsEmailConfirmation = Boolean(data.user && !data.session);
-    return { error, needsEmailConfirmation };
-  };
-
-  const signInWithOtp = async (email: string) => {
-    if (!supabase) {
-      return { 
-        error: { 
-          name: 'NotConfigured', 
-          message: 'Supabase is not configured yet. Please add your cloud Supabase keys to .env.local' 
-        } as AuthError 
-      };
-    }
-    const { error } = await supabase.auth.signInWithOtp({
-      email,
-      options: {
-        emailRedirectTo: getCallbackUrl(),
+    return {
+      id: workosUser.id,
+      email: workosUser.email || '',
+      firstName: workosUser.firstName,
+      lastName: workosUser.lastName,
+      name: fullName,
+      profilePictureUrl: workosUser.profilePictureUrl,
+      user_metadata: {
+        full_name: fullName,
+        name: fullName,
+        avatar_url: workosUser.profilePictureUrl,
       },
-    });
-    return { error };
-  };
+      raw: workosUser,
+    };
+  }, [workosUser]);
 
-  const verifyOtp = async (email: string, token: string, type: EmailOtpType = 'email') => {
-    if (!supabase) {
-      return { 
-        error: { 
-          name: 'NotConfigured', 
-          message: 'Supabase is not configured yet. Please add your cloud Supabase keys to .env.local' 
-        } as AuthError 
-      };
+  const session = useMemo(() => {
+    return normalizedUser ? { user: normalizedUser } : null;
+  }, [normalizedUser]);
+
+  const signIn = useCallback(() => {
+    window.location.assign('/auth/login');
+  }, []);
+
+  const signUp = useCallback(() => {
+    window.location.assign('/auth/signup');
+  }, []);
+
+  const signOut = useCallback(async () => {
+    try {
+      if (workosSignOut) {
+        await workosSignOut({ returnTo: '/login' });
+      } else {
+        window.location.assign('/auth/logout');
+      }
+      return { error: null };
+    } catch {
+      window.location.assign('/auth/logout');
+      return { error: null };
     }
-    const { error } = await supabase.auth.verifyOtp({
-      email,
-      token,
-      type,
-    });
-    return { error };
-  };
+  }, [workosSignOut]);
 
-  const signOut = async () => {
-    if (!supabase) return { error: null };
-    const { error } = await supabase.auth.signOut();
-    setUser(null);
-    setSession(null);
-    return { error };
-  };
+  // Backward compatibility handlers
+  const signInWithPassword = useCallback(async () => {
+    signIn();
+    return { error: null };
+  }, [signIn]);
+
+  const signUpWithPassword = useCallback(async () => {
+    signUp();
+    return { error: null, needsEmailConfirmation: false };
+  }, [signUp]);
+
+  const signInWithOtp = useCallback(async () => {
+    signIn();
+    return { error: null };
+  }, [signIn]);
+
+  const verifyOtp = useCallback(async () => {
+    return { error: null };
+  }, []);
+
+  const value = useMemo<AuthContextType>(() => ({
+    user: normalizedUser,
+    session,
+    loading: workosLoading,
+    isConfigured,
+    signIn,
+    signUp,
+    signOut,
+    signInWithPassword,
+    signUpWithPassword,
+    signInWithOtp,
+    verifyOtp,
+  }), [
+    normalizedUser,
+    session,
+    workosLoading,
+    isConfigured,
+    signIn,
+    signUp,
+    signOut,
+    signInWithPassword,
+    signUpWithPassword,
+    signInWithOtp,
+    verifyOtp,
+  ]);
 
   return (
-    <AuthContext.Provider
-      value={{
-        user,
-        session,
-        loading,
-        isConfigured,
-        signInWithPassword,
-        signUpWithPassword,
-        signInWithOtp,
-        verifyOtp,
-        signOut,
-      }}
-    >
+    <AuthContext.Provider value={value}>
       {children}
     </AuthContext.Provider>
   );
-};
+}
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+  return (
+    <AuthKitProvider>
+      <InnerAuthProvider>
+        {children}
+      </InnerAuthProvider>
+    </AuthKitProvider>
+  );
+}
 
 export const useAuth = () => useContext(AuthContext);

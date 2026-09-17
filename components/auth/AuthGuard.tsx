@@ -9,11 +9,12 @@ export default function AuthGuard({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
   const router = useRouter();
 
-  const isPublicRoute = pathname === '/login' || pathname.startsWith('/auth');
+  const isPublicRoute = pathname === '/login' || pathname.startsWith('/auth') || pathname.startsWith('/callback') || pathname.startsWith('/api/auth');
 
   useEffect(() => {
     if (!loading) {
-      if (!user && !isPublicRoute) {
+      const isGuest = typeof window !== 'undefined' && sessionStorage.getItem('focusdeck_guest') === 'true';
+      if (!user && !isPublicRoute && !isGuest) {
         router.replace('/login');
       } else if (user && pathname === '/login') {
         router.replace('/');

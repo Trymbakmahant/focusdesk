@@ -1,6 +1,7 @@
 "use client";
 
 import React, { useState, useMemo } from 'react';
+import Link from 'next/link';
 import { useCalendar } from '@/hooks/useCalendar';
 import GoogleCalendarModal from '@/components/calendar/GoogleCalendarModal';
 import { CATEGORY_COLORS } from '@/types/calendar';
@@ -18,12 +19,25 @@ export default function CalendarTimeline() {
 
   const [isModalOpen, setIsModalOpen] = useState(false);
 
+  const todayStr = useMemo(() => new Date().toISOString().split('T')[0], []);
+
   const formattedCurrentDate = useMemo(() => {
     return new Intl.DateTimeFormat('en-US', {
       month: 'long',
       day: 'numeric',
     }).format(new Date());
   }, []);
+
+  // Display upcoming and today's events, sorted chronologically
+  const displayedEvents = useMemo(() => {
+    // Show events from today onwards, or latest events if all are in past
+    const todayAndUpcoming = events.filter((e) => e.date >= todayStr);
+    if (todayAndUpcoming.length > 0) {
+      return todayAndUpcoming.slice(0, 5);
+    }
+    // If all events are historical (e.g. from past months), show latest 5
+    return [...events].sort((a, b) => b.timestamp - a.timestamp).slice(0, 5);
+  }, [events, todayStr]);
 
   return (
     <div className="md:col-span-5 flex flex-col justify-between bg-surface-container-lowest border border-outline-variant/20 rounded-2xl p-space-lg shadow-sm hover:shadow-md transition-shadow">
@@ -37,6 +51,17 @@ export default function CalendarTimeline() {
 
           <div className="flex items-center gap-space-xs">
             <span className="font-label-sm text-label-sm text-primary font-medium">{formattedCurrentDate}</span>
+
+            {/* Expand / Full View Link */}
+            <Link
+              href="/calendar"
+              title="Open Full Calendar View"
+              className="w-7 h-7 rounded-lg text-outline hover:text-on-surface hover:bg-surface-container flex items-center justify-center transition-colors"
+            >
+              <span className="material-symbols-outlined text-[17px]">open_in_new</span>
+            </Link>
+
+            {/* GCal Import Trigger */}
             <button
               onClick={() => setIsModalOpen(true)}
               className="px-2.5 py-1 rounded-lg bg-surface-container hover:bg-surface-container-high text-on-surface text-xs font-medium transition-colors flex items-center gap-1.5 border border-outline-variant/20"
@@ -84,7 +109,7 @@ export default function CalendarTimeline() {
           <div className="flex flex-col gap-space-sm relative pr-1 max-h-72 overflow-y-auto">
             <div className="absolute left-2.5 top-2 bottom-2 w-0.5 bg-surface-container-high" />
 
-            {events.map((event, index) => {
+            {displayedEvents.map((event, index) => {
               const catConfig = CATEGORY_COLORS[event.category] || CATEGORY_COLORS.Work;
               const isFirst = index === 0;
 
@@ -117,7 +142,7 @@ export default function CalendarTimeline() {
                       {event.location && (
                         <>
                           <span className="text-outline">·</span>
-                          <span className="text-outline text-[11px] truncate">{event.location}</span>
+                          <span className="text-outline text-[11px] truncate max-w-[150px]">{event.location}</span>
                         </>
                       )}
                     </div>
@@ -129,25 +154,34 @@ export default function CalendarTimeline() {
         )}
       </div>
 
-      {/* Footer Sync Status */}
+      {/* Footer Sync Status with Full View Link */}
       <div className="pt-space-md flex items-center justify-between text-xs text-outline border-t border-outline-variant/15 mt-3">
         <div className="flex items-center gap-1.5">
           {hasGoogleEvents ? (
             <span className="text-emerald-400 font-medium flex items-center gap-1">
               <span className="w-2 h-2 rounded-full bg-emerald-400" />
-              <span>Google Calendar Synced</span>
+              <span>{events.length} events synced</span>
             </span>
           ) : (
             <span>No calendar connected</span>
           )}
         </div>
-        <button
-          onClick={() => setIsModalOpen(true)}
-          className="text-primary hover:underline font-medium text-xs flex items-center gap-1"
-        >
-          <span className="material-symbols-outlined text-[14px]">settings</span>
-          <span>{hasGoogleEvents ? 'Sync Settings' : 'Connect'}</span>
-        </button>
+
+        <div className="flex items-center gap-3">
+          <button
+            onClick={() => setIsModalOpen(true)}
+            className="text-outline hover:text-on-surface text-xs transition-colors"
+          >
+            {hasGoogleEvents ? 'Sync Settings' : 'Connect'}
+          </button>
+          <Link
+            href="/calendar"
+            className="text-primary hover:underline font-medium text-xs flex items-center gap-0.5"
+          >
+            <span>Full View</span>
+            <span className="material-symbols-outlined text-[14px]">arrow_forward</span>
+          </Link>
+        </div>
       </div>
 
       {/* Google Calendar Import Modal */}

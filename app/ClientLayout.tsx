@@ -11,7 +11,7 @@ import AuthGuard from '@/components/auth/AuthGuard';
 export default function ClientLayout({ children }: { children: React.ReactNode }) {
   const [isSidebarOpen, setIsSidebarOpen] = useState(false);
   const pathname = usePathname();
-  const isAuthPage = pathname === '/login' || pathname.startsWith('/auth');
+  const isAuthPage = pathname === '/login' || pathname.startsWith('/auth') || pathname.startsWith('/callback');
 
   return (
     <AuthProvider>

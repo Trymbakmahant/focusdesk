@@ -4,48 +4,51 @@ export interface CalendarEvent {
   id: string;
   user_id?: string;
   title: string;
-  startTime: string; // e.g. "09:30 AM"
-  endTime: string;   // e.g. "10:30 AM"
-  date: string;      // "YYYY-MM-DD"
+  startTime: string; // e.g. "09:30 AM" or "All day"
+  endTime: string;   // e.g. "10:30 AM" or "All day"
+  date: string;      // "YYYY-MM-DD" local date
+  timestamp: number; // Unix timestamp ms for exact sorting
+  endTimestamp?: number;
   category: EventCategory;
   description?: string;
   location?: string;
+  url?: string;
   source: 'google' | 'manual';
   created_at?: string;
 }
 
 export const CATEGORY_COLORS: Record<
   EventCategory,
-  { bg: string; text: string; dot: string; ring?: string }
+  { bg: string; text: string; dot: string; border: string }
 > = {
   Work: {
     bg: 'bg-sky-500/15',
-    text: 'text-sky-300',
+    text: 'text-sky-400',
     dot: 'bg-sky-400',
-    ring: 'ring-sky-500/30',
+    border: 'border-sky-500/30',
   },
   Meeting: {
     bg: 'bg-purple-500/15',
-    text: 'text-purple-300',
+    text: 'text-purple-400',
     dot: 'bg-purple-400',
-    ring: 'ring-purple-500/30',
+    border: 'border-purple-500/30',
   },
   Focus: {
     bg: 'bg-primary/20',
     text: 'text-primary',
     dot: 'bg-primary',
-    ring: 'ring-primary/40',
+    border: 'border-primary/40',
   },
   Personal: {
     bg: 'bg-emerald-500/15',
-    text: 'text-emerald-300',
+    text: 'text-emerald-400',
     dot: 'bg-emerald-400',
-    ring: 'ring-emerald-500/30',
+    border: 'border-emerald-500/30',
   },
   Design: {
     bg: 'bg-rose-500/15',
-    text: 'text-rose-300',
+    text: 'text-rose-400',
     dot: 'bg-rose-400',
-    ring: 'ring-rose-500/30',
+    border: 'border-rose-500/30',
   },
 };

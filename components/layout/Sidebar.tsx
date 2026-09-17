@@ -107,12 +107,16 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
           {user ? (
             <div className="flex items-center justify-between p-1 rounded-lg bg-surface-container/40">
               <div className="flex items-center gap-space-xs min-w-0 pr-2">
-                <div className="w-7 h-7 rounded-full bg-primary/20 text-primary flex items-center justify-center font-semibold text-xs shrink-0 ring-1 ring-primary/30">
-                  {user.email ? user.email[0].toUpperCase() : 'U'}
-                </div>
+                {user.profilePictureUrl ? (
+                  <img src={user.profilePictureUrl} alt="" className="w-7 h-7 rounded-full object-cover ring-1 ring-primary/30 shrink-0" />
+                ) : (
+                  <div className="w-7 h-7 rounded-full bg-primary/20 text-primary flex items-center justify-center font-semibold text-xs shrink-0 ring-1 ring-primary/30">
+                    {user.name ? user.name[0].toUpperCase() : user.email ? user.email[0].toUpperCase() : 'U'}
+                  </div>
+                )}
                 <div className="flex flex-col min-w-0">
-                  <span className="font-label-sm text-label-sm text-on-surface truncate">{user.email}</span>
-                  <span className="text-[10px] text-primary leading-none">Cloud Synced</span>
+                  <span className="font-label-sm text-label-sm text-on-surface truncate">{user.name || user.email}</span>
+                  <span className="text-[10px] text-primary leading-none">WorkOS Authenticated</span>
                 </div>
               </div>
               <button
@@ -129,7 +133,7 @@ export default function Sidebar({ isOpen, setIsOpen }: SidebarProps) {
               className="flex items-center justify-center gap-space-xs w-full py-2 px-space-sm rounded-lg bg-surface-container text-on-surface hover:bg-surface-container-high transition-colors font-label-md text-label-md"
             >
               <span className="material-symbols-outlined text-[18px] text-primary">login</span>
-              <span>Sign In with Supabase</span>
+              <span>Sign In with WorkOS</span>
             </Link>
           )}
         </div>

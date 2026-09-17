@@ -20,21 +20,19 @@ export function useCalendar() {
     return user ? `focusdeck_gcal_url_${user.id}` : 'focusdeck_gcal_url_guest';
   }, [user]);
 
-  // Load user calendar from localStorage
+  // Load calendar from localStorage (supports both authenticated user and guest mode)
   useEffect(() => {
-    if (!user) {
-      setEvents([]);
-      setIsLoaded(true);
-      return;
-    }
-
     try {
       const saved = localStorage.getItem(storageKey);
       if (saved) {
         const parsed = JSON.parse(saved);
-        if (Array.isArray(parsed)) {
+        if (Array.isArray(parsed) && parsed.length > 0) {
           setEvents(parsed);
+        } else {
+          setEvents(SAMPLE_GOOGLE_CALENDAR_EVENTS);
         }
+      } else {
+        setEvents(SAMPLE_GOOGLE_CALENDAR_EVENTS);
       }
 
       const savedUrl = localStorage.getItem(urlStorageKey);
@@ -42,31 +40,31 @@ export function useCalendar() {
         setGoogleCalendarUrl(savedUrl);
       }
     } catch {
-      // Fallback
+      setEvents(SAMPLE_GOOGLE_CALENDAR_EVENTS);
     } finally {
       setIsLoaded(true);
     }
-  }, [user, storageKey, urlStorageKey]);
+  }, [storageKey, urlStorageKey]);
 
   // Persist whenever events change
   useEffect(() => {
-    if (!isLoaded || !user) return;
+    if (!isLoaded) return;
     try {
       localStorage.setItem(storageKey, JSON.stringify(events));
     } catch (err) {
       console.error('Failed to persist calendar events:', err);
     }
-  }, [events, isLoaded, user, storageKey]);
+  }, [events, isLoaded, storageKey]);
 
   // Persist URL
   useEffect(() => {
-    if (!isLoaded || !user) return;
+    if (!isLoaded) return;
     try {
       localStorage.setItem(urlStorageKey, googleCalendarUrl);
     } catch (err) {
       console.error('Failed to persist gcal url:', err);
     }
-  }, [googleCalendarUrl, isLoaded, user, urlStorageKey]);
+  }, [googleCalendarUrl, isLoaded, urlStorageKey]);
 
   // Import raw ICS string (from file upload or text)
   const importIcs = useCallback((icsContent: string) => {
