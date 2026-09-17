@@ -4,12 +4,13 @@ import React, { useState, useEffect, useMemo } from "react";
 import { useAuth } from "@/context/AuthContext";
 import { useFocusStats } from "@/hooks/useFocusStats";
 import { useTasks } from "@/hooks/useTasks";
+import { useViewMode } from "@/context/ViewModeContext";
 
 export default function GreetingHeader() {
   const { user } = useAuth();
+  const { viewMode, setViewMode } = useViewMode();
   const [greeting, setGreeting] = useState("Good morning");
   const [currentDate, setCurrentDate] = useState("");
-  const [viewMode, setViewMode] = useState<"canvas" | "feed">("canvas");
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {

@@ -85,10 +85,12 @@ export default function HeroFocusCard() {
   );
 
   return (
-    <section className="relative overflow-hidden rounded-2xl bg-gradient-to-br from-[#EAF7FF] via-[#D9F1FF] to-surface-container-lowest p-space-xl shadow-md border border-outline-variant/20">
-      {/* Background ambient orbs */}
-      <div className="absolute -right-20 -top-20 w-96 h-96 rounded-full bg-secondary-container/20 blur-3xl pointer-events-none" />
-      <div className="absolute right-1/4 -bottom-16 w-80 h-80 rounded-full bg-primary-fixed/40 blur-2xl pointer-events-none" />
+    <section className="relative rounded-2xl bg-gradient-to-br from-[#EAF7FF] via-[#D9F1FF] to-surface-container-lowest p-space-xl shadow-md border border-outline-variant/20 z-10">
+      {/* Background ambient orbs container with isolated overflow-hidden */}
+      <div className="absolute inset-0 overflow-hidden rounded-2xl pointer-events-none">
+        <div className="absolute -right-20 -top-20 w-96 h-96 rounded-full bg-secondary-container/20 blur-3xl" />
+        <div className="absolute right-1/4 -bottom-16 w-80 h-80 rounded-full bg-primary-fixed/40 blur-2xl" />
+      </div>
 
       <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-space-xl">
         <div className="flex flex-col gap-space-sm max-w-2xl">
@@ -142,7 +144,7 @@ export default function HeroFocusCard() {
                   type="button"
                   onClick={() => setShowTargetMenu(!showTargetMenu)}
                   title="Change Daily Target"
-                  className="w-5 h-5 rounded-full hover:bg-surface-container flex items-center justify-center text-outline hover:text-on-surface transition-colors"
+                  className="w-6 h-6 rounded-lg bg-surface-container/60 hover:bg-surface-container flex items-center justify-center text-outline hover:text-primary transition-colors border border-outline-variant/30"
                 >
                   <span className="material-symbols-outlined text-[14px]">tune</span>
                 </button>
@@ -150,31 +152,48 @@ export default function HeroFocusCard() {
               <span className="text-on-surface-variant">{formattedRemainingTime}</span>
             </div>
 
-            {/* Target Goal Popup Menu */}
+            {/* Target Goal Popup Menu (Unclipped, with click-away backdrop) */}
             {showTargetMenu && (
-              <div className="absolute top-7 left-0 z-30 p-2 bg-surface-container-lowest rounded-xl shadow-xl border border-outline-variant/30 flex flex-col gap-1 text-xs text-on-surface min-w-[140px] animate-fadeIn">
-                <span className="font-semibold px-2 py-1 text-[11px] text-outline">Set Daily Goal:</span>
-                {TARGET_PRESETS.map((preset) => (
-                  <button
-                    key={preset.value}
-                    type="button"
-                    onClick={() => {
-                      setDailyTargetMinutes(preset.value);
-                      setShowTargetMenu(false);
-                    }}
-                    className={`px-2.5 py-1.5 rounded-lg text-left transition-colors flex items-center justify-between ${
-                      targetMinutes === preset.value
-                        ? 'bg-primary/15 text-primary font-semibold'
-                        : 'hover:bg-surface-container text-on-surface'
-                    }`}
-                  >
-                    <span>{preset.label}</span>
-                    {targetMinutes === preset.value && (
-                      <span className="material-symbols-outlined text-[14px] text-primary">check</span>
-                    )}
-                  </button>
-                ))}
-              </div>
+              <>
+                <div
+                  className="fixed inset-0 z-40"
+                  onClick={() => setShowTargetMenu(false)}
+                />
+                <div className="absolute top-8 left-0 z-50 p-3 bg-surface-container-lowest/98 backdrop-blur-xl rounded-2xl shadow-2xl border border-outline-variant/40 flex flex-col gap-2 text-xs text-on-surface min-w-[240px] animate-fadeIn">
+                  <div className="flex items-center justify-between pb-1 border-b border-outline-variant/20">
+                    <span className="font-semibold text-xs text-on-surface">Set Daily Focus Goal</span>
+                    <button
+                      type="button"
+                      onClick={() => setShowTargetMenu(false)}
+                      className="w-5 h-5 rounded-md hover:bg-surface-container flex items-center justify-center text-outline hover:text-on-surface"
+                    >
+                      <span className="material-symbols-outlined text-[14px]">close</span>
+                    </button>
+                  </div>
+                  <div className="grid grid-cols-2 gap-1.5 pt-1">
+                    {TARGET_PRESETS.map((preset) => (
+                      <button
+                        key={preset.value}
+                        type="button"
+                        onClick={() => {
+                          setDailyTargetMinutes(preset.value);
+                          setShowTargetMenu(false);
+                        }}
+                        className={`px-3 py-2 rounded-xl text-left transition-all flex items-center justify-between ${
+                          targetMinutes === preset.value
+                            ? 'bg-primary text-on-primary font-semibold shadow-xs'
+                            : 'bg-surface-container-low hover:bg-surface-container text-on-surface'
+                        }`}
+                      >
+                        <span className="text-[11px]">{preset.label}</span>
+                        {targetMinutes === preset.value && (
+                          <span className="material-symbols-outlined text-[14px]">check</span>
+                        )}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+              </>
             )}
 
             {/* Linear Progress Bar */}
